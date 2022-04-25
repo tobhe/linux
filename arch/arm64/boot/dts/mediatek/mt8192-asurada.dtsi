@@ -221,6 +221,7 @@
 
 	sound: sound {
 		mediatek,platform = <&afe>;
+		mediatek,hdmi-codec = <&anx_bridge_dp>;
 		pinctrl-names = "aud_clk_mosi_off",
 				"aud_clk_mosi_on",
 				"aud_dat_mosi_off",
@@ -446,6 +447,7 @@
 						 0x7f 0x7f 0x3f 0x3c
 						 0x20 0x60 0x3c 0x25
 						 0x60 0x2c 0x40 0x60>;
+		analogix,audio-enable;
 
 		ports {
 			#address-cells = <1>;
