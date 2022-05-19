@@ -1118,6 +1118,9 @@
 			bus-range = <0x00 0xff>;
 			ranges = <0x82000000 0 0x12000000 0x0 0x12000000 0 0x0800000>,
 				 <0x81000000 0 0x12800000 0x0 0x12800000 0 0x0800000>;
+			resets = <&infracfg MT8192_INFRA_RST2_PEXTP_PHY_SWRST>,
+				 <&infracfg MT8192_INFRA_RST4_PCIE_TOP_SWRST>;
+			reset-names = "phy", "mac";
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 7>;
 			interrupt-map = <0 0 0 1 &pcie_intc0 0>,
