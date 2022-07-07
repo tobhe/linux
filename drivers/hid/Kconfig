@@ -1294,4 +1294,6 @@ source "drivers/hid/surface-hid/Kconfig"
 
 source "drivers/hid/spi-hid/Kconfig"
 
+source "drivers/hid/dockchannel-hid/Kconfig"
+
 endmenu
