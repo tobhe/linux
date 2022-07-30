@@ -110,10 +110,6 @@ struct dchid_gpio_ack {
 #define STM_REPORT_SERIAL	0x11
 #define STM_REPORT_KEYBTYPE	0x14
 
-#define KEYBOARD_TYPE_ANSI	0
-#define KEYBOARD_TYPE_ISO	1
-#define KEYBOARD_TYPE_JIS	2
-
 struct dchid_stm_id {
 	u8 unk;
 	u16 vendor_id;
@@ -176,6 +172,8 @@ struct dchid_iface {
 	void *resp_buf;
 	size_t resp_size;
 	struct completion out_complete;
+
+	u32 keyboard_layout_id;
 };
 
 struct dockchannel_hid {
@@ -194,6 +192,18 @@ struct dockchannel_hid {
 	/* Workqueue to asynchronously create HID devices */
 	struct workqueue_struct *new_iface_wq;
 };
+
+static ssize_t apple_layout_id_show(struct device *dev,
+				       struct device_attribute *attr,
+				       char *buf)
+{
+	struct hid_device *hdev = to_hid_device(dev);
+	struct dchid_iface *iface = hdev->driver_data;
+
+	return scnprintf(buf, PAGE_SIZE, "%d\n", iface->keyboard_layout_id);
+}
+
+static DEVICE_ATTR_RO(apple_layout_id);
 
 static struct dchid_iface *
 dchid_get_interface(struct dockchannel_hid *dchid, int index, const char *name)
@@ -488,12 +498,25 @@ err:
 
 static int dchid_start(struct hid_device *hdev)
 {
+	struct dchid_iface *iface = hdev->driver_data;
+
+	if (iface->keyboard_layout_id) {
+		int ret = device_create_file(&hdev->dev, &dev_attr_apple_layout_id);
+		if (ret) {
+			dev_warn(iface->dchid->dev, "Failed to create apple_layout_id: %d", ret);
+			iface->keyboard_layout_id = 0;
+		}
+	}
+
 	return 0;
 };
 
 static void dchid_stop(struct hid_device *hdev)
 {
-	/* no-op, we don't know what the shutdown commands are, if any */
+	struct dchid_iface *iface = hdev->driver_data;
+
+	if (iface->keyboard_layout_id)
+		device_remove_file(&hdev->dev, &dev_attr_apple_layout_id);
 }
 
 static int dchid_open(struct hid_device *hdev)
@@ -614,22 +637,19 @@ static void dchid_create_interface_work(struct work_struct *ws)
 	if (!strcmp(iface->name, "multi-touch")) {
 		hid->type = HID_TYPE_SPI_MOUSE;
 	} else if (!strcmp(iface->name, "keyboard")) {
+		u32 country_code = 0;
+
 		hid->type = HID_TYPE_SPI_KEYBOARD;
 
-		/* These country codes match what earlier Apple HID keyboards did */
-		switch (dchid->device_id.keyboard_type) {
-		case KEYBOARD_TYPE_ANSI:
-			hid->country = 33; // US-English
-			break;
+		/*
+		 * We have to get the country code from the device tree, since the
+		 * device provides no reliable way to get this info.
+		 */
+		if (!of_property_read_u32(iface->of_node, "hid-country-code", &country_code))
+			hid->country = country_code;
 
-		case KEYBOARD_TYPE_ISO:
-			hid->country = 13; // ISO
-			break;
-
-		case KEYBOARD_TYPE_JIS:
-			hid->country = 15; // Japan
-			break;
-		}
+		of_property_read_u32(iface->of_node, "apple,keyboard-layout-id",
+			&iface->keyboard_layout_id);
 	}
 
 	hid->dev.parent = iface->dchid->dev;
