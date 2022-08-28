@@ -1,7 +1,7 @@
 human_arch	= ARMv8
 build_arch	= arm64
 header_arch	= $(build_arch)
-defconfig	= defconfig generic-64k
+defconfig	= defconfig
 flavours	= asahi
 build_image	= Image.gz
 kernel_file	= arch/$(build_arch)/boot/Image.gz
