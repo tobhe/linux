@@ -32,18 +32,15 @@ include $(DROOT)/rules.d/0-common-vars.mk
 # branches to override master branch settings such as do_tools_common.
 -include $(DEBIAN)/rules.d/hooks.mk
 
+# do_libc_dev_package=false
+# do_flavour_image_package=false
+
 do_linux_tools=$(sort $(filter-out false,$(do_tools_usbip) $(do_tools_cpupower) $(do_tools_perf) $(do_tools_bpftool) $(do_tools_x86)))
 do_cloud_tools=$(sort $(filter-out false,$(do_tools_hyperv)))
 do_tools_common?=true
 do_tools_host?=false
 do_tools_perf_jvmti?=false
 do_enforce_all?=false
-
-# Don't build tools in a cross compile environment.
-ifneq ($(DEB_HOST_ARCH),$(DEB_BUILD_ARCH))
-        do_tools=false
-        do_zfs=false
-endif
 
 # Never signed
 bin_pkg_name=$(bin_pkg_name_unsigned)
@@ -69,7 +66,9 @@ binary: binary-indep binary-arch
 
 build: build-arch build-indep
 
-clean: debian/control
+clean:
+	cp $(DEBIAN)/control debian/control
+
 	dh_testdir
 	dh_testroot
 	dh_clean
@@ -85,6 +84,7 @@ clean: debian/control
 	# Install the copyright information.
 	cp $(DEBIAN)/copyright debian/copyright
 
+
 	# Install the retpoline extractor.
 	cp $(DROOT)/scripts/retpoline-extract-one scripts/ubuntu-retpoline-extract-one
 
@@ -92,7 +92,6 @@ clean: debian/control
 	[ -f $(DEBIAN)/reconstruct ] && bash $(DEBIAN)/reconstruct || true
 
 	# Remove generated intermediate files
-	rm -f $(DROOT)/control.stub $(DEBIAN)/control.stub
 	rm -f $(DROOT)/scripts/fix-filenames
 
 distclean: clean
@@ -108,34 +107,3 @@ include $(DROOT)/rules.d/3-binary-indep.mk
 
 # Various checks to be performed on builds
 include $(DROOT)/rules.d/4-checks.mk
-
-# Misc stuff
-.PHONY: $(DEBIAN)/control.stub
-$(DEBIAN)/control.stub: 				\
-		$(DROOT)/scripts/control-create		\
-		$(control_files)			\
-		$(DEBIAN)/changelog			\
-		$(wildcard $(DEBIAN)/control.d/* $(DEBIAN)/sub-flavours/*.vars)
-	for i in $(control_files); do                                           \
-	  cat $$i;                                                              \
-	  echo "";                                                              \
-	done | sed -e 's/PKGVER/$(release)/g'                                   \
-	        -e 's/ABINUM/$(abinum)/g'                                       \
-		-e 's/SRCPKGNAME/$(src_pkg_name)/g'                             \
-		-e 's/=HUMAN=/$(human_arch)/g'                                  \
-		-e 's/=SERIES=/$(series)/g'                                     \
-	  > $(DEBIAN)/control.stub;
-	flavours="$(sort $(wildcard $(DEBIAN)/control.d/vars.* $(DEBIAN)/sub-flavours/*.vars))";\
-	for i in $$flavours; do							\
-	  $(SHELL) $(DROOT)/scripts/control-create $$i "$(any_signed)" |	\
-		sed -e 's/PKGVER/$(release)/g'                                  \
-		-e 's/ABINUM/$(abinum)/g'                                       \
-		-e 's/SRCPKGNAME/$(src_pkg_name)/g'                             \
-		-e 's/=HUMAN=/$(human_arch)/g'                                  \
-		-e 's/=SERIES=/$(series)/g'                                     \
-		>> $(DEBIAN)/control.stub;                                      \
-	done
-
-.PHONY: debian/control
-debian/control: $(DEBIAN)/control.stub
-	cp $(DEBIAN)/control.stub debian/control
