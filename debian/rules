@@ -69,9 +69,7 @@ binary: binary-indep binary-arch
 
 build: build-arch build-indep
 
-clean:
-	cp $(DEBIAN)/control debian/control
-
+clean: debian/control
 	dh_testdir
 	dh_testroot
 	dh_clean
@@ -95,6 +93,7 @@ clean:
 	[ -f $(DEBIAN)/reconstruct ] && bash $(DEBIAN)/reconstruct || true
 
 	# Remove generated intermediate files
+	rm -f $(DROOT)/control.stub $(DEBIAN)/control.stub
 	rm -f $(DROOT)/scripts/fix-filenames
 
 distclean: clean
@@ -110,3 +109,70 @@ include $(DROOT)/rules.d/3-binary-indep.mk
 
 # Various checks to be performed on builds
 include $(DROOT)/rules.d/4-checks.mk
+
+control_files := $(DEBIAN)/control.stub.in
+ifeq ($(do_libc_dev_package),true)
+ifneq (,$(wildcard $(DEBIAN)/control.d/linux-libc-dev.stub))
+	control_files += $(DEBIAN)/control.d/linux-libc-dev.stub
+endif
+endif
+ifeq ($(do_doc_package),true)
+ifneq (,$(wildcard $(DEBIAN)/control.d/linux-doc.stub))
+	control_files += $(DEBIAN)/control.d/linux-doc.stub
+endif
+endif
+
+# Misc stuff
+.PHONY: $(DEBIAN)/control.stub
+$(DEBIAN)/control.stub: 				\
+		$(DROOT)/scripts/control-create		\
+		$(control_files)			\
+		$(DEBIAN)/changelog			\
+		$(wildcard $(DEBIAN)/control.d/* $(DEBIAN)/sub-flavours/*.vars)
+	for i in $(control_files); do                                           \
+	  cat $$i;                                                              \
+	  echo "";                                                              \
+	done | sed -e 's/PKGVER/$(release)/g'                                   \
+	        -e 's/ABINUM/$(abinum)/g'                                       \
+		-e 's/SRCPKGNAME/$(src_pkg_name)/g'                             \
+		-e 's/=HUMAN=/$(human_arch)/g'                                  \
+		-e 's/=SERIES=/$(series)/g'                                     \
+	  > $(DEBIAN)/control.stub;
+	flavours="$(sort $(wildcard $(DEBIAN)/control.d/vars.* $(DEBIAN)/sub-flavours/*.vars))";\
+	for i in $$flavours; do							\
+	  $(SHELL) $(DROOT)/scripts/control-create $$i "$(any_signed)" |	\
+		sed -e 's/PKGVER/$(release)/g'                                  \
+		-e 's/ABINUM/$(abinum)/g'                                       \
+		-e 's/SRCPKGNAME/$(src_pkg_name)/g'                             \
+		-e 's/=HUMAN=/$(human_arch)/g'                                  \
+		-e 's/=SERIES=/$(series)/g'                                     \
+		>> $(DEBIAN)/control.stub;                                      \
+	done
+
+.PHONY: debian/control
+debian/control: $(DEBIAN)/control.stub
+	cp $(DEBIAN)/control.stub debian/control
+
+debian/canonical-certs.pem: $(wildcard $(DROOT)/certs/*-all.pem) $(wildcard $(DROOT)/certs/*-$(arch).pem) $(wildcard $(DEBIAN)/certs/*-all.pem) $(wildcard $(DEBIAN)/certs/*-$(arch).pem)
+	for cert in $(sort $(notdir $^));					\
+	do									\
+		for dir in $(DEBIAN) $(DROOT);					\
+		do								\
+			if [ -f "$$dir/certs/$$cert" ]; then			\
+				cat "$$dir/certs/$$cert";			\
+				break;						\
+			fi;							\
+		done;								\
+	done >"$@"
+
+debian/canonical-revoked-certs.pem: $(wildcard $(DROOT)/revoked-certs/*-all.pem) $(wildcard $(DROOT)/revoked-certs/*-$(arch).pem) $(wildcard $(DEBIAN)/revoked-certs/*-all.pem) $(wildcard $(DEBIAN)/revoked-certs/*-$(arch).pem)
+	for cert in $(sort $(notdir $^));					\
+	do									\
+		for dir in $(DEBIAN) $(DROOT);					\
+		do								\
+			if [ -f "$$dir/revoked-certs/$$cert" ]; then		\
+				cat "$$dir/revoked-certs/$$cert";		\
+				break;						\
+			fi;							\
+		done;								\
+	done >"$@"
