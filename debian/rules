@@ -46,7 +46,8 @@ do_tools_perf_jvmti?=false
 do_enforce_all?=false
 
 # Never signed
-bin_pkg_name=$(bin_pkg_name_unsigned)
+any_signed=false
+bin_pkg_name=$(bin_pkg_name_signed)
 
 # This is a mainline build -- turn off things which do not work
 o_dtbs=true
