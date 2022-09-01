@@ -1,4 +1,4 @@
-linux-asahi (5.19.5-0~rc0) jammy; urgency=medium
+linux-asahi (5.19.5-2) jammy; urgency=medium
 
   * Import Asahi Linux kernel with apple silicon patches
 
