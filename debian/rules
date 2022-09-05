@@ -51,7 +51,6 @@ bin_pkg_name=$(bin_pkg_name_signed)
 
 # This is a mainline build -- turn off things which do not work
 o_dtbs=true
-do_extras_package=false
 do_tools=false
 no_dumpfile=1
 do_zfs=false
