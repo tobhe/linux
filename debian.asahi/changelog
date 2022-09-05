@@ -1,3 +1,9 @@
+linux-asahi (5.19.5-7) jammy; urgency=medium
+
+  * Also build extras packages
+
+ -- Tobias Heider <me@tobhe.de>  Mon, 05 Sep 2022 13:17:44 +0200
+
 linux-asahi (5.19.5-6) jammy; urgency=medium
 
   * Import Asahi Linux kernel with apple silicon patches
