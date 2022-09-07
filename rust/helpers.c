@@ -27,11 +27,13 @@
 #include <linux/gfp.h>
 #include <linux/highmem.h>
 #include <linux/io.h>
+#include <linux/ioport.h>
 #include <linux/irqchip/chained_irq.h>
 #include <linux/irqdomain.h>
 #include <linux/irq.h>
 #include <linux/mutex.h>
 #include <linux/netdevice.h>
+#include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/platform_device.h>
 #include <linux/sched/signal.h>
@@ -666,6 +668,20 @@ int rust_helper_dma_set_mask_and_coherent(struct device *dev, u64 mask)
 	return dma_set_mask_and_coherent(dev, mask);
 }
 EXPORT_SYMBOL_GPL(rust_helper_dma_set_mask_and_coherent);
+
+struct device_node *rust_helper_of_parse_phandle(const struct device_node *np,
+		const char *phandle_name,
+		int index)
+{
+	return of_parse_phandle(np, phandle_name, index);
+}
+EXPORT_SYMBOL_GPL(rust_helper_of_parse_phandle);
+
+resource_size_t rust_helper_resource_size(const struct resource *res)
+{
+	return resource_size(res);
+}
+EXPORT_SYMBOL_GPL(rust_helper_resource_size);
 
 /*
  * We use `bindgen`'s `--size_t-is-usize` option to bind the C `size_t` type
