@@ -322,6 +322,12 @@ impl Error {
         self.0
     }
 
+    /// Returns the error encoded as a pointer.
+    pub(crate) fn to_ptr<T>(self) -> *mut T {
+        // SAFETY: Valid as long as self.0 is a valid error
+        unsafe { bindings::ERR_PTR(self.0.into()) as *mut _ }
+    }
+
     /// Returns a string representing the error, if one exists.
     #[cfg(not(testlib))]
     pub fn name(&self) -> Option<&'static CStr> {
