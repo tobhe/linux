@@ -213,6 +213,12 @@ impl Drop for Device {
     }
 }
 
+impl Clone for Device {
+    fn clone(&self) -> Self {
+        Device::from_dev(self)
+    }
+}
+
 /// Device data.
 ///
 /// When a device is removed (for whatever reason, for example, because the device was unplugged or
