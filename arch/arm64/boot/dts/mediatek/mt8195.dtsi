@@ -969,6 +969,7 @@
 			#mbox-cells = <0>;
 			reg = <0 0x10816000 0 0x1000>;
 			interrupts = <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH 0>;
+			power-domains = <&spm MT8195_POWER_DOMAIN_ADSP>;
 		};
 
 		adsp_mailbox1: mailbox@10817000 {
@@ -976,6 +977,7 @@
 			#mbox-cells = <0>;
 			reg = <0 0x10817000 0 0x1000>;
 			interrupts = <GIC_SPI 703 IRQ_TYPE_LEVEL_HIGH 0>;
+			power-domains = <&spm MT8195_POWER_DOMAIN_ADSP>;
 		};
 
 		afe: mt8195-afe-pcm@10890000 {
