@@ -1,3 +1,9 @@
+linux-asahi (5.19.5-10) jammy; urgency=medium
+
+  * Reduce config to only support Apple Silicon hardware
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 08 Sep 2022 14:51:08 +0200
+
 linux-asahi (5.19.5-9) jammy; urgency=medium
 
   * Also build extras packages
