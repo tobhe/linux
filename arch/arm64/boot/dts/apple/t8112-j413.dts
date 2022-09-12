@@ -82,20 +82,20 @@
 &i2c1 {
 	status = "okay";
 
-	speaker_left_rear: codec@38 {
+	speaker_left_woof: codec@38 {
 		compatible = "ti,sn012776", "ti,tas2764";
 		reg = <0x38>;
 		shutdown-gpios = <&pinctrl_ap 88 GPIO_ACTIVE_HIGH>;
 		#sound-dai-cells = <0>;
-		sound-name-prefix = "Left Rear";
+		sound-name-prefix = "Left Woofer";
 	};
 
-	speaker_left_front: codec@39 {
+	speaker_left_tweet: codec@39 {
 		compatible = "ti,sn012776", "ti,tas2764";
 		reg = <0x39>;
 		shutdown-gpios = <&pinctrl_ap 88 GPIO_ACTIVE_HIGH>;
 		#sound-dai-cells = <0>;
-		sound-name-prefix = "Left Front";
+		sound-name-prefix = "Left Tweeter";
 	};
 };
 
@@ -106,20 +106,20 @@
 &i2c3 {
 	status = "okay";
 
-	speaker_right_rear: codec@3b {
+	speaker_right_woof: codec@3b {
 		compatible = "ti,sn012776", "ti,tas2764";
 		reg = <0x3b>;
 		shutdown-gpios = <&pinctrl_ap 88 GPIO_ACTIVE_HIGH>;
 		#sound-dai-cells = <0>;
-		sound-name-prefix = "Right Rear";
+		sound-name-prefix = "Right Woofer";
 	};
 
-	speaker_right_front: codec@3c {
+	speaker_right_tweet: codec@3c {
 		compatible = "ti,sn012776", "ti,tas2764";
 		reg = <0x3c>;
 		shutdown-gpios = <&pinctrl_ap 88 GPIO_ACTIVE_HIGH>;
 		#sound-dai-cells = <0>;
-		sound-name-prefix = "Right Front";
+		sound-name-prefix = "Right Tweeter";
 	};
 
 	jack_codec: codec@4b {
@@ -164,8 +164,8 @@
 				sound-dai = <&mca 0>, <&mca 1>;
 			};
 			codec {
-				sound-dai = <&speaker_left_front>, <&speaker_left_rear>,
-					    <&speaker_right_front>, <&speaker_right_rear>;
+				sound-dai = <&speaker_left_tweet>, <&speaker_left_woof>,
+					    <&speaker_right_tweet>, <&speaker_right_woof>;
 			};
 		};
 
