@@ -752,7 +752,7 @@ static int macaudio_j314_fixup_controls(struct snd_soc_card *card)
 		 * controls.
 		 */
 		CHECK(snd_soc_deactivate_kctl, "* VSENSE Switch", 0);
-		CHECK(snd_soc_deactivate_kctl, "* ISENSE Switch", 0);		
+		CHECK(snd_soc_deactivate_kctl, "* ISENSE Switch", 0);
 	}
 
 	return 0;
