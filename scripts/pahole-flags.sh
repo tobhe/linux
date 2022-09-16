@@ -28,4 +28,8 @@ if is_enabled CONFIG_RUST; then
 	extra_paholeopt="${extra_paholeopt} --lang_exclude=rust"
 fi
 
+if [ "${pahole_ver}" -ge "124" ]; then
+	extra_paholeopt="${extra_paholeopt} --skip_encoding_btf_enum64"
+fi
+
 echo ${extra_paholeopt}
