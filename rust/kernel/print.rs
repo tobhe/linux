@@ -147,12 +147,14 @@ macro_rules! print_macro (
         // ones. All `__LOG_PREFIX`s are null-terminated as they are generated
         // by the `module!` proc macro or fixed values defined in a kernel
         // crate.
-        unsafe {
-            $crate::print::call_printk(
-                &$format_string,
-                crate::__LOG_PREFIX,
-                format_args!($($arg)+),
-            );
+        match format_args!($($arg)+) {
+            args => unsafe {
+                $crate::print::call_printk(
+                    &$format_string,
+                    crate::__LOG_PREFIX,
+                    args,
+                );
+            }
         }
     );
 
