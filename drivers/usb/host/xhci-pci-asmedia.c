@@ -48,7 +48,7 @@
 #define ASMT_REG_RDATA			0x3018
 
 #define TIMEOUT_USEC			10000
-#define RESET_TIMEOUT_USEC		100000
+#define RESET_TIMEOUT_USEC		300000
 
 static int asmedia_mbox_tx(struct pci_dev *pdev, u64 data)
 {
@@ -251,8 +251,10 @@ int asmedia_xhci_check_request_fw(struct pci_dev *pdev,
 	}
 
 	ret = asmedia_load_fw(pdev, fw);
-	if (ret)
+	if (ret) {
 		dev_err(&pdev->dev, "Firmware upload failed: %d\n", ret);
+		goto err;
+	}
 
 	ret = asmedia_check_firmware(pdev);
 	if (ret < 0) {
