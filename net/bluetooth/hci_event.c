@@ -4179,17 +4179,6 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, void *data,
 		}
 	}
 
-	if (i == ARRAY_SIZE(hci_cc_table)) {
-		/* Unknown opcode, assume byte 0 contains the status, so
-		 * that e.g. __hci_cmd_sync() properly returns errors
-		 * for vendor specific commands send by HCI drivers.
-		 * If a vendor doesn't actually follow this convention we may
-		 * need to introduce a vendor CC table in order to properly set
-		 * the status.
-		 */
-		*status = skb->data[0];
-	}
-
 	handle_cmd_cnt_and_timer(hdev, ev->ncmd);
 
 	hci_req_cmd_complete(hdev, *opcode, *status, req_complete,
@@ -6482,6 +6471,10 @@ static void hci_le_ext_adv_report_evt(struct hci_dev *hdev, void *data,
 			break;
 
 		evt_type = __le16_to_cpu(info->type);
+		if (test_bit(HCI_QUIRK_FIXUP_LE_EXT_ADV_REPORT_EVT_TYPE,
+			     &hdev->quirks))
+			evt_type &= 0xff;
+
 		legacy_evt_type = ext_evt_type_to_legacy(hdev, evt_type);
 		if (legacy_evt_type != LE_ADV_INVALID) {
 			process_adv_report(hdev, legacy_evt_type, &info->bdaddr,
