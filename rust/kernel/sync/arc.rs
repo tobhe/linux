@@ -23,6 +23,7 @@ use alloc::{
 use core::{
     alloc::Layout,
     convert::{AsRef, TryFrom},
+    fmt,
     marker::{PhantomData, Unsize},
     mem::{ManuallyDrop, MaybeUninit},
     ops::{Deref, DerefMut},
@@ -259,6 +260,12 @@ impl<T: ?Sized> Drop for Arc<T> {
     }
 }
 
+impl<T: ?Sized + fmt::Debug> fmt::Debug for Arc<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Debug::fmt(&**self, f)
+    }
+}
+
 impl<T> TryFrom<Vec<T>> for Arc<[T]> {
     type Error = Error;
 
@@ -372,6 +379,12 @@ impl<T: ?Sized> Deref for ArcBorrow<'_, T> {
         // SAFETY: By the type invariant, the underlying object is still alive with no mutable
         // references to it, so it is safe to create a shared reference.
         unsafe { &self.inner.as_ref().data }
+    }
+}
+
+impl<T: ?Sized + fmt::Debug> fmt::Debug for ArcBorrow<'_, T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Debug::fmt(&**self, f)
     }
 }
 
@@ -498,6 +511,12 @@ impl<T: ?Sized> DerefMut for UniqueArc<T> {
         // it is safe to dereference it. Additionally, we know there is only one reference when
         // it's inside a `UniqueArc`, so it is safe to get a mutable reference.
         unsafe { &mut self.inner.ptr.as_mut().data }
+    }
+}
+
+impl<T: ?Sized + fmt::Debug> fmt::Debug for UniqueArc<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Debug::fmt(&**self, f)
     }
 }
 
