@@ -323,6 +323,7 @@ impl Error {
     }
 
     /// Returns the error encoded as a pointer.
+    #[allow(dead_code)]
     pub(crate) fn to_ptr<T>(self) -> *mut T {
         // SAFETY: Valid as long as self.0 is a valid error
         unsafe { bindings::ERR_PTR(self.0.into()) as *mut _ }
