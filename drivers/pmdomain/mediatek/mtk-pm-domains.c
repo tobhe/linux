@@ -4,6 +4,7 @@
  */
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
+#include <linux/cpu.h>
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -667,6 +668,7 @@ static int scpsys_probe(struct platform_device *pdev)
 	struct device_node *node;
 	struct device *parent;
 	struct scpsys *scpsys;
+	bool cpu_pd_found = false;
 	int ret;
 
 	soc = of_device_get_match_data(&pdev->dev);
@@ -700,6 +702,7 @@ static int scpsys_probe(struct platform_device *pdev)
 	ret = -ENODEV;
 	for_each_available_child_of_node(np, node) {
 		struct generic_pm_domain *domain;
+		struct scpsys_domain *pd;
 
 		domain = scpsys_add_one_domain(scpsys, node);
 		if (IS_ERR(domain)) {
@@ -713,6 +716,10 @@ static int scpsys_probe(struct platform_device *pdev)
 			of_node_put(node);
 			goto err_cleanup_domains;
 		}
+
+		pd = to_scpsys_domain(domain);
+		if (MTK_SCPD_CAPS(pd, MTK_SCPD_CPU_DOMAIN))
+			cpu_pd_found = true;
 	}
 
 	if (ret) {
@@ -725,6 +732,14 @@ static int scpsys_probe(struct platform_device *pdev)
 		dev_err(dev, "failed to add provider: %d\n", ret);
 		goto err_cleanup_domains;
 	}
+
+	/*
+	 * If we have found a CPU power domain this means that, during early
+	 * init, we have disabled CPU hotplug: since we can now control power
+	 * to bring up secondary CPUs now, enable it again here.
+	 */
+	if (cpu_pd_found)
+		cpu_hotplug_enable();
 
 	return 0;
 
@@ -742,3 +757,55 @@ static struct platform_driver scpsys_pm_domain_driver = {
 	},
 };
 builtin_platform_driver(scpsys_pm_domain_driver);
+
+static int scpsys_early_init(void)
+{
+	const struct scpsys_soc_data *soc;
+	const struct of_device_id *match;
+	bool cpu_pd_found = false;
+	struct device_node *np;
+	int i;
+
+	np = of_find_matching_node_and_match(NULL, scpsys_of_match, &match);
+	if (IS_ERR_OR_NULL(np))
+		return -ENODEV;
+
+	soc = match->data;
+
+	for (i = 0; i < soc->num_domains; i++) {
+		if (soc->domains_data[i].caps & MTK_SCPD_CPU_DOMAIN) {
+			cpu_pd_found = true;
+			break;
+		}
+	}
+
+	/* If there's no CPU Power Domain we have nothing to do here */
+	if (!cpu_pd_found)
+		goto end;
+
+	/*
+	 * This function always runs after SMP is prepared, so the CPU maps
+	 * are populated but no secondary CPU is booted yet: in order to
+	 * avoid forcing powerup of all processors in the systems at this
+	 * early stage and to keep using the regular power domains on/off
+	 * flow provided in this driver (using regmap), we temporarily
+	 * disable CPU hotplug here and re-enable it after initializing
+	 * all of the power domains for the CPUs.
+	 */
+	cpu_hotplug_disable();
+
+	/* we set all of the
+	 * secondary processors as not present in this function (not good)
+	*/
+	/*
+		base = of_iomap(np, 0);
+		if (!base) {
+			ret = -ENODEV;
+			goto end;
+		};
+	*/
+end:
+	of_node_put(np);
+	return 0;
+}
+early_initcall(scpsys_early_init);
