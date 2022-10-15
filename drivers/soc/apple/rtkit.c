@@ -703,7 +703,8 @@ static int apple_rtkit_request_mbox_chan(struct apple_rtkit *rtk)
 
 	if (IS_ERR(rtk->mbox_chan))
 		return PTR_ERR(rtk->mbox_chan);
-	return 0;
+
+	return mbox_start_channel(rtk->mbox_chan);
 }
 
 static struct apple_rtkit *apple_rtkit_init(struct device *dev, void *cookie,
@@ -736,6 +737,7 @@ static struct apple_rtkit *apple_rtkit_init(struct device *dev, void *cookie,
 	rtk->mbox_cl.dev = dev;
 	rtk->mbox_cl.tx_block = false;
 	rtk->mbox_cl.knows_txdone = false;
+	rtk->mbox_cl.defer_startup = true;
 	rtk->mbox_cl.rx_callback = &apple_rtkit_rx;
 	rtk->mbox_cl.tx_done = &apple_rtkit_tx_done;
 
