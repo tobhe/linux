@@ -73,7 +73,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&icestorm_opp>;
 			capacity-dmips-mhz = <714>;
-			apple,freq-domain = <&cpufreq_hw 3>;
+			performance-domains = <&cpufreq_e_die1>;
 		};
 
 		cpu_e11: cpu@801 {
@@ -84,7 +84,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&icestorm_opp>;
 			capacity-dmips-mhz = <714>;
-			apple,freq-domain = <&cpufreq_hw 3>;
+			performance-domains = <&cpufreq_e_die1>;
 		};
 
 		cpu_p20: cpu@10900 {
@@ -95,7 +95,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&firestorm_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 4>;
+			performance-domains = <&cpufreq_p0_die1>;
 		};
 
 		cpu_p21: cpu@10901 {
@@ -106,7 +106,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&firestorm_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 4>;
+			performance-domains = <&cpufreq_p0_die1>;
 		};
 
 		cpu_p22: cpu@10902 {
@@ -117,7 +117,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&firestorm_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 4>;
+			performance-domains = <&cpufreq_p0_die1>;
 		};
 
 		cpu_p23: cpu@10903 {
@@ -128,7 +128,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&firestorm_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 4>;
+			performance-domains = <&cpufreq_p0_die1>;
 		};
 
 		cpu_p30: cpu@10a00 {
@@ -139,7 +139,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&firestorm_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 5>;
+			performance-domains = <&cpufreq_p1_die1>;
 		};
 
 		cpu_p31: cpu@10a01 {
@@ -150,7 +150,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&firestorm_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 5>;
+			performance-domains = <&cpufreq_p1_die1>;
 		};
 
 		cpu_p32: cpu@10a02 {
@@ -161,7 +161,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&firestorm_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 5>;
+			performance-domains = <&cpufreq_p1_die1>;
 		};
 
 		cpu_p33: cpu@10a03 {
@@ -172,7 +172,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&firestorm_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 5>;
+			performance-domains = <&cpufreq_p1_die1>;
 		};
 	};
 
@@ -226,17 +226,6 @@
 
 #undef DIE
 #undef DIE_NO
-
-&cpufreq_hw {
-	reg = <0x2 0x10e20000 0 0x1000>,
-		<0x2 0x11e20000 0 0x1000>,
-		<0x2 0x12e20000 0 0x1000>,
-		<0x22 0x10e20000 0 0x1000>,
-		<0x22 0x11e20000 0 0x1000>,
-		<0x22 0x12e20000 0 0x1000>;
-	reg-names = "cluster0", "cluster1", "cluster2",
-		    "cluster3", "cluster4", "cluster5";
-};
 
 &aic {
 	affinities {
