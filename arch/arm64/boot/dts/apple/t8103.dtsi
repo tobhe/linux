@@ -63,7 +63,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&ecluster_opp>;
 			capacity-dmips-mhz = <714>;
-			apple,freq-domain = <&cpufreq_hw 0>;
+			performance-domains = <&cpufreq_e>;
 		};
 
 		cpu_e1: cpu@1 {
@@ -74,7 +74,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&ecluster_opp>;
 			capacity-dmips-mhz = <714>;
-			apple,freq-domain = <&cpufreq_hw 0>;
+			performance-domains = <&cpufreq_e>;
 		};
 
 		cpu_e2: cpu@2 {
@@ -85,7 +85,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&ecluster_opp>;
 			capacity-dmips-mhz = <714>;
-			apple,freq-domain = <&cpufreq_hw 0>;
+			performance-domains = <&cpufreq_e>;
 		};
 
 		cpu_e3: cpu@3 {
@@ -96,7 +96,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&ecluster_opp>;
 			capacity-dmips-mhz = <714>;
-			apple,freq-domain = <&cpufreq_hw 0>;
+			performance-domains = <&cpufreq_e>;
 		};
 
 		cpu_p0: cpu@10100 {
@@ -107,7 +107,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&pcluster_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 1>;
+			performance-domains = <&cpufreq_p>;
 		};
 
 		cpu_p1: cpu@10101 {
@@ -118,7 +118,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&pcluster_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 1>;
+			performance-domains = <&cpufreq_p>;
 		};
 
 		cpu_p2: cpu@10102 {
@@ -129,7 +129,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&pcluster_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 1>;
+			performance-domains = <&cpufreq_p>;
 		};
 
 		cpu_p3: cpu@10103 {
@@ -140,7 +140,7 @@
 			cpu-release-addr = <0 0>; /* To be filled by loader */
 			operating-points-v2 = <&pcluster_opp>;
 			capacity-dmips-mhz = <1024>;
-			apple,freq-domain = <&cpufreq_hw 1>;
+			performance-domains = <&cpufreq_p>;
 		};
 	};
 
@@ -316,13 +316,16 @@
 		ranges;
 		nonposted-mmio;
 
-		cpufreq_hw: cpufreq@210e20000 {
-			compatible = "apple,t8103-soc-cpufreq", "apple,soc-cpufreq";
-			reg = <0x2 0x10e20000 0 0x1000>,
-			      <0x2 0x11e20000 0 0x1000>;
-			reg-names = "cluster0", "cluster1";
+		cpufreq_e: cpufreq@210e20000 {
+			compatible = "apple,t8103-cluster-cpufreq", "apple,cluster-cpufreq";
+			reg = <0x2 0x10e20000 0 0x1000>;
+			#performance-domain-cells = <0>;
+		};
 
-			#freq-domain-cells = <1>;
+		cpufreq_p: cpufreq@211e20000 {
+			compatible = "apple,t8103-cluster-cpufreq", "apple,cluster-cpufreq";
+			reg = <0x2 0x11e20000 0 0x1000>;
+			#performance-domain-cells = <0>;
 		};
 
 		dart_sio: iommu@235004000 {
