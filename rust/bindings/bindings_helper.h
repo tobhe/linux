@@ -20,6 +20,7 @@
 #include <linux/io.h>
 #include <linux/irqdomain.h>
 #include <linux/irq.h>
+#include <linux/ktime.h>
 #include <linux/miscdevice.h>
 #include <linux/mm.h>
 #include <linux/module.h>
@@ -36,6 +37,7 @@
 #include <linux/security.h>
 #include <linux/slab.h>
 #include <linux/sysctl.h>
+#include <linux/timekeeping.h>
 #include <linux/uaccess.h>
 #include <linux/uio.h>
 #include <uapi/asm-generic/ioctl.h>
