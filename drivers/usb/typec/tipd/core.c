@@ -14,6 +14,7 @@
 #include <linux/regmap.h>
 #include <linux/interrupt.h>
 #include <linux/usb/typec.h>
+#include <linux/usb/typec_altmode.h>
 #include <linux/usb/role.h>
 
 #include "tps6598x.h"
@@ -221,11 +222,16 @@ static void tps6598x_set_data_role(struct tps6598x *tps,
 	else
 		role_val = USB_ROLE_DEVICE;
 
-	if (!connected)
+	if (connected)
+		typec_set_mode(tps->port, TYPEC_STATE_USB);
+	else
 		role_val = USB_ROLE_NONE;
 
 	usb_role_switch_set_role(tps->role_sw, role_val);
 	typec_set_data_role(tps->port, role);
+
+	if (!connected)
+		typec_set_mode(tps->port, TYPEC_STATE_SAFE);
 }
 
 static int tps6598x_connect(struct tps6598x *tps, u32 status)
