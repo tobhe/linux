@@ -914,6 +914,12 @@ static bool glk_broken_cqhci(struct sdhci_pci_slot *slot)
 		dmi_match(DMI_SYS_VENDOR, "IRBIS"));
 }
 
+static bool jsl_broken_hs400es(struct sdhci_pci_slot *slot)
+{
+	return slot->chip->pdev->device == PCI_DEVICE_ID_INTEL_JSL_EMMC &&
+			dmi_match(DMI_BIOS_VENDOR, "ASUSTeK COMPUTER INC.");
+}
+
 static int glk_emmc_probe_slot(struct sdhci_pci_slot *slot)
 {
 	int ret = byt_emmc_probe_slot(slot);
@@ -922,9 +928,11 @@ static int glk_emmc_probe_slot(struct sdhci_pci_slot *slot)
 		slot->host->mmc->caps2 |= MMC_CAP2_CQE;
 
 	if (slot->chip->pdev->device != PCI_DEVICE_ID_INTEL_GLK_EMMC) {
-		slot->host->mmc->caps2 |= MMC_CAP2_HS400_ES;
-		slot->host->mmc_host_ops.hs400_enhanced_strobe =
-						intel_hs400_enhanced_strobe;
+		if (!jsl_broken_hs400es(slot)) {
+			slot->host->mmc->caps2 |= MMC_CAP2_HS400_ES;
+			slot->host->mmc_host_ops.hs400_enhanced_strobe =
+							intel_hs400_enhanced_strobe;
+		}
 		slot->host->mmc->caps2 |= MMC_CAP2_CQE_DCMD;
 	}
 
@@ -1741,6 +1749,8 @@ static int amd_probe(struct sdhci_pci_chip *chip)
 		}
 	}
 
+	pci_dev_put(smbus_dev);
+
 	if (gen == AMD_CHIPSET_BEFORE_ML || gen == AMD_CHIPSET_CZ)
 		chip->quirks2 |= SDHCI_QUIRK2_CLEAR_TRANSFERMODE_REG_BEFORE_CMD;
 
@@ -2031,6 +2041,7 @@ static struct sdhci_pci_slot *sdhci_pci_probe_slot(
 	struct sdhci_host *host;
 	int ret, bar = first_bar + slotno;
 	size_t priv_size = chip->fixes ? chip->fixes->priv_size : 0;
+	u32 cd_debounce_delay_ms;
 
 	if (!(pci_resource_flags(pdev, bar) & IORESOURCE_MEM)) {
 		dev_err(&pdev->dev, "BAR %d is not iomem. Aborting.\n", bar);
@@ -2097,6 +2108,10 @@ static struct sdhci_pci_slot *sdhci_pci_probe_slot(
 	if (host->mmc->caps & MMC_CAP_CD_WAKE)
 		device_init_wakeup(&pdev->dev, true);
 
+	if (device_property_read_u32(&pdev->dev, "cd-debounce-delay-ms",
+				     &cd_debounce_delay_ms))
+		cd_debounce_delay_ms = 200;
+
 	if (slot->cd_idx >= 0) {
 		ret = mmc_gpiod_request_cd(host->mmc, "cd", slot->cd_idx,
 					   slot->cd_override_level, 0);
@@ -2104,7 +2119,7 @@ static struct sdhci_pci_slot *sdhci_pci_probe_slot(
 			ret = mmc_gpiod_request_cd(host->mmc, NULL,
 						   slot->cd_idx,
 						   slot->cd_override_level,
-						   0);
+						   cd_debounce_delay_ms * 1000);
 		if (ret == -EPROBE_DEFER)
 			goto remove;
 
@@ -2112,6 +2127,16 @@ static struct sdhci_pci_slot *sdhci_pci_probe_slot(
 			dev_warn(&pdev->dev, "failed to setup card detect gpio\n");
 			slot->cd_idx = -1;
 		}
+	} else if (is_of_node(pdev->dev.fwnode)) {
+		/* Allow all OF systems to use a CD GPIO if provided */
+
+		ret = mmc_gpiod_request_cd(host->mmc, "cd", 0,
+					   slot->cd_override_level,
+					   cd_debounce_delay_ms * 1000);
+		if (ret == -EPROBE_DEFER)
+			goto remove;
+		else if (ret == 0)
+			slot->cd_idx = 0;
 	}
 
 	if (chip->fixes && chip->fixes->add_host)

@@ -23,6 +23,7 @@
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
 #include <linux/of.h>
+#include <linux/of_graph.h>
 #include <linux/acpi.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/reset.h>
@@ -85,7 +86,7 @@ static int dwc3_get_dr_mode(struct dwc3 *dwc)
 		 * mode. If the controller supports DRD but the dr_mode is not
 		 * specified or set to OTG, then set the mode to peripheral.
 		 */
-		if (mode == USB_DR_MODE_OTG &&
+		if (mode == USB_DR_MODE_OTG && !dwc->edev &&
 		    (!IS_ENABLED(CONFIG_USB_ROLE_SWITCH) ||
 		     !device_property_read_bool(dwc->dev, "usb-role-switch")) &&
 		    !DWC3_VER_IS_PRIOR(DWC3, 330A))
@@ -115,6 +116,9 @@ void dwc3_set_prtcap(struct dwc3 *dwc, u32 mode)
 	dwc->current_dr_role = mode;
 }
 
+static void dwc3_core_exit(struct dwc3 *dwc);
+static int dwc3_core_init_for_resume(struct dwc3 *dwc);
+
 static void __dwc3_set_mode(struct work_struct *work)
 {
 	struct dwc3 *dwc = work_to_dwc(work);
@@ -129,10 +133,11 @@ static void __dwc3_set_mode(struct work_struct *work)
 	if (dwc->current_dr_role == DWC3_GCTL_PRTCAP_OTG)
 		dwc3_otg_update(dwc, 0);
 
-	if (!dwc->desired_dr_role)
+	if (!dwc->desired_dr_role && !dwc->role_switch_reset_quirk)
 		goto out;
 
-	if (dwc->desired_dr_role == dwc->current_dr_role)
+	if (dwc->desired_dr_role == dwc->current_dr_role &&
+			!dwc->role_switch_reset_quirk)
 		goto out;
 
 	if (dwc->desired_dr_role == DWC3_GCTL_PRTCAP_OTG && dwc->edev)
@@ -157,13 +162,32 @@ static void __dwc3_set_mode(struct work_struct *work)
 		break;
 	}
 
+	if (dwc->role_switch_reset_quirk) {
+		if (dwc->current_dr_role) {
+			dwc->current_dr_role = 0;
+			dwc3_core_exit(dwc);
+		}
+
+		if (dwc->desired_dr_role) {
+			ret = dwc3_core_init_for_resume(dwc);
+			if (ret) {
+				dev_err(dwc->dev,
+				    "failed to reinitialize core\n");
+				goto out;
+			}
+		} else {
+			goto out;
+		}
+	}
+
 	/*
 	 * When current_dr_role is not set, there's no role switching.
 	 * Only perform GCTL.CoreSoftReset when there's DRD role switching.
 	 */
-	if (dwc->current_dr_role && ((DWC3_IP_IS(DWC3) ||
+	if (dwc->role_switch_reset_quirk ||
+		(dwc->current_dr_role && ((DWC3_IP_IS(DWC3) ||
 			DWC3_VER_IS_PRIOR(DWC31, 190A)) &&
-			dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG)) {
+			dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG))) {
 		reg = dwc3_readl(dwc->regs, DWC3_GCTL);
 		reg |= DWC3_GCTL_CORESOFTRESET;
 		dwc3_writel(dwc->regs, DWC3_GCTL, reg);
@@ -1395,6 +1419,18 @@ static int dwc3_core_init_mode(struct dwc3 *dwc)
 		ret = dwc3_drd_init(dwc);
 		if (ret)
 			return dev_err_probe(dev, ret, "failed to initialize dual-role\n");
+
+		/*
+		 * If the role switch reset quirk is required the first role
+		 * switch notification will initialize the core such that we
+		 * have to shut it down here. Make sure that the dwc3_set_mode
+		 * called by dwc3_drd_init has completed before since it
+		 * may still try to access MMIO.
+		 */
+		if (dwc->role_switch_reset_quirk) {
+			flush_work(&dwc->drd_work);
+			dwc3_core_exit(dwc);
+		}
 		break;
 	default:
 		dev_err(dev, "Unsupported mode of operation %d\n", dwc->dr_mode);
@@ -1690,6 +1726,56 @@ static void dwc3_check_params(struct dwc3 *dwc)
 	}
 }
 
+static struct extcon_dev *dwc3_get_extcon(struct dwc3 *dwc)
+{
+	struct device *dev = dwc->dev;
+	struct device_node *np_phy;
+	struct extcon_dev *edev = NULL;
+	const char *name;
+
+	if (device_property_read_bool(dev, "extcon"))
+		return extcon_get_edev_by_phandle(dev, 0);
+
+	/*
+	 * Device tree platforms should get extcon via phandle.
+	 * On ACPI platforms, we get the name from a device property.
+	 * This device property is for kernel internal use only and
+	 * is expected to be set by the glue code.
+	 */
+	if (device_property_read_string(dev, "linux,extcon-name", &name) == 0)
+		return extcon_get_extcon_dev(name);
+
+	/*
+	 * Check explicitly if "usb-role-switch" is used since
+	 * extcon_find_edev_by_node() can not be used to check the absence of
+	 * an extcon device. In the absence of an device it will always return
+	 * EPROBE_DEFER.
+	 */
+	if (IS_ENABLED(CONFIG_USB_ROLE_SWITCH) &&
+	    device_property_read_bool(dev, "usb-role-switch"))
+		return NULL;
+
+	/*
+	 * Try to get an extcon device from the USB PHY controller's "port"
+	 * node. Check if it has the "port" node first, to avoid printing the
+	 * error message from underlying code, as it's a valid case: extcon
+	 * device (and "port" node) may be missing in case of "usb-role-switch"
+	 * or OTG mode.
+	 */
+	np_phy = of_parse_phandle(dev->of_node, "phys", 0);
+	if (of_graph_is_present(np_phy)) {
+		struct device_node *np_conn;
+
+		np_conn = of_graph_get_remote_node(np_phy, -1, -1);
+		if (np_conn)
+			edev = extcon_find_edev_by_node(np_conn);
+		of_node_put(np_conn);
+	}
+	of_node_put(np_phy);
+
+	return edev;
+}
+
 static int dwc3_probe(struct platform_device *pdev)
 {
 	struct device		*dev = &pdev->dev;
@@ -1794,6 +1880,19 @@ static int dwc3_probe(struct platform_device *pdev)
 				goto put_usb_psy;
 			}
 		}
+
+		if (of_device_is_compatible(dev->of_node, "apple,dwc3")) {
+			if (!IS_ENABLED(CONFIG_USB_ROLE_SWITCH) ||
+			    dwc->dr_mode != USB_DR_MODE_OTG) {
+				dev_err(dev,
+				    "Apple DWC3 requires role switch support.\n"
+				    );
+				ret = -EINVAL;
+				goto put_usb_psy;
+			}
+
+			dwc->role_switch_reset_quirk = true;
+		}
 	}
 
 	ret = reset_control_deassert(dwc->reset);
@@ -1838,6 +1937,12 @@ static int dwc3_probe(struct platform_device *pdev)
 		dev_err(dwc->dev, "failed to allocate event buffers\n");
 		ret = -ENOMEM;
 		goto err2;
+	}
+
+	dwc->edev = dwc3_get_extcon(dwc);
+	if (IS_ERR(dwc->edev)) {
+		ret = dev_err_probe(dwc->dev, PTR_ERR(dwc->edev), "failed to get extcon\n");
+		goto err3;
 	}
 
 	ret = dwc3_get_dr_mode(dwc);
@@ -1930,7 +2035,6 @@ static int dwc3_remove(struct platform_device *pdev)
 	return 0;
 }
 
-#ifdef CONFIG_PM
 static int dwc3_core_init_for_resume(struct dwc3 *dwc)
 {
 	int ret;
@@ -1957,6 +2061,7 @@ assert_reset:
 	return ret;
 }
 
+#ifdef CONFIG_PM
 static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
 {
 	unsigned long	flags;

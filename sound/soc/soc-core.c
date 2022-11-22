@@ -2071,7 +2071,10 @@ static int snd_soc_bind_card(struct snd_soc_card *card)
 		goto probe_end;
 
 	snd_soc_dapm_new_widgets(card);
-	snd_soc_card_fixup_controls(card);
+
+	ret = snd_soc_card_fixup_controls(card);
+	if (ret < 0)
+		goto probe_end;
 
 	ret = snd_card_register(card->snd_card);
 	if (ret < 0) {
@@ -3477,10 +3480,23 @@ EXPORT_SYMBOL_GPL(snd_soc_of_get_dai_link_cpus);
 
 static int __init snd_soc_init(void)
 {
-	snd_soc_debugfs_init();
-	snd_soc_util_init();
+	int ret;
 
-	return platform_driver_register(&soc_driver);
+	snd_soc_debugfs_init();
+	ret = snd_soc_util_init();
+	if (ret)
+		goto err_util_init;
+
+	ret = platform_driver_register(&soc_driver);
+	if (ret)
+		goto err_register;
+	return 0;
+
+err_register:
+	snd_soc_util_exit();
+err_util_init:
+	snd_soc_debugfs_exit();
+	return ret;
 }
 module_init(snd_soc_init);
 

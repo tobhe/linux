@@ -14,6 +14,7 @@
 #include <linux/regmap.h>
 #include <linux/interrupt.h>
 #include <linux/usb/typec.h>
+#include <linux/usb/typec_altmode.h>
 #include <linux/usb/role.h>
 
 #include "tps6598x.h"
@@ -128,11 +129,15 @@ tps6598x_block_read(struct tps6598x *tps, u8 reg, void *val, size_t len)
 		return regmap_raw_read(tps->regmap, reg, val, len);
 
 	ret = regmap_raw_read(tps->regmap, reg, data, len + 1);
-	if (ret)
+	if (ret) {
+		dev_err(tps->dev, "regmap_raw_read returned %d\n", ret);
 		return ret;
+	}
 
-	if (data[0] < len)
+	if (data[0] < len) {
+		dev_err(tps->dev, "expected %zu bytes, got %d\n", len, data[0]);
 		return -EIO;
+	}
 
 	memcpy(val, &data[1], len);
 	return 0;
@@ -221,11 +226,16 @@ static void tps6598x_set_data_role(struct tps6598x *tps,
 	else
 		role_val = USB_ROLE_DEVICE;
 
-	if (!connected)
+	if (connected)
+		typec_set_mode(tps->port, TYPEC_STATE_USB);
+	else
 		role_val = USB_ROLE_NONE;
 
 	usb_role_switch_set_role(tps->role_sw, role_val);
 	typec_set_data_role(tps->port, role);
+
+	if (!connected)
+		typec_set_mode(tps->port, TYPEC_STATE_SAFE);
 }
 
 static int tps6598x_connect(struct tps6598x *tps, u32 status)
@@ -419,7 +429,7 @@ static bool tps6598x_read_status(struct tps6598x *tps, u32 *status)
 
 	ret = tps6598x_read32(tps, TPS_REG_STATUS, status);
 	if (ret) {
-		dev_err(tps->dev, "%s: failed to read status\n", __func__);
+		dev_err(tps->dev, "%s: failed to read status: %d\n", __func__, ret);
 		return false;
 	}
 	trace_tps6598x_status(*status);
@@ -474,7 +484,7 @@ static void tps6598x_handle_plug_event(struct tps6598x *tps, u32 status)
 static irqreturn_t cd321x_interrupt(int irq, void *data)
 {
 	struct tps6598x *tps = data;
-	u64 event;
+	u64 event = 0;
 	u32 status;
 	int ret;
 
@@ -519,8 +529,8 @@ err_unlock:
 static irqreturn_t tps6598x_interrupt(int irq, void *data)
 {
 	struct tps6598x *tps = data;
-	u64 event1;
-	u64 event2;
+	u64 event1 = 0;
+	u64 event2 = 0;
 	u32 status;
 	int ret;
 
