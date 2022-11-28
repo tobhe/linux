@@ -1,4 +1,4 @@
-linux-asahi-edge (6.1.0-9.9) jammy; urgency=medium
+linux-asahi (6.1.1-0.0) jammy; urgency=medium
 
   * Rebase onto Asahi Linux 6.1-rc6-5 kernel
 
