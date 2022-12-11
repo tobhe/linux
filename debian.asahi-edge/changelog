@@ -1,3 +1,15 @@
+linux-asahi-edge (6.1.1-3.0) kinetic; urgency=medium
+
+  * Initial rust support
+
+ -- Tobias Heider <me@tobhe.de>  Thu, 08 Dec 2022 01:39:21 +0100
+
+linux-asahi-edge (6.1.1-2.0) jammy; urgency=medium
+
+  * Rebase onto Asahi 6.1-rc8-3
+
+ -- Tobias Heider <me@tobhe.de>  Wed, 07 Dec 2022 21:57:38 +0100
+
 linux-asahi-edge (6.1.1-1.0) jammy; urgency=medium
 
   * Rebase onto Asahi Linux 6.1-rc6-5 kernel
