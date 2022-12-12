@@ -1,3 +1,9 @@
+linux-asahi-edge (6.1.1-5.0) kinetic; urgency=medium
+
+  * Disable CONFIG_SYSFB_SIMPLEFB
+
+ -- Tobias Heider <me@tobhe.de>  Mon, 12 Dec 2022 17:26:56 +0100
+
 linux-asahi-edge (6.1.1-4.0) kinetic; urgency=medium
 
   * Reenable modules-extra and tools

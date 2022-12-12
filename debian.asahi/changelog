@@ -1,3 +1,15 @@
+linux-asahi (6.1.0-5.0) jammy; urgency=medium
+
+  * Disable CONFIG_SYSFB_SIMPLEFB
+
+ -- Tobias Heider <me@tobhe.de>  Mon, 12 Dec 2022 12:49:04 +0100
+
+linux-asahi (6.1.0-4.0) jammy; urgency=medium
+
+  * Rebase onto Asahi 6.1-rc8-3
+
+ -- Tobias Heider <me@tobhe.de>  Mon, 12 Dec 2022 00:40:04 +0100
+
 linux-asahi (6.1.0-1.1) jammy; urgency=medium
 
   * Rebase onto Asahi Linux 6.1-rc6-5 kernel
