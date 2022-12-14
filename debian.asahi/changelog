@@ -1,3 +1,15 @@
+linux-asahi (6.1.0-5.2) jammy; urgency=medium
+
+  * More config tuning
+
+ -- Tobias Heider <me@tobhe.de>  Tue, 13 Dec 2022 14:00:19 +0100
+
+linux-asahi (6.1.0-5.1) jammy; urgency=medium
+
+  * Disable DCP, sync with asahi
+
+ -- Tobias Heider <me@tobhe.de>  Tue, 13 Dec 2022 00:55:04 +0100
+
 linux-asahi (6.1.0-5.0) jammy; urgency=medium
 
   * Disable CONFIG_SYSFB_SIMPLEFB
