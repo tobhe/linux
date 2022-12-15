@@ -1,3 +1,15 @@
+linux-asahi (6.1.0-6.2) kinetic; urgency=medium
+
+  * Enable clang toolchain for DRM_ASAHI
+
+ -- Tobias Heider <me@tobhe.de>  Thu, 15 Dec 2022 00:04:12 +0100
+
+linux-asahi (6.1.0-6) kinetic; urgency=medium
+
+  * Switch from simpledrm to DRM_APPLE DCP and DRM_ASAHI gpu drivers
+
+ -- Tobias Heider <me@tobhe.de>  Wed, 14 Dec 2022 13:56:13 +0100
+
 linux-asahi (6.1.0-5.2) jammy; urgency=medium
 
   * More config tuning
