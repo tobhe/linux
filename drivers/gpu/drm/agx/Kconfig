@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-2.0-only OR MIT
+
+config DRM_AGX
+	tristate "DRM Support for Apple AGX GPUs"
+	depends on DRM && OF && ARM64
+	depends on ARCH_APPLE || COMPILE_TEST
+	select DRM_SCHED
+	select IOMMU_SUPPORT
+	select IOMMU_IO_PGTABLE_LPAE
+	select DRM_GEM_SHMEM_HELPER
+	help
+	  DRM driver for Apple AGX GPUs (G13x, found in the M1 SoC family)
