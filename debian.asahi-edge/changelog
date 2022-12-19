@@ -1,3 +1,15 @@
+linux-asahi-edge (6.1.1-7.1) kinetic; urgency=medium
+
+  * Fix bug where tilde key maps to backslash
+
+ -- Tobias Heider <me@tobhe.de>  Fri, 16 Dec 2022 10:51:35 +0100
+
+linux-asahi-edge (6.1.1-7.0) kinetic; urgency=medium
+
+  * Bump to 6.1.asahi2-1
+
+ -- Tobias Heider <me@tobhe.de>  Thu, 15 Dec 2022 18:45:17 +0100
+
 linux-asahi-edge (6.1.1-6) kinetic; urgency=medium
 
   * Sync config with asahi
