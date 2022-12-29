@@ -119,5 +119,5 @@
 };
 
 &gpu {
-	apple,perf-base-pstate = <3>;
+	// apple,perf-base-pstate = <3>;
 };
