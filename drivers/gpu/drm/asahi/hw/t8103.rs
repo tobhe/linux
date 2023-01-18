@@ -16,7 +16,7 @@ pub(crate) const HWCONFIG: super::HwConfig = HwConfig {
     gpu_feat_incompat: 0,
 
     base_clock_hz: 24_000_000,
-    uat_oas: 36,
+    uat_oas: 40,
     max_num_clusters: 1,
     max_num_cores: 8,
     max_num_frags: 8,
@@ -44,11 +44,11 @@ pub(crate) const HWCONFIG: super::HwConfig = HwConfig {
         unk_b30: 0,
     },
     shared1_tab: &[
-        -1, 0x7282, 0x50ea, 0x370a, 0x25be, 0x1c1f, 0x16fb, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+        -1, 0x7282, 0x50ea, 0x370a, 0x25be, 0x1c1f, 0x16fb, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     ],
     shared1_a4: 0xffff,
     shared2_tab: &[0x800, 0x1555, -1, -1, -1, -1, -1, -1, 0, 0],
-    shared2_unk_508: 0xc0007,
+    shared2_unk_508: 0xc00007,
     sram_k: f32!(1.02),
     unk_coef_a: &[],
     unk_coef_b: &[],

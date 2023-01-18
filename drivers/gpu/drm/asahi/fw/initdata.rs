@@ -54,7 +54,7 @@ pub(crate) mod raw {
     #[derive(Debug, Default)]
     #[repr(C)]
     pub(crate) struct HwDataShared1 {
-        pub(crate) table: Array<17, i32>,
+        pub(crate) table: Array<16, i32>,
         pub(crate) unk_44: Array<0x60, u8>,
         pub(crate) unk_a4: u32,
         pub(crate) unk_a8: u32,
@@ -490,6 +490,7 @@ pub(crate) mod raw {
 
         pub(crate) unk_1640: Array<0x2000, u8>,
         pub(crate) unk_3640: u32,
+        pub(crate) unk_3644: u32,
         pub(crate) hws1: HwDataShared1,
 
         #[ver(V >= V13_0B4)]
@@ -980,6 +981,7 @@ pub(crate) mod raw {
         #[ver(V >= V13_0B4)]
         pub(crate) unk_89f4_c: Array<0x50, u8>,
 
+        pub(crate) unk_89f4: u32,
         pub(crate) hws1: HwDataShared1,
         pub(crate) hws2: HwDataShared2,
         pub(crate) hws3: HwDataShared3,

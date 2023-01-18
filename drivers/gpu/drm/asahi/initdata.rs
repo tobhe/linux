@@ -199,14 +199,7 @@ impl<'a> InitDataBuilder::ver<'a> {
                         ppm_filter_a_neg: f32!(1.0) - ppm_filter_a,
                         ppm_filter_a: ppm_filter_a,
                         ppm_ki_dt: pwr.ppm_ki * period_s,
-                        #[ver(V >= V13_0B4)]
                         unk_6fc: f32!(65536.0),
-                        #[ver(V < V13_0B4)]
-                        unk_6fc: if self.cfg.chip_id != 0x8103 {
-                            f32!(65536.0)
-                        } else {
-                            f32!(0.0)
-                        },
                         ppm_kp: pwr.ppm_kp,
                         pwr_min_duty_cycle: pwr.pwr_min_duty_cycle,
                         max_pstate_scaled_4: max_ps_scaled,
@@ -334,6 +327,7 @@ impl<'a> InitDataBuilder::ver<'a> {
                         fast_die0_sensor_present: self.cfg.fast_die0_sensor_present,
                         #[ver(V < V13_0B4)]
                         unk_1638: Array::new([0, 0, 0, 0, 1, 0, 0, 0]),
+                        unk_3644: 0,
                         hws1: Self::hw_shared1(self.cfg),
                         hws2: *Self::hw_shared2(self.cfg)?,
                         hws3: *Self::hw_shared3(self.cfg)?,
@@ -545,6 +539,7 @@ impl<'a> InitDataBuilder::ver<'a> {
                         ppm_ki_dt: pwr.ppm_ki * period_s,
                         #[ver(V >= V13_0B4)]
                         unk_89f4_8: 1,
+                        unk_89f4: 0,
                         hws1: Self::hw_shared1(self.cfg),
                         hws2: *Self::hw_shared2(self.cfg)?,
                         hws3: *Self::hw_shared3(self.cfg)?,
