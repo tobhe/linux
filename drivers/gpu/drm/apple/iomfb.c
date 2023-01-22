@@ -1485,6 +1485,7 @@ static void dcpep_handle_ack(struct apple_dcp *dcp, enum dcp_context_id context,
 {
 	struct dcp_packet_header *header = data;
 	struct dcp_channel *ch = dcp_get_channel(dcp, context);
+	bool was_sleeping = dcp->sleeping;
 	void *cookie;
 	dcp_callback_t cb;
 	u8 depth;
@@ -1505,7 +1506,14 @@ static void dcpep_handle_ack(struct apple_dcp *dcp, enum dcp_context_id context,
 	if (cb)
 		cb(dcp, data + sizeof(*header) + header->in_len, cookie);
 
-	if (!dcp->sleeping && !depth) {
+	/*
+	 * We cache whether we were in the process of a sleep operation before
+	 * calling the callback, to make sure our autosuspend calls are balanced.
+	 * Otherwise we might consider DCP to be awake after the final ACK
+	 * comes in, since the dcp_sleep() code will unset dcp->sleeping at that
+	 * point, before this code runs.
+	 */
+	if (!was_sleeping && !depth) {
 		pm_runtime_mark_last_busy(dcp->dev);
 		if (pm_runtime_put_autosuspend(dcp->dev) < 0)
 			dev_err(dcp->dev, "failed to suspend DCP\n");
