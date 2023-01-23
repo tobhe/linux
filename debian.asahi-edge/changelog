@@ -1,3 +1,16 @@
+linux-asahi-edge (6.1.1-7.3) kinetic; urgency=medium
+
+  * Build dart as non-module
+  * Tune IOMMU config to match asahi
+
+ -- Tobias Heider <me@tobhe.de>  Thu, 22 Dec 2022 19:53:26 +0100
+
+linux-asahi-edge (6.1.1-7.2) kinetic; urgency=medium
+
+  * Disable simpledrm
+
+ -- Tobias Heider <me@tobhe.de>  Thu, 22 Dec 2022 19:35:41 +0100
+
 linux-asahi-edge (6.1.1-7.1) kinetic; urgency=medium
 
   * Fix bug where tilde key maps to backslash
