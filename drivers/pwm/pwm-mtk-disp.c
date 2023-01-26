@@ -66,6 +66,14 @@ static void mtk_disp_pwm_update_bits(struct mtk_disp_pwm *mdp, u32 offset,
 	writel(value, address);
 }
 
+static void mtk_disp_pwm_commit(struct mtk_disp_pwm *mdp)
+{
+	const struct mtk_pwm_data *d = mdp->data;
+
+	mtk_disp_pwm_update_bits(mdp, d->commit, d->commit_mask, d->commit_mask);
+	mtk_disp_pwm_update_bits(mdp, d->commit, d->commit_mask, 0x0);
+}
+
 static int mtk_disp_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 			      const struct pwm_state *state)
 {
@@ -153,14 +161,8 @@ static int mtk_disp_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 				 PWM_PERIOD_MASK | PWM_HIGH_WIDTH_MASK,
 				 value);
 
-	if (mdp->data->has_commit) {
-		mtk_disp_pwm_update_bits(mdp, mdp->data->commit,
-					 mdp->data->commit_mask,
-					 mdp->data->commit_mask);
-		mtk_disp_pwm_update_bits(mdp, mdp->data->commit,
-					 mdp->data->commit_mask,
-					 0x0);
-	}
+	if (mdp->data->has_commit)
+		mtk_disp_pwm_commit(mdp);
 
 	mtk_disp_pwm_update_bits(mdp, DISP_PWM_EN, mdp->data->enable_mask,
 				 mdp->data->enable_mask);
@@ -190,6 +192,14 @@ static int mtk_disp_pwm_get_state(struct pwm_chip *chip,
 		clk_disable_unprepare(mdp->clk_main);
 		return err;
 	}
+
+	/*
+	 * If the SoC uses double buffering (shadow registers), make sure that
+	 * any change left from bootloader is committed to working registers
+	 * to synchronize the status before reading.
+	 */
+	if (mdp->data->has_commit)
+		mtk_disp_pwm_commit(mdp);
 
 	/*
 	 * Apply DISP_PWM_DEBUG settings to choose whether to enable or disable
