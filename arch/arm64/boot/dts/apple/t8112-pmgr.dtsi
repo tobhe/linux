@@ -799,6 +799,7 @@
 		#reset-cells = <0>;
 		label = "ans";
 		power-domains = <&ps_imx>;
+		apple,always-on; /* HACK: We need a proper solution for deferred dependencies. */
 	};
 
 	ps_gfx: power-controller@430 {
