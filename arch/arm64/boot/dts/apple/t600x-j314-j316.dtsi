@@ -390,6 +390,10 @@
 	status = "disabled";
 };
 
+&ps_atc3_usb_aon {
+	/delete-property/ apple,always-on;
+};
+
 / {
 	backlight: gpio-bl {
 		compatible = "gpio-backlight";
