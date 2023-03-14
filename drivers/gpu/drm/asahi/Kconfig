@@ -11,6 +11,7 @@ config RUST_DRM_GEM_SHMEM_HELPER
 config RUST_APPLE_RTKIT
 	bool
 	select APPLE_RTKIT
+	select APPLE_MBOX
 
 config DRM_ASAHI
 	tristate "Asahi (DRM support for Apple AGX GPUs)"
