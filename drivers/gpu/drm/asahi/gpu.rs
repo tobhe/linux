@@ -84,6 +84,11 @@ const IOVA_KERN_GPU_TOP: u64 = 0xffffffafffffffff;
 /// Timeout for entering the halt state after a fault or request.
 const HALT_ENTER_TIMEOUT_MS: u64 = 100;
 
+/// Maximum amount of firmware-private memory garbage allowed before collection.
+/// Collection flushes the FW cache and is expensive, so this needs to be
+/// reasonably high.
+const MAX_FW_ALLOC_GARBAGE: usize = 16 * 1024 * 1024;
+
 /// Global allocators used for kernel-half structures.
 pub(crate) struct KernelAllocators {
     pub(crate) private: alloc::DefaultAllocator,
@@ -838,7 +843,7 @@ impl GpuManager for GpuManager::ver {
     fn alloc(&self) -> Guard<'_, Mutex<KernelAllocators>> {
         let mut guard = self.alloc.lock();
         let (garbage_count, garbage_bytes) = guard.private.garbage();
-        if garbage_bytes > 1024 * 1024 {
+        if garbage_bytes > MAX_FW_ALLOC_GARBAGE {
             mod_dev_dbg!(
                 self.dev,
                 "Collecting kalloc garbage ({} objects, {} bytes)\n",
