@@ -59,6 +59,14 @@ config DRM_DISPLAY_DP_TUNNEL_STATE_DEBUG
 
 	  If in doubt, say "N".
 
+config DRM_DISPLAY_DP_TYPEC_HELPER
+	def_bool y
+	depends on DRM_DISPLAY_HELPER
+	depends on DRM_DISPLAY_HELPER=TYPEC || TYPEC=y
+	help
+	  Choose this option to enable helpers for registering USB Type-C
+	  switches when USB Type-C DisplayPort Alternate mode is used.
+
 config DRM_DISPLAY_HDCP_HELPER
 	bool
 	depends on DRM_DISPLAY_HELPER
