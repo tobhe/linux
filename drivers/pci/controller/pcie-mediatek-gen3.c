@@ -976,8 +976,6 @@ static void mtk_pcie_irq_save(struct mtk_gen3_pcie *pcie)
 {
 	int i;
 
-	raw_spin_lock(&pcie->irq_lock);
-
 	pcie->saved_irq_state = readl_relaxed(pcie->base + PCIE_INT_ENABLE_REG);
 
 	for (i = 0; i < PCIE_MSI_SET_NUM; i++) {
@@ -986,15 +984,11 @@ static void mtk_pcie_irq_save(struct mtk_gen3_pcie *pcie)
 		msi_set->saved_irq_state = readl_relaxed(msi_set->base +
 					   PCIE_MSI_SET_ENABLE_OFFSET);
 	}
-
-	raw_spin_unlock(&pcie->irq_lock);
 }
 
 static void mtk_pcie_irq_restore(struct mtk_gen3_pcie *pcie)
 {
 	int i;
-
-	raw_spin_lock(&pcie->irq_lock);
 
 	writel_relaxed(pcie->saved_irq_state, pcie->base + PCIE_INT_ENABLE_REG);
 
@@ -1004,8 +998,6 @@ static void mtk_pcie_irq_restore(struct mtk_gen3_pcie *pcie)
 		writel_relaxed(msi_set->saved_irq_state,
 			       msi_set->base + PCIE_MSI_SET_ENABLE_OFFSET);
 	}
-
-	raw_spin_unlock(&pcie->irq_lock);
 }
 
 static int mtk_pcie_turn_off_link(struct mtk_gen3_pcie *pcie)
@@ -1070,8 +1062,8 @@ static int mtk_pcie_resume_noirq(struct device *dev)
 }
 
 static const struct dev_pm_ops mtk_pcie_pm_ops = {
-	NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_pcie_suspend_noirq,
-				  mtk_pcie_resume_noirq)
+	.suspend_noirq = mtk_pcie_suspend_noirq,
+	.resume_noirq = mtk_pcie_resume_noirq,
 };
 
 static const struct of_device_id mtk_pcie_of_match[] = {
