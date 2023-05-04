@@ -891,6 +891,13 @@ static void msdc_set_mclk(struct msdc_host *host, unsigned char timing, u32 hz)
 		return;
 	}
 
+	/*
+	 * Select the best clock parent for src_clk: this is done in order
+	 * to save power and/or achieve an accurate rate for DDR52/SDR104.
+	 */
+	clk_set_rate(host->src_clk, hz);
+	host->src_clk_freq = clk_get_rate(host->src_clk);
+
 	flags = readl(host->base + MSDC_INTEN);
 	sdr_clr_bits(host->base + MSDC_INTEN, flags);
 	if (host->dev_comp->clk_div_bits == 8)
