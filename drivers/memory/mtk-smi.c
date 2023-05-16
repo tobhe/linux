@@ -157,6 +157,7 @@ struct mtk_smi_larb { /* larb: local arbiter */
 	int				larbid;
 	u32				*mmu;
 	unsigned char			*bank;
+	u8				slp_retry_cnt;
 };
 
 static int
@@ -461,15 +462,23 @@ static int mtk_smi_larb_sleep_ctrl_enable(struct mtk_smi_larb *larb)
 	ret = readl_poll_timeout_atomic(larb->base + SMI_LARB_SLP_CON,
 					tmp, !!(tmp & SLP_PROT_RDY), 10, 1000);
 	if (ret) {
+		if (larb->slp_retry_cnt > 3) {
+			dev_warn(larb->smi.dev, "FIXME: Ignoring sleep ctrl not ready!\n");
+			return 0;
+		}
+
 		/* TODO: Reset this larb if it fails here. */
 		dev_err(larb->smi.dev, "sleep ctrl is not ready(0x%x).\n", tmp);
+		larb->slp_retry_cnt++;
 	}
+
 	return ret;
 }
 
 static void mtk_smi_larb_sleep_ctrl_disable(struct mtk_smi_larb *larb)
 {
 	writel_relaxed(0, larb->base + SMI_LARB_SLP_CON);
+	larb->slp_retry_cnt = 0;
 }
 
 static int mtk_smi_device_link_common(struct device *dev, struct device **com_dev)
