@@ -547,7 +547,7 @@
 	bus-width = <4>;
 	cap-sd-highspeed;
 	cd-gpios = <&pio 54 GPIO_ACTIVE_LOW>;
-	max-frequency = <200000000>;
+	max-frequency = <208000000>;
 	no-mmc;
 	no-sdio;
 	pinctrl-names = "default", "state_uhs";
