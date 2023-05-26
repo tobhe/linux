@@ -27,6 +27,10 @@ static const struct mtk_gate_regs vdec1_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &vdec0_cg_regs, _shift,	\
 		&mtk_clk_gate_ops_setclr_inv)
 
+#define GATE_VDEC0(_id, _name, _parent, _shift)		\
+	GATE_MTK(_id, _name, _parent, &vdec0_cg_regs, _shift,	\
+		&mtk_clk_gate_ops_setclr)
+
 #define GATE_VDEC1_I(_id, _name, _parent, _shift)		\
 	GATE_MTK(_id, _name, _parent, &vdec1_cg_regs, _shift,	\
 		&mtk_clk_gate_ops_setclr_inv)
@@ -34,6 +38,7 @@ static const struct mtk_gate_regs vdec1_cg_regs = {
 static const struct mtk_gate vdec_clks[] = {
 	/* VDEC0 */
 	GATE_VDEC0_I(CLK_VDEC_VDEC, "vdec_vdec", "mm_sel", 0),
+	GATE_VDEC0(CLK_VDEC_ACTIVE, "vdec_active", "mm_sel", 4),
 	/* VDEC1 */
 	GATE_VDEC1_I(CLK_VDEC_LARB1, "vdec_larb1", "mm_sel", 0),
 };
