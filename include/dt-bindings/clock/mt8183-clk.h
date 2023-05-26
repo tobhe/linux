@@ -357,7 +357,8 @@
 /* VDEC_GCON */
 #define CLK_VDEC_VDEC			0
 #define CLK_VDEC_LARB1			1
-#define CLK_VDEC_NR_CLK			2
+#define CLK_VDEC_ACTIVE			2
+#define CLK_VDEC_NR_CLK			3
 
 /* VENC_GCON */
 #define CLK_VENC_LARB			0
