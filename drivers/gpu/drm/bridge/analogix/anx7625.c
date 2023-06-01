@@ -1675,8 +1675,7 @@ static int anx7625_get_swing_setting(struct device *dev,
 static int anx7625_parse_dt(struct device *dev,
 			    struct anx7625_platform_data *pdata)
 {
-	struct device_node *np = dev->of_node, *ep0, *port_node;
-	unsigned int count;
+	struct device_node *np = dev->of_node, *ep0;
 	int bus_type, mipi_lanes;
 
 	anx7625_get_swing_setting(dev, pdata);
@@ -1722,6 +1721,8 @@ static int anx7625_parse_dt_panel(struct device *dev,
 				  struct anx7625_platform_data *pdata)
 {
 	struct device_node *np = dev->of_node;
+	struct device_node *port_node;
+	unsigned int count;
 
 	/*
 	 * Don't bother finding a panel if a Type-C `mode-switch` property is
