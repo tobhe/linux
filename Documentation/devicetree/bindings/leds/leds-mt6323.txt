@@ -30,6 +30,7 @@ Optional properties for the LED child node:
 - label : See Documentation/devicetree/bindings/leds/common.txt
 - linux,default-trigger : See Documentation/devicetree/bindings/leds/common.txt
 - default-state: See Documentation/devicetree/bindings/leds/common.txt
+- mediatek,is-wled: LED string is connected to WLED output
 
 Example:
 
