@@ -34,6 +34,7 @@ struct cmdq_client_reg {
 struct cmdq_client {
 	struct mbox_client client;
 	struct mbox_chan *chan;
+	void *priv;
 };
 
 #if IS_ENABLED(CONFIG_MTK_CMDQ)
