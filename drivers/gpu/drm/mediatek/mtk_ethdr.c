@@ -318,12 +318,10 @@ static int mtk_ethdr_probe(struct platform_device *pdev)
 	for (i = 0; i < ETHDR_ID_MAX; i++) {
 		priv->ethdr_comp[i].dev = dev;
 		priv->ethdr_comp[i].regs = of_iomap(dev->of_node, i);
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
-		ret = cmdq_dev_get_client_reg(dev,
-					      &priv->ethdr_comp[i].cmdq_base, i);
+		ret = cmdq_dev_get_client_reg(dev, &priv->ethdr_comp[i].cmdq_base, i);
 		if (ret)
 			dev_dbg(dev, "get mediatek,gce-client-reg fail!\n");
-#endif
+
 		dev_dbg(dev, "[DRM]regs:0x%p, node:%d\n", priv->ethdr_comp[i].regs, i);
 	}
 

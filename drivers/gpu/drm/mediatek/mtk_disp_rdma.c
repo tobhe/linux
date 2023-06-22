@@ -335,11 +335,10 @@ static int mtk_disp_rdma_probe(struct platform_device *pdev)
 	if (IS_ERR(priv->regs))
 		return dev_err_probe(dev, PTR_ERR(priv->regs),
 				     "failed to ioremap rdma\n");
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
+
 	ret = cmdq_dev_get_client_reg(dev, &priv->cmdq_reg, 0);
 	if (ret)
 		dev_dbg(dev, "get mediatek,gce-client-reg fail!\n");
-#endif
 
 	if (of_find_property(dev->of_node, "mediatek,rdma-fifo-size", &ret)) {
 		ret = of_property_read_u32(dev->of_node,
