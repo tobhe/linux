@@ -897,6 +897,55 @@ struct device *mtk_crtc_dma_dev_get(struct drm_crtc *crtc)
 	return mtk_crtc->dma_dev;
 }
 
+static int mtk_crtc_cmdq_init(struct device *dev, struct mtk_drm_private *priv,
+			      struct mtk_crtc *mtk_crtc)
+{
+	int ret;
+
+	mtk_crtc->cmdq_client = cmdq_mbox_create(mtk_crtc->mmsys_dev, priv->mbox_index);
+	if (IS_ERR(mtk_crtc->cmdq_client)) {
+		ret = PTR_ERR(mtk_crtc->cmdq_client);
+		dev_dbg(dev, "Failed to create CMDQ client: %d\n", ret);
+		goto error;
+	}
+
+	/* Setup the CMDQ handler callback */
+	mtk_crtc->cmdq_client->priv = mtk_crtc;
+	mtk_crtc->cmdq_client->client.rx_callback = ddp_cmdq_cb;
+
+	ret = of_property_read_u32_index(priv->mutex_node, "mediatek,gce-events",
+					 priv->mbox_index, &mtk_crtc->cmdq_event);
+	if (ret) {
+		dev_dbg(dev, "Failed to get mediatek,gce-events: %d\n", ret);
+		goto free_mbox;
+	}
+
+	mtk_crtc->cmdq_handle = kzalloc(sizeof(*mtk_crtc->cmdq_handle), GFP_KERNEL);
+	if (!mtk_crtc->cmdq_handle) {
+		ret = -ENOMEM;
+		goto free_mbox;
+	}
+
+	ret = cmdq_pkt_create(mtk_crtc->cmdq_client, mtk_crtc->cmdq_handle, PAGE_SIZE);
+	if (ret) {
+		dev_err(dev, "Failed to create cmdq packet: %d\n", ret);
+		goto free_pkt;
+	}
+
+	/* for sending blocking cmd in crtc disable */
+	init_waitqueue_head(&mtk_crtc->cb_blocking_queue);
+
+	return 0;
+
+free_pkt:
+	kfree(mtk_crtc->cmdq_handle);
+free_mbox:
+	cmdq_mbox_destroy(mtk_crtc->cmdq_client);
+error:
+	mtk_crtc->cmdq_client = NULL;
+	return ret;
+}
+
 int mtk_crtc_create(struct drm_device *drm_dev, const unsigned int *path,
 		    unsigned int path_len, int priv_data_index,
 		    const struct mtk_drm_route *conn_routes,
@@ -1018,43 +1067,13 @@ int mtk_crtc_create(struct drm_device *drm_dev, const unsigned int *path,
 	drm_crtc_enable_color_mgmt(&mtk_crtc->base, 0, has_ctm, gamma_lut_size);
 	mutex_init(&mtk_crtc->hw_lock);
 
-	i = priv->mbox_index++;
+	ret = mtk_crtc_cmdq_init(dev, priv, mtk_crtc);
+	if (ret)
+		dev_info(dev, "No CMDQ support for CRTC%d: using CPU writes\n",
+			 drm_crtc_index(&mtk_crtc->base));
 
-	mtk_crtc->cmdq_client = cmdq_mbox_create(mtk_crtc->mmsys_dev, i);
-	if (IS_ERR(mtk_crtc->cmdq_client)) {
-		ret = PTR_ERR(mtk_crtc->cmdq_client);
-		dev_dbg(dev, "Failed to create CMDQ client: %d\n", ret);
-		mtk_crtc->cmdq_client = NULL;
-		return 0;
-	}
-
-	/* Setup the CMDQ handler callback */
-	mtk_crtc->cmdq_client->priv = mtk_crtc;
-	mtk_crtc->cmdq_client->client.rx_callback = ddp_cmdq_cb;
-
-	if (mtk_crtc->cmdq_client) {
-		ret = of_property_read_u32_index(priv->mutex_node,
-						 "mediatek,gce-events",
-						 i,
-						 &mtk_crtc->cmdq_event);
-		if (ret) {
-			dev_dbg(dev, "mtk_crtc %d failed to get mediatek,gce-events property\n",
-				drm_crtc_index(&mtk_crtc->base));
-			cmdq_mbox_destroy(mtk_crtc->cmdq_client);
-			mtk_crtc->cmdq_client = NULL;
-		} else {
-			mtk_crtc->cmdq_handle = cmdq_pkt_create(mtk_crtc->cmdq_client, PAGE_SIZE);
-			if (ret) {
-				dev_dbg(dev, "mtk_crtc %d failed to create cmdq packet\n",
-					drm_crtc_index(&mtk_crtc->base));
-				cmdq_mbox_destroy(mtk_crtc->cmdq_client);
-				mtk_crtc->cmdq_client = NULL;
-			}
-		}
-
-		/* for sending blocking cmd in crtc disable */
-		init_waitqueue_head(&mtk_crtc->cb_blocking_queue);
-	}
+	/* Unconditionally increment mbox_index */
+	priv->mbox_index++;
 
 	if (conn_routes) {
 		for (i = 0; i < num_conn_routes; i++) {
