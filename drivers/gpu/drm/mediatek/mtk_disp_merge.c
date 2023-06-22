@@ -336,11 +336,9 @@ static int mtk_disp_merge_probe(struct platform_device *pdev)
 			return PTR_ERR(priv->reset_ctl);
 	}
 
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	ret = cmdq_dev_get_client_reg(dev, &priv->cmdq_reg, 0);
 	if (ret)
 		dev_dbg(dev, "get mediatek,gce-client-reg fail!\n");
-#endif
 
 	priv->fifo_en = of_property_read_bool(dev->of_node,
 					      "mediatek,merge-fifo-en");
