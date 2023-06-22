@@ -50,13 +50,11 @@ struct mtk_crtc {
 	bool				pending_planes;
 	bool				pending_async_planes;
 
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	struct cmdq_client		*cmdq_client;
 	struct cmdq_pkt			*cmdq_handle;
 	u32				cmdq_event;
 	u32				cmdq_vblank_cnt;
 	wait_queue_head_t		cb_blocking_queue;
-#endif
 
 	struct device			*mmsys_dev;
 	struct device			*dma_dev;
@@ -119,14 +117,13 @@ static void mtk_crtc_destroy(struct drm_crtc *crtc)
 	int i;
 
 	mtk_mutex_put(mtk_crtc->mutex);
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
+
 	cmdq_pkt_destroy(mtk_crtc->cmdq_client, mtk_crtc->cmdq_handle);
 	kfree(mtk_crtc->cmdq_handle);
 	mtk_crtc->cmdq_handle = NULL;
 
 	cmdq_mbox_destroy(mtk_crtc->cmdq_client);
 	mtk_crtc->cmdq_client = NULL;
-#endif
 
 	for (i = 0; i < mtk_crtc->ddp_comp_nr; i++) {
 		struct mtk_ddp_comp *comp;
@@ -262,7 +259,6 @@ struct mtk_ddp_comp *mtk_ddp_comp_for_plane(struct drm_crtc *crtc,
 	return NULL;
 }
 
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 static void ddp_cmdq_cb(struct mbox_client *cl, void *mssg)
 {
 	struct cmdq_cb_data *data = mssg;
@@ -305,7 +301,6 @@ static void ddp_cmdq_cb(struct mbox_client *cl, void *mssg)
 	mtk_crtc->cmdq_vblank_cnt = 0;
 	wake_up(&mtk_crtc->cb_blocking_queue);
 }
-#endif
 
 static int mtk_crtc_ddp_hw_init(struct mtk_crtc *mtk_crtc)
 {
@@ -524,9 +519,7 @@ static void mtk_crtc_ddp_config(struct drm_crtc *crtc,
 
 static void mtk_crtc_update_config(struct mtk_crtc *mtk_crtc, bool needs_vblank)
 {
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	struct cmdq_pkt *cmdq_handle = mtk_crtc->cmdq_handle;
-#endif
 	struct drm_crtc *crtc = &mtk_crtc->base;
 	struct mtk_drm_private *priv = crtc->dev->dev_private;
 	unsigned int pending_planes = 0, pending_async_planes = 0;
@@ -562,7 +555,6 @@ static void mtk_crtc_update_config(struct mtk_crtc *mtk_crtc, bool needs_vblank)
 		mtk_crtc_ddp_config(crtc, NULL);
 		mtk_mutex_release(mtk_crtc->mutex);
 	}
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	if (mtk_crtc->cmdq_client) {
 		mbox_flush(mtk_crtc->cmdq_client->chan, 2000);
 		cmdq_handle->cmd_buf_size = 0;
@@ -586,7 +578,6 @@ static void mtk_crtc_update_config(struct mtk_crtc *mtk_crtc, bool needs_vblank)
 		mbox_send_message(mtk_crtc->cmdq_client->chan, cmdq_handle);
 		mbox_client_txdone(mtk_crtc->cmdq_client->chan, 0);
 	}
-#endif
 	mtk_crtc->config_updating = false;
 	mutex_unlock(&mtk_crtc->hw_lock);
 }
@@ -597,16 +588,12 @@ static void mtk_crtc_ddp_irq(void *data)
 	struct mtk_crtc *mtk_crtc = to_mtk_crtc(crtc);
 	struct mtk_drm_private *priv = crtc->dev->dev_private;
 
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	if (!priv->data->shadow_register && !mtk_crtc->cmdq_client)
 		mtk_crtc_ddp_config(crtc, NULL);
 	else if (mtk_crtc->cmdq_vblank_cnt > 0 && --mtk_crtc->cmdq_vblank_cnt == 0)
 		DRM_ERROR("mtk_crtc %d CMDQ execute command timeout!\n",
 			  drm_crtc_index(&mtk_crtc->base));
-#else
-	if (!priv->data->shadow_register)
-		mtk_crtc_ddp_config(crtc, NULL);
-#endif
+
 	mtk_drm_finish_page_flip(mtk_crtc);
 }
 
@@ -738,13 +725,13 @@ static void mtk_crtc_atomic_disable(struct drm_crtc *crtc,
 	mtk_crtc->pending_planes = true;
 
 	mtk_crtc_update_config(mtk_crtc, false);
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
+
 	/* Wait for planes to be disabled by cmdq */
 	if (mtk_crtc->cmdq_client)
 		wait_event_timeout(mtk_crtc->cb_blocking_queue,
 				   mtk_crtc->cmdq_vblank_cnt == 0,
 				   msecs_to_jiffies(500));
-#endif
+
 	/* Wait for planes to be disabled */
 	drm_crtc_wait_one_vblank(crtc);
 
@@ -1031,7 +1018,6 @@ int mtk_crtc_create(struct drm_device *drm_dev, const unsigned int *path,
 	drm_crtc_enable_color_mgmt(&mtk_crtc->base, 0, has_ctm, gamma_lut_size);
 	mutex_init(&mtk_crtc->hw_lock);
 
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	i = priv->mbox_index++;
 
 	mtk_crtc->cmdq_client = cmdq_mbox_create(mtk_crtc->mmsys_dev, i);
@@ -1069,7 +1055,6 @@ int mtk_crtc_create(struct drm_device *drm_dev, const unsigned int *path,
 		/* for sending blocking cmd in crtc disable */
 		init_waitqueue_head(&mtk_crtc->cb_blocking_queue);
 	}
-#endif
 
 	if (conn_routes) {
 		for (i = 0; i < num_conn_routes; i++) {

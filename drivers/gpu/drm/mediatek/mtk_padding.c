@@ -112,11 +112,9 @@ static int mtk_padding_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(priv->reg),
 				     "failed to do ioremap\n");
 
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	ret = cmdq_dev_get_client_reg(dev, &priv->cmdq_reg, 0);
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to get gce client reg\n");
-#endif
 
 	platform_set_drvdata(pdev, priv);
 

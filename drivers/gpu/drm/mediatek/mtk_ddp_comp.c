@@ -70,12 +70,10 @@ void mtk_ddp_write(struct cmdq_pkt *cmdq_pkt, unsigned int value,
 		   struct cmdq_client_reg *cmdq_reg, void __iomem *regs,
 		   unsigned int offset)
 {
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	if (cmdq_pkt)
 		cmdq_pkt_write(cmdq_pkt, cmdq_reg->subsys,
 			       cmdq_reg->offset + offset, value);
 	else
-#endif
 		writel(value, regs + offset);
 }
 
@@ -83,12 +81,10 @@ void mtk_ddp_write_relaxed(struct cmdq_pkt *cmdq_pkt, unsigned int value,
 			   struct cmdq_client_reg *cmdq_reg, void __iomem *regs,
 			   unsigned int offset)
 {
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	if (cmdq_pkt)
 		cmdq_pkt_write(cmdq_pkt, cmdq_reg->subsys,
 			       cmdq_reg->offset + offset, value);
 	else
-#endif
 		writel_relaxed(value, regs + offset);
 }
 
@@ -96,19 +92,15 @@ void mtk_ddp_write_mask(struct cmdq_pkt *cmdq_pkt, unsigned int value,
 			struct cmdq_client_reg *cmdq_reg, void __iomem *regs,
 			unsigned int offset, unsigned int mask)
 {
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	if (cmdq_pkt) {
 		cmdq_pkt_write_mask(cmdq_pkt, cmdq_reg->subsys,
 				    cmdq_reg->offset + offset, value, mask);
 	} else {
-#endif
 		u32 tmp = readl(regs + offset);
 
 		tmp = (tmp & ~mask) | (value & mask);
 		writel(tmp, regs + offset);
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	}
-#endif
 }
 
 static int mtk_ddp_clk_enable(struct device *dev)
@@ -624,9 +616,7 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
 	struct platform_device *comp_pdev;
 	enum mtk_ddp_comp_type type;
 	struct mtk_ddp_comp_dev *priv;
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	int ret;
-#endif
 
 	if (comp_id >= DDP_COMPONENT_DRM_ID_MAX)
 		return -EINVAL;
@@ -672,11 +662,9 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
 	if (IS_ERR(priv->clk))
 		return PTR_ERR(priv->clk);
 
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
 	ret = cmdq_dev_get_client_reg(comp->dev, &priv->cmdq_reg, 0);
 	if (ret)
 		dev_dbg(comp->dev, "get mediatek,gce-client-reg fail!\n");
-#endif
 
 	platform_set_drvdata(comp_pdev, priv);
 
