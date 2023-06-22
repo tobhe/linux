@@ -115,11 +115,10 @@ static int mtk_disp_color_probe(struct platform_device *pdev)
 		dev_err(dev, "failed to ioremap color\n");
 		return PTR_ERR(priv->regs);
 	}
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
+
 	ret = cmdq_dev_get_client_reg(dev, &priv->cmdq_reg, 0);
 	if (ret)
 		dev_dbg(dev, "get mediatek,gce-client-reg fail!\n");
-#endif
 
 	priv->data = of_device_get_match_data(dev);
 	platform_set_drvdata(pdev, priv);
