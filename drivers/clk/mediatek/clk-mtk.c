@@ -95,6 +95,10 @@ int mtk_clk_register_fixed_clks(const struct mtk_fixed_clk *clks, int num,
 	for (i = 0; i < num; i++) {
 		const struct mtk_fixed_clk *rc = &clks[i];
 
+		if (WARN(rc->id >= clk_data->num,
+			 "Fixed clock ID (%d) larger than expected (%d)\n", rc->id, clk_data->num))
+			continue;
+
 		if (!IS_ERR_OR_NULL(clk_data->hws[rc->id])) {
 			pr_warn("Trying to register duplicate clock ID: %d\n", rc->id);
 			continue;
@@ -118,6 +122,9 @@ err:
 	while (--i >= 0) {
 		const struct mtk_fixed_clk *rc = &clks[i];
 
+		if (rc->id >= clk_data->num)
+			continue;
+
 		if (IS_ERR_OR_NULL(clk_data->hws[rc->id]))
 			continue;
 
@@ -140,6 +147,9 @@ void mtk_clk_unregister_fixed_clks(const struct mtk_fixed_clk *clks, int num,
 	for (i = num; i > 0; i--) {
 		const struct mtk_fixed_clk *rc = &clks[i - 1];
 
+		if (rc->id >= clk_data->num)
+			continue;
+
 		if (IS_ERR_OR_NULL(clk_data->hws[rc->id]))
 			continue;
 
@@ -160,6 +170,11 @@ int mtk_clk_register_factors(const struct mtk_fixed_factor *clks, int num,
 
 	for (i = 0; i < num; i++) {
 		const struct mtk_fixed_factor *ff = &clks[i];
+
+		if (WARN(ff->id >= clk_data->num,
+			 "Fixed factor clock ID (%d) larger than expected (%d)\n",
+			 ff->id, clk_data->num))
+			continue;
 
 		if (!IS_ERR_OR_NULL(clk_data->hws[ff->id])) {
 			pr_warn("Trying to register duplicate clock ID: %d\n", ff->id);
@@ -184,6 +199,9 @@ err:
 	while (--i >= 0) {
 		const struct mtk_fixed_factor *ff = &clks[i];
 
+		if (ff->id >= clk_data->num)
+			continue;
+
 		if (IS_ERR_OR_NULL(clk_data->hws[ff->id]))
 			continue;
 
@@ -205,6 +223,9 @@ void mtk_clk_unregister_factors(const struct mtk_fixed_factor *clks, int num,
 
 	for (i = num; i > 0; i--) {
 		const struct mtk_fixed_factor *ff = &clks[i - 1];
+
+		if (ff->id >= clk_data->num)
+			continue;
 
 		if (IS_ERR_OR_NULL(clk_data->hws[ff->id]))
 			continue;
@@ -340,6 +361,11 @@ int mtk_clk_register_composites(struct device *dev,
 	for (i = 0; i < num; i++) {
 		const struct mtk_composite *mc = &mcs[i];
 
+		if (WARN(mc->id >= clk_data->num,
+			 "Composite clock ID (%d) larger than expected (%d)\n",
+			 mc->id, clk_data->num))
+			continue;
+
 		if (!IS_ERR_OR_NULL(clk_data->hws[mc->id])) {
 			pr_warn("Trying to register duplicate clock ID: %d\n",
 				mc->id);
@@ -363,6 +389,9 @@ err:
 	while (--i >= 0) {
 		const struct mtk_composite *mc = &mcs[i];
 
+		if (mc->id >= clk_data->num)
+			continue;
+
 		if (IS_ERR_OR_NULL(clk_data->hws[mcs->id]))
 			continue;
 
@@ -384,6 +413,9 @@ void mtk_clk_unregister_composites(const struct mtk_composite *mcs, int num,
 
 	for (i = num; i > 0; i--) {
 		const struct mtk_composite *mc = &mcs[i - 1];
+
+		if (mc->id >= clk_data->num)
+			continue;
 
 		if (IS_ERR_OR_NULL(clk_data->hws[mc->id]))
 			continue;
@@ -407,6 +439,11 @@ int mtk_clk_register_dividers(struct device *dev,
 
 	for (i = 0; i <  num; i++) {
 		const struct mtk_clk_divider *mcd = &mcds[i];
+
+		if (WARN(mcd->id >= clk_data->num,
+			 "Divider clock ID (%d) larger than expected (%d)\n",
+			 mcd->id, clk_data->num))
+			continue;
 
 		if (!IS_ERR_OR_NULL(clk_data->hws[mcd->id])) {
 			pr_warn("Trying to register duplicate clock ID: %d\n",
@@ -433,6 +470,9 @@ err:
 	while (--i >= 0) {
 		const struct mtk_clk_divider *mcd = &mcds[i];
 
+		if (mcd->id >= clk_data->num)
+			continue;
+
 		if (IS_ERR_OR_NULL(clk_data->hws[mcd->id]))
 			continue;
 
@@ -454,6 +494,9 @@ void mtk_clk_unregister_dividers(const struct mtk_clk_divider *mcds, int num,
 
 	for (i = num; i > 0; i--) {
 		const struct mtk_clk_divider *mcd = &mcds[i - 1];
+
+		if (mcd->id >= clk_data->num)
+			continue;
 
 		if (IS_ERR_OR_NULL(clk_data->hws[mcd->id]))
 			continue;
