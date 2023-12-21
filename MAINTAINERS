@@ -2521,6 +2521,7 @@ C:	irc://irc.libera.chat/linux-mediatek
 F:	arch/arm/boot/dts/mediatek/
 F:	arch/arm/mach-mediatek/
 F:	arch/arm64/boot/dts/mediatek/
+F:	drivers/clk/mediatek/
 F:	drivers/soc/mediatek/
 N:	mtk
 N:	mt[2678]
