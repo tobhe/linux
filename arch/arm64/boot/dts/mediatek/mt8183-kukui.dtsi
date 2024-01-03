@@ -24,7 +24,7 @@
 	backlight_lcd0: backlight_lcd0 {
 		compatible = "pwm-backlight";
 		pwms = <&pwm0 0 500000>;
-		power-supply = <&reg_vsys>;
+		power-supply = <&bl_pp5000>;
 		enable-gpios = <&pio 176 0>;
 		brightness-levels = <0 1023>;
 		num-interpolated-steps = <1023>;
@@ -47,21 +47,42 @@
 	it6505_pp18_reg: regulator0 {
 		compatible = "regulator-fixed";
 		regulator-name = "it6505_pp18";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
 		gpio = <&pio 178 0>;
 		enable-active-high;
-		vin-supply = <&pp1800_alw>;
+	};
+
+	lcd_pp3300: regulator1 {
+		compatible = "regulator-fixed";
+		regulator-name = "lcd_pp3300";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+
+	bl_pp5000: regulator2 {
+		compatible = "regulator-fixed";
+		regulator-name = "bl_pp5000";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		regulator-always-on;
+		regulator-boot-on;
 	};
 
 	mmc1_fixed_power: regulator3 {
 		compatible = "regulator-fixed";
 		regulator-name = "mmc1_power";
-		vin-supply = <&pp3300_alw>;
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
 	};
 
 	mmc1_fixed_io: regulator4 {
 		compatible = "regulator-fixed";
 		regulator-name = "mmc1_io";
-		vin-supply = <&pp1800_alw>;
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
 	};
 
 	pp1800_alw: regulator5 {
@@ -71,7 +92,6 @@
 		regulator-boot-on;
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <1800000>;
-		vin-supply = <&reg_vsys>;
 	};
 
 	pp3300_alw: regulator6 {
@@ -81,7 +101,6 @@
 		regulator-boot-on;
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-		vin-supply = <&reg_vsys>;
 	};
 
 	/* system wide semi-regulated power rail from charger */
