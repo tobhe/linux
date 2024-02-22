@@ -221,7 +221,6 @@
 
 	sound: sound {
 		mediatek,platform = <&afe>;
-		mediatek,hdmi-codec = <&anx_bridge_dp>;
 		pinctrl-names = "aud_clk_mosi_off",
 				"aud_clk_mosi_on",
 				"aud_dat_mosi_off",
@@ -274,6 +273,47 @@
 		pinctrl-23 = <&aud_dat_miso_ch34_on_pins>;
 		pinctrl-24 = <&aud_gpio_tdm_off_pins>;
 		pinctrl-25 = <&aud_gpio_tdm_on_pins>;
+
+		audio-routing =
+			"Headphone Jack", "HPOL",
+			"Headphone Jack", "HPOR",
+			"IN1P", "Headset Mic",
+			"Speakers", "Speaker";
+
+		spk-playback-dai-link {
+			link-name = "I2S3";
+			dai-format = "i2s";
+			mediatek,clk-provider = "cpu";
+			codec {
+				sound-dai = <&rt1015p>;
+			};
+		};
+
+		hs-playback-dai-link {
+			link-name = "I2S8";
+			dai-format = "i2s";
+			mediatek,clk-provider = "cpu";
+			codec {
+				sound-dai = <&rt5682 0>;
+			};
+		};
+
+		hs-capture-dai-link {
+			link-name = "I2S9";
+			dai-format = "i2s";
+			mediatek,clk-provider = "cpu";
+			codec {
+				sound-dai = <&rt5682 0>;
+			};
+		};
+
+		displayport-dai-link {
+			link-name = "TDM";
+			dai-format = "dsp_a";
+			codec {
+				sound-dai = <&anx_bridge_dp>;
+			};
+		};
 	};
 };
 
@@ -434,6 +474,7 @@
 		reset-gpios = <&pio 9 GPIO_ACTIVE_HIGH>;
 		interrupt-parent = <&pio>;
 		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
+		#sound-dai-cells = <0>;
 		vdd10-supply = <&pp1000_dpbrdg>;
 		vdd18-supply = <&pp1800_dpbrdg>;
 		vdd33-supply = <&pp3300_dpbrdg>;
