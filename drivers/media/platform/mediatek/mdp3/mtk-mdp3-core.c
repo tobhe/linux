@@ -314,7 +314,7 @@ static int mdp_probe(struct platform_device *pdev)
 		}
 	}
 
-	mdp->cmdq_shift_pa = cmdq_get_shift_pa(mdp->cmdq_clt->chan);
+	mdp->cmdq_shift_pa = cmdq_get_shift_pa(mdp->cmdq_clt[0]->chan);
 
 	init_waitqueue_head(&mdp->callback_wq);
 	ida_init(&mdp->mdp_ida);
