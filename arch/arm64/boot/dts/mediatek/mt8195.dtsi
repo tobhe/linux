@@ -863,6 +863,39 @@
 			#clock-cells = <1>;
 		};
 
+		system-controller@10012000 {
+			compatible = "mediatek,mt8195-dvfsrc";
+			reg = <0 0x10012000 0 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			regulators {
+				compatible = "mediatek,mt8195-dvfsrc-regulator";
+				reg = <0>;
+
+				dvfsrc_vcore: dvfsrc-vcore {
+					regulator-name = "dvfsrc-vcore";
+					regulator-min-microvolt = <550000>;
+					regulator-max-microvolt = <750000>;
+					regulator-always-on;
+					regulator-boot-on;
+				};
+
+				dvfsrc_vscp: dvfsrc-vscp {
+					regulator-name = "dvfsrc-vcore";
+					regulator-min-microvolt = <550000>;
+					regulator-max-microvolt = <750000>;
+					regulator-always-on;
+					regulator-boot-on;
+				};
+			};
+
+			emi_icc: interconnect {
+				compatible = "mediatek,mt8195-emi";
+				reg = <1>;
+			};
+		};
+
 		systimer: timer@10017000 {
 			compatible = "mediatek,mt8195-timer",
 				     "mediatek,mt6765-timer";
