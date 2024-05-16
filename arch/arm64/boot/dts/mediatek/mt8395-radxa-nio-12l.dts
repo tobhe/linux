@@ -49,6 +49,12 @@
 		stdout-path = "serial0:921600n8";
 	};
 
+	amic_codec: amic-codec {
+		compatible = "dmic-codec";
+		num-channels = <2>;
+		wakeup-delay-ms = <200>;
+	};
+
 	firmware {
 		optee {
 			compatible = "linaro,optee-tz";
@@ -151,6 +157,11 @@
 			reg = <0 0x62000000 0 0x1400000>; /* 20 MB */
 		};
 	};
+};
+
+&afe {
+	memory-region = <&afe_mem>;
+	status = "okay";
 };
 
 &cpu0 {
@@ -444,6 +455,10 @@
 	status = "okay";
 };
 
+&mt6359codec {
+	mediatek,mic-type-1 = <3>; /* DCC */
+};
+
 &mt6359_vaud18_ldo_reg {
 	regulator-always-on;
 };
@@ -498,6 +513,18 @@
 
 &pio {
 	mediatek,rsel-resistance-in-si-unit;
+
+	aud_pins_default: audio-default-pins {
+		pins-cmd-dat {
+		    pinmux = <PINMUX_GPIO69__FUNC_AUD_CLK_MOSI>,
+			     <PINMUX_GPIO70__FUNC_AUD_SYNC_MOSI>,
+			     <PINMUX_GPIO71__FUNC_AUD_DAT_MOSI0>,
+			     <PINMUX_GPIO72__FUNC_AUD_DAT_MOSI1>,
+			     <PINMUX_GPIO73__FUNC_AUD_DAT_MISO0>,
+			     <PINMUX_GPIO74__FUNC_AUD_DAT_MISO1>,
+			     <PINMUX_GPIO75__FUNC_AUD_DAT_MISO2>;
+		};
+	};
 
 	dsi0_backlight_pins: dsi0-backlight-pins {
 		pins-backlight-en {
@@ -825,6 +852,7 @@
 };
 
 &pmic {
+	#sound-dai-cells = <1>;
 	interrupts-extended = <&pio 222 IRQ_TYPE_LEVEL_HIGH>;
 };
 
@@ -834,6 +862,42 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&scp_pins>;
 	status = "okay";
+};
+
+&sound {
+	audio-routing =
+		"Headphone", "Headphone L",
+		"Headphone", "Headphone R",
+		"AIN1", "Headset Mic";
+	pinctrl-names = "default";
+	pinctrl-0 = <&aud_pins_default>;
+	status = "okay";
+
+	hs-playback-dai-link {
+		link-name = "DL_SRC_BE";
+		mediatek,clk-provider = "cpu";
+		codec {
+			sound-dai = <&pmic 0>;
+		};
+	};
+
+	hs-capture-dai-link {
+		link-name = "UL_SRC1_BE";
+		mediatek,clk-provider = "cpu";
+		codec {
+			sound-dai = <&amic_codec>;
+		};
+	};
+
+	pmic-capture-dai-link {
+		link-name = "UL_SRC2_BE";
+		mediatek,clk-provider = "cpu";
+		codec {
+			sound-dai = <&pmic 1>;
+		};
+	};
+
+	/* TODO: HDMI at ETDM2_OUT_BE, DisplayPort at DPTX_BE */
 };
 
 &spi1 {
