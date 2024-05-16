@@ -299,8 +299,15 @@
 	cpu-supply = <&mt6315_6_vbuck1>;
 };
 
-&dither0_out {
-	remote-endpoint = <&dsc0_in>;
+&dither0 {
+	ports {
+		port@1 {
+			reg = <1>;
+			dither0_out: endpoint {
+				remote-endpoint = <&dsc0_in>;
+			};
+		};
+	};
 };
 
 &dp_intf0 {
