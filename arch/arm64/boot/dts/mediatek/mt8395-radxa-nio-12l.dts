@@ -32,6 +32,17 @@
 		spi1 = &spi2;
 	};
 
+	backlight_lcd0: backlight-lcd0 {
+		compatible = "pwm-backlight";
+		brightness-levels = <0 1023>;
+		default-brightness-level = <576>;
+		enable-gpios = <&pio 107 GPIO_ACTIVE_HIGH>;
+		num-interpolated-steps = <1023>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&dsi0_backlight_pins>;
+		pwms = <&disp_pwm0 0 500000>;
+	};
+
 	chosen {
 		stdout-path = "serial0:921600n8";
 	};
@@ -170,6 +181,58 @@
 
 &cpu7 {
 	cpu-supply = <&mt6315_6_vbuck1>;
+};
+
+&disp_pwm0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm0_gpio_def_cfg>;
+	status = "okay";
+};
+
+&dither0_out {
+	remote-endpoint = <&dsi0_in>;
+};
+
+&dsi0 {
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	panel@0 {
+		compatible = "radxa,display-8hd-ad002", "jadard,jd9365da-h3";
+		reg = <0>;
+		backlight = <&backlight_lcd0>;
+		vdd-supply = <&mt6359_vcn33_2_bt_ldo_reg>;
+		vccio-supply = <&mt6360_ldo2>;
+		reset-gpios = <&pio 108 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&panel_pins_default>;
+
+		port {
+			dsi_panel_in: endpoint {
+				remote-endpoint = <&dsi_out>;
+			};
+		};
+	};
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+			dsi0_in: endpoint {
+				remote-endpoint = <&dither0_out>;
+			};
+		};
+
+		port@1 {
+			reg = <1>;
+			dsi_out: endpoint {
+				remote-endpoint = <&dsi_panel_in>;
+			};
+		};
+	};
 };
 
 &eth {
@@ -375,6 +438,10 @@
 	};
 };
 
+&mipi_tx0 {
+	status = "okay";
+};
+
 &mfg0 {
 	domain-supply = <&mt6315_7_vbuck1>;
 };
@@ -475,6 +542,13 @@
 
 &pio {
 	mediatek,rsel-resistance-in-si-unit;
+
+	dsi0_backlight_pins: dsi0-backlight-pins {
+		pins-backlight-en {
+			pinmux = <PINMUX_GPIO107__FUNC_GPIO107>;
+			output-high;
+		};
+	};
 
 	eth_default_pins: eth-default-pins {
 		pins-cc {
@@ -673,6 +747,13 @@
 		};
 	};
 
+	panel_pins_default: panel-pins {
+		pins-panel-rst {
+			pinmux = <PINMUX_GPIO108__FUNC_GPIO108>;
+			bias-pull-up;
+		};
+	};
+
 	pcie0_default_pins: pcie0-default-pins {
 		pins-bus {
 			pinmux = <PINMUX_GPIO19__FUNC_WAKEN>,
@@ -688,6 +769,12 @@
 				 <PINMUX_GPIO1__FUNC_CLKREQN_1>,
 				 <PINMUX_GPIO2__FUNC_WAKEN_1>;
 			bias-disable;
+		};
+	};
+
+	pwm0_gpio_def_cfg: pwm0-pins {
+		pins-disp-pwm {
+			pinmux = <PINMUX_GPIO97__FUNC_DISP_PWM0>;
 		};
 	};
 
