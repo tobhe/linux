@@ -1,3 +1,9 @@
+linux-chromebook (6.11.0-6.6) oracular; urgency=medium
+
+  * Merge with collabora chromeos kernel
+
+ -- Tobias Heider <me@tobhe.de>  Sat, 20 Jul 2024 16:59:42 +0200
+
 linux (6.11.0-6.6) oracular; urgency=medium
 
   * oracular/linux: 6.11.0-6.6 -proposed tracker (LP: #2077949)
