@@ -5282,6 +5282,10 @@ CONFIG_INTERCONNECT_IMX8MM                      policy<{'arm64': 'm'}>
 CONFIG_INTERCONNECT_IMX8MN                      policy<{'arm64': 'm'}>
 CONFIG_INTERCONNECT_IMX8MP                      policy<{'arm64': 'm'}>
 CONFIG_INTERCONNECT_IMX8MQ                      policy<{'arm64': 'm'}>
+CONFIG_INTERCONNECT_MTK                         policy<{'arm64': 'y'}>
+CONFIG_INTERCONNECT_MTK_DVFSRC_EMI              policy<{'arm64': 'm'}>
+CONFIG_INTERCONNECT_MTK_MT8183                  policy<{'arm64': 'm'}>
+CONFIG_INTERCONNECT_MTK_MT8195                  policy<{'arm64': 'm'}>
 CONFIG_INTERCONNECT_QCOM                        policy<{'arm64': 'y'}>
 CONFIG_INTERCONNECT_QCOM_BCM_VOTER              policy<{'arm64': 'm'}>
 CONFIG_INTERCONNECT_QCOM_MSM8909                policy<{'arm64': 'm'}>
@@ -6858,7 +6862,7 @@ CONFIG_MTK_CMDQ_MBOX                            policy<{'arm64': 'm'}>
 CONFIG_MTK_CPUX_TIMER                           policy<{'arm64': 'y'}>
 CONFIG_MTK_CQDMA                                policy<{'arm64': 'm'}>
 CONFIG_MTK_DEVAPC                               policy<{'arm64': 'm'}>
-CONFIG_MTK_DVFSRC                               policy<{'arm64': 'n'}>
+CONFIG_MTK_DVFSRC                               policy<{'arm64': 'm'}>
 CONFIG_MTK_HSDMA                                policy<{'arm64': 'm'}>
 CONFIG_MTK_INFRACFG                             policy<{'arm64': 'y'}>
 CONFIG_MTK_IOMMU                                policy<{'arm64': 'm'}>
@@ -8845,6 +8849,7 @@ CONFIG_REGULATOR_MT6360                         policy<{'arm64': 'm'}>
 CONFIG_REGULATOR_MT6370                         policy<{'arm64': 'm'}>
 CONFIG_REGULATOR_MT6380                         policy<{'arm64': 'm'}>
 CONFIG_REGULATOR_MT6397                         policy<{'arm64': 'm'}>
+CONFIG_REGULATOR_MTK_DVFSRC                     policy<{'arm64': 'n'}>
 CONFIG_REGULATOR_NETLINK_EVENTS                 policy<{'arm64': 'y'}>
 CONFIG_REGULATOR_PALMAS                         policy<{'arm64': 'm'}>
 CONFIG_REGULATOR_PCA9450                        policy<{'arm64': 'm'}>
