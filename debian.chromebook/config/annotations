@@ -2370,6 +2370,7 @@ CONFIG_DRM_DISPLAY_DP_AUX_BUS                   policy<{'arm64': 'y'}>
 CONFIG_DRM_DISPLAY_DP_AUX_CEC                   policy<{'arm64': 'n'}>
 CONFIG_DRM_DISPLAY_DP_AUX_CHARDEV               policy<{'arm64': 'y'}>
 CONFIG_DRM_DISPLAY_DP_HELPER                    policy<{'arm64': 'y'}>
+CONFIG_DRM_DISPLAY_DP_TYPEC_HELPER              policy<{'arm64': 'y'}>
 CONFIG_DRM_DISPLAY_HDCP_HELPER                  policy<{'arm64': 'y'}>
 CONFIG_DRM_DISPLAY_HDMI_HELPER                  policy<{'arm64': 'y'}>
 CONFIG_DRM_DISPLAY_HELPER                       policy<{'arm64': 'y'}>
@@ -8648,12 +8649,12 @@ CONFIG_TUN_VNET_CROSS_LE                        policy<{'arm64': 'n'}>
 CONFIG_TURRIS_MOX_RWTM                          policy<{'arm64': 'n'}>
 CONFIG_TWL4030_CORE                             policy<{'arm64': 'n'}>
 CONFIG_TWL6040_CORE                             policy<{'arm64': 'n'}>
-CONFIG_TYPEC                                    policy<{'arm64': 'm'}>
+CONFIG_TYPEC                                    policy<{'arm64': 'y'}>
 CONFIG_TYPEC_ANX7411                            policy<{'arm64': 'm'}>
 CONFIG_TYPEC_DP_ALTMODE                         policy<{'arm64': 'm'}>
 CONFIG_TYPEC_FUSB302                            policy<{'arm64': 'm'}>
 CONFIG_TYPEC_HD3SS3220                          policy<{'arm64': 'm'}>
-CONFIG_TYPEC_MT6360                             policy<{'arm64': 'm'}>
+CONFIG_TYPEC_MT6360                             policy<{'arm64': 'y'}>
 CONFIG_TYPEC_MUX_FSA4480                        policy<{'arm64': 'm'}>
 CONFIG_TYPEC_MUX_GPIO_SBU                       policy<{'arm64': 'm'}>
 CONFIG_TYPEC_MUX_IT5205                         policy<{'arm64': 'm'}>
@@ -8666,10 +8667,10 @@ CONFIG_TYPEC_QCOM_PMIC                          policy<{'arm64': 'm'}>
 CONFIG_TYPEC_RT1711H                            policy<{'arm64': 'm'}>
 CONFIG_TYPEC_RT1719                             policy<{'arm64': 'm'}>
 CONFIG_TYPEC_STUSB160X                          policy<{'arm64': 'm'}>
-CONFIG_TYPEC_TCPCI                              policy<{'arm64': 'm'}>
+CONFIG_TYPEC_TCPCI                              policy<{'arm64': 'y'}>
 CONFIG_TYPEC_TCPCI_MAXIM                        policy<{'arm64': 'm'}>
-CONFIG_TYPEC_TCPCI_MT6370                       policy<{'arm64': 'm'}>
-CONFIG_TYPEC_TCPM                               policy<{'arm64': 'm'}>
+CONFIG_TYPEC_TCPCI_MT6370                       policy<{'arm64': 'y'}>
+CONFIG_TYPEC_TCPM                               policy<{'arm64': 'y'}>
 CONFIG_TYPEC_TPS6598X                           policy<{'arm64': 'm'}>
 CONFIG_TYPEC_UCSI                               policy<{'arm64': 'm'}>
 CONFIG_TYPEC_WUSB3801                           policy<{'arm64': 'm'}>
