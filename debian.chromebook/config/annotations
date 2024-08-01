@@ -4158,6 +4158,7 @@ CONFIG_MEDIATEK_GE_PHY                          policy<{'arm64': 'n'}>
 CONFIG_MEDIATEK_GE_SOC_PHY                      policy<{'arm64': 'm'}>
 CONFIG_MEDIATEK_MT6360_ADC                      policy<{'arm64': 'y'}>
 CONFIG_MEDIATEK_MT6370_ADC                      policy<{'arm64': 'y'}>
+CONFIG_MEDIATEK_MT6359_AUXADC                   policy<{'arm64': 'y'}>
 CONFIG_MEDIATEK_MT6577_AUXADC                   policy<{'arm64': 'y'}>
 CONFIG_MEDIATEK_WATCHDOG                        policy<{'arm64': 'y'}>
 CONFIG_MEDIA_ANALOG_TV_SUPPORT                  policy<{'arm64': 'y'}>
