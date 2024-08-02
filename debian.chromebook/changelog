@@ -1,4 +1,4 @@
-linux-chromebook (6.10.0-20.20) oracular; urgency=medium
+linux-chromebook (6.10.0-24.24) oracular; urgency=medium
 
   * Merge with collabora chromeos kernel
 
