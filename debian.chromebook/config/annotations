@@ -135,6 +135,9 @@ CONFIG_DEBUG_FS                                 note<'required debug option'>
 CONFIG_DEBUG_INFO                               policy<{'arm64': 'y'}>
 CONFIG_DEBUG_INFO                               note<'required for debug packages'>
 
+CONFIG_DEBUG_INFO_BTF                           policy<{'arm64': 'y'}>
+CONFIG_DEBUG_INFO_BTF                           note<'Needs newer pahole for armhf'>
+
 CONFIG_DEBUG_INFO_SPLIT                         policy<{'arm64': 'n'}>
 CONFIG_DEBUG_INFO_SPLIT                         note<'LP: #1413664'>
 
@@ -2018,7 +2021,7 @@ CONFIG_DEBUG_FS_ALLOW_ALL                       policy<{'arm64': 'y'}>
 CONFIG_DEBUG_FS_ALLOW_NONE                      policy<{'arm64': 'n'}>
 CONFIG_DEBUG_FS_DISALLOW_MOUNT                  policy<{'arm64': 'n'}>
 CONFIG_DEBUG_GPIO                               policy<{'arm64': 'n'}>
-CONFIG_DEBUG_INFO_BTF                           policy<{'arm64': 'n'}>
+CONFIG_DEBUG_INFO_BTF_MODULES                   policy<{'arm64': 'y'}>
 CONFIG_DEBUG_INFO_COMPRESSED_NONE               policy<{'arm64': 'y'}>
 CONFIG_DEBUG_INFO_COMPRESSED_ZLIB               policy<{'arm64': 'n'}>
 CONFIG_DEBUG_INFO_COMPRESSED_ZSTD               policy<{'arm64': 'n'}>
@@ -4568,6 +4571,7 @@ CONFIG_MODPROBE_PATH                            policy<{'arm64': '"/sbin/modprob
 CONFIG_MODULES                                  policy<{'arm64': 'y'}>
 CONFIG_MODULES_TREE_LOOKUP                      policy<{'arm64': 'y'}>
 CONFIG_MODULES_USE_ELF_RELA                     policy<{'arm64': 'y'}>
+CONFIG_MODULE_ALLOW_BTF_MISMATCH                policy<{'arm64': 'n'}>
 CONFIG_MODULE_ALLOW_MISSING_NAMESPACE_IMPORTS   policy<{'arm64': 'n'}>
 CONFIG_MODULE_COMPRESS_GZIP                     policy<{'arm64': 'n'}>
 CONFIG_MODULE_COMPRESS_NONE                     policy<{'arm64': 'n'}>
@@ -5843,6 +5847,7 @@ CONFIG_PRINTK_CALLER                            policy<{'arm64': 'n'}>
 CONFIG_PRINTK_INDEX                             policy<{'arm64': 'n'}>
 CONFIG_PRINTK_TIME                              policy<{'arm64': 'y'}>
 CONFIG_PROBE_EVENTS                             policy<{'arm64': 'y'}>
+CONFIG_PROBE_EVENTS_BTF_ARGS                    policy<{'arm64': 'y'}>
 CONFIG_PROC_CHILDREN                            policy<{'arm64': 'y'}>
 CONFIG_PROC_EVENTS                              policy<{'arm64': 'y'}>
 CONFIG_PROC_FS                                  policy<{'arm64': 'y'}>
