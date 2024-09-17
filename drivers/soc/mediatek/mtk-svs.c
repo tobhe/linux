@@ -2127,19 +2127,15 @@ static struct device *svs_get_subsys_device(struct svs_platform *svsp,
 	struct device_node *np;
 
 	np = of_find_node_by_name(NULL, node_name);
-	if (!np) {
-		dev_err(svsp->dev, "cannot find %s node\n", node_name);
-		return ERR_PTR(-ENODEV);
-	}
+	if (!np)
+		return dev_err_ptr_probe(svsp->dev, -ENODEV,
+					 "cannot find %s node\n", node_name);
 
 	pdev = of_find_device_by_node(np);
-	if (!pdev) {
-		of_node_put(np);
-		dev_err(svsp->dev, "cannot find pdev by %s\n", node_name);
-		return ERR_PTR(-ENXIO);
-	}
-
 	of_node_put(np);
+	if (!pdev)
+		return dev_err_ptr_probe(svsp->dev, -ENXIO,
+					 "cannot find pdev by %s\n", node_name);
 
 	return &pdev->dev;
 }
@@ -2156,10 +2152,8 @@ static struct device *svs_add_device_link(struct svs_platform *svsp,
 
 	sup_link = device_link_add(svsp->dev, dev,
 				   DL_FLAG_AUTOREMOVE_CONSUMER);
-	if (!sup_link) {
-		dev_err(svsp->dev, "sup_link is NULL\n");
-		return ERR_PTR(-EINVAL);
-	}
+	if (!sup_link)
+		return dev_err_ptr_probe(svsp->dev, -EINVAL, "Cannot add device link\n");
 
 	if (sup_link->supplier->links.status != DL_DEV_DRIVER_BOUND)
 		return ERR_PTR(-EPROBE_DEFER);
@@ -2201,8 +2195,8 @@ static int svs_mt8192_platform_probe(struct svs_platform *svsp)
 				svsb->opp_dev = svs_add_device_link(svsp, "gpu");
 			break;
 		default:
-			dev_err(svsb->dev, "unknown sw_id: %u\n", bdata->sw_id);
-			return -EINVAL;
+			return dev_err_probe(svsb->dev, -EINVAL,
+					     "unknown sw_id: %u\n", bdata->sw_id);
 		}
 
 		if (IS_ERR(svsb->opp_dev))
@@ -2240,8 +2234,8 @@ static int svs_mt8183_platform_probe(struct svs_platform *svsp)
 			svsb->opp_dev = svs_add_device_link(svsp, "gpu");
 			break;
 		default:
-			dev_err(svsb->dev, "unknown sw_id: %u\n", bdata->sw_id);
-			return -EINVAL;
+			return dev_err_probe(svsb->dev, -EINVAL,
+					     "unknown sw_id: %u\n", bdata->sw_id);
 		}
 
 		if (IS_ERR(svsb->opp_dev))
