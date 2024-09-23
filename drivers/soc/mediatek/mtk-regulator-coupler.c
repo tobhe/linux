@@ -146,6 +146,7 @@ static struct mediatek_regulator_coupler mediatek_coupler = {
 static const char * const mediatek_regulator_coupler_allowlist[] = {
 	"mediatek,mt8183",
 	"mediatek,mt8186",
+	"mediatek,mt8188",
 	"mediatek,mt8192",
 	NULL
 };
