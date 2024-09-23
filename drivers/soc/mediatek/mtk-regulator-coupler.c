@@ -143,11 +143,16 @@ static struct mediatek_regulator_coupler mediatek_coupler = {
 	},
 };
 
+static const char * const mediatek_regulator_coupler_allowlist[] = {
+	"mediatek,mt8183",
+	"mediatek,mt8186",
+	"mediatek,mt8192",
+	NULL
+};
+
 static int mediatek_regulator_coupler_init(void)
 {
-	if (!of_machine_is_compatible("mediatek,mt8183") &&
-	    !of_machine_is_compatible("mediatek,mt8186") &&
-	    !of_machine_is_compatible("mediatek,mt8192"))
+	if (!of_machine_compatible_match(mediatek_regulator_coupler_allowlist))
 		return 0;
 
 	return regulator_coupler_register(&mediatek_coupler.coupler);
