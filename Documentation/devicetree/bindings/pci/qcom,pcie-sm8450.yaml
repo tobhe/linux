@@ -69,10 +69,6 @@ properties:
       - const: msi6
       - const: msi7
 
-  operating-points-v2: true
-  opp-table:
-    type: object
-
   resets:
     maxItems: 1
 
