@@ -1,7 +1,7 @@
 # Menu: HEADER
 # FORMAT: 4
 # ARCH: arm64
-# FLAVOUR: arm64-x1e
+# FLAVOUR: arm64-qcom-x1e
 
 CONFIG_ACCESSIBILITY                            policy<{'arm64': 'y'}>
 CONFIG_ACCESSIBILITY                            note<'LP: #1967702'>

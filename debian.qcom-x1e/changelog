@@ -1,4 +1,4 @@
-linux-x1e (6.11.0-8.8) oracular; urgency=medium
+linux-qcom-x1e (6.11.0-8.8) oracular; urgency=medium
 
   * Merge jhovold/wip/x1e80100-6.11
 
