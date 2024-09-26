@@ -2697,7 +2697,7 @@ static struct clk_branch gcc_gpu_memnoc_gfx_clk = {
 
 static struct clk_branch gcc_gpu_snoc_dvm_gfx_clk = {
 	.halt_reg = 0x71018,
-	.halt_check = BRANCH_HALT,
+	.halt_check = BRANCH_HALT_DELAY,
 	.clkr = {
 		.enable_reg = 0x71018,
 		.enable_mask = BIT(0),
