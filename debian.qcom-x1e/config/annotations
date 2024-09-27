@@ -5651,6 +5651,7 @@ CONFIG_PHY_MTK_TPHY                             policy<{'arm64': 'y'}>
 CONFIG_PHY_MTK_UFS                              policy<{'arm64': 'y'}>
 CONFIG_PHY_MTK_XFI_TPHY                         policy<{'arm64': 'y'}>
 CONFIG_PHY_MTK_XSPHY                            policy<{'arm64': 'n'}>
+CONFIG_PHY_NXP_PTN3222                          policy<{'arm64': 'm'}>
 CONFIG_PHY_OCELOT_SERDES                        policy<{'arm64': 'n'}>
 CONFIG_PHY_PXA_28NM_HSIC                        policy<{'arm64': 'n'}>
 CONFIG_PHY_PXA_28NM_USB2                        policy<{'arm64': 'n'}>
