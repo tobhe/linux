@@ -1,3 +1,9 @@
+linux-qcom-x1e (6.11.0-13.13) oracular; urgency=medium
+
+  * Fix arm-smmu bug on X1E platforms
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Mon, 30 Sep 2024 15:22:47 +0200
+
 linux-qcom-x1e (6.11.0-12.12) oracular; urgency=medium
 
   * Merge USB-A support from linaro tree
