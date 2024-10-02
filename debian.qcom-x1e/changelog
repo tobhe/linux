@@ -1,5 +1,6 @@
-linux-qcom-x1e (6.11.0-13.13) oracular; urgency=medium
+linux-qcom-x1e (6.11.0-21.21) oracular; urgency=medium
 
+  * Sync kernel config from -generic
   * Fix arm-smmu bug on X1E platforms
 
  -- Tobias Heider <tobias.heider@canonical.com>  Mon, 30 Sep 2024 15:22:47 +0200
