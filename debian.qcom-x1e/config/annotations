@@ -3597,7 +3597,7 @@ CONFIG_EDAC_DEBUG                               policy<{'arm64': 'n'}>
 CONFIG_EDAC_DMC520                              policy<{'arm64': 'm'}>
 CONFIG_EDAC_GHES                                policy<{'arm64': 'y'}>
 CONFIG_EDAC_LAYERSCAPE                          policy<{'arm64': 'm'}>
-CONFIG_EDAC_LEGACY_SYSFS                        policy<{'arm64': 'y'}>
+CONFIG_EDAC_LEGACY_SYSFS                        policy<{'arm64': 'n'}>
 CONFIG_EDAC_NPCM                                policy<{'arm64': 'm'}>
 CONFIG_EDAC_QCOM                                policy<{'arm64': 'm'}>
 CONFIG_EDAC_SUPPORT                             policy<{'arm64': 'y'}>
@@ -3615,7 +3615,7 @@ CONFIG_EEPROM_IDT_89HPESX                       policy<{'arm64': 'm'}>
 CONFIG_EEPROM_MAX6875                           policy<{'arm64': 'm'}>
 CONFIG_EFI                                      policy<{'arm64': 'y'}>
 CONFIG_EFIVAR_FS                                policy<{'arm64': 'y'}>
-CONFIG_EFI_ARMSTUB_DTB_LOADER                   policy<{'arm64': 'y'}>
+CONFIG_EFI_ARMSTUB_DTB_LOADER                   policy<{'arm64': 'n'}>
 CONFIG_EFI_BOOTLOADER_CONTROL                   policy<{'arm64': 'm'}>
 CONFIG_EFI_CAPSULE_LOADER                       policy<{'arm64': 'm'}>
 CONFIG_EFI_COCO_SECRET                          policy<{'arm64': 'y'}>
@@ -3633,7 +3633,7 @@ CONFIG_EFI_STUB                                 policy<{'arm64': 'y'}>
 CONFIG_EFI_TEST                                 policy<{'arm64': 'm'}>
 CONFIG_EFI_VARS_PSTORE                          policy<{'arm64': 'm'}>
 CONFIG_EFI_VARS_PSTORE_DEFAULT_DISABLE          policy<{'arm64': 'n'}>
-CONFIG_EFI_ZBOOT                                policy<{'arm64': 'y'}>
+CONFIG_EFI_ZBOOT                                policy<{'arm64': 'n'}>
 CONFIG_EFS_FS                                   policy<{'arm64': 'm'}>
 CONFIG_EINT_MTK                                 policy<{'arm64': 'y'}>
 CONFIG_ELFCORE                                  policy<{'arm64': 'y'}>
@@ -3658,7 +3658,7 @@ CONFIG_EROFS_FS                                 policy<{'arm64': 'm'}>
 CONFIG_EROFS_FS_DEBUG                           policy<{'arm64': 'n'}>
 CONFIG_EROFS_FS_ONDEMAND                        policy<{'arm64': 'n'}>
 CONFIG_EROFS_FS_PCPU_KTHREAD                    policy<{'arm64': 'y'}>
-CONFIG_EROFS_FS_PCPU_KTHREAD_HIPRI              policy<{'arm64': 'y'}>
+CONFIG_EROFS_FS_PCPU_KTHREAD_HIPRI              policy<{'arm64': 'n'}>
 CONFIG_EROFS_FS_POSIX_ACL                       policy<{'arm64': 'y'}>
 CONFIG_EROFS_FS_SECURITY                        policy<{'arm64': 'y'}>
 CONFIG_EROFS_FS_XATTR                           policy<{'arm64': 'y'}>
@@ -3738,7 +3738,7 @@ CONFIG_FAULT_INJECTION                          policy<{'arm64': 'n'}>
 CONFIG_FB                                       policy<{'arm64': 'y'}>
 CONFIG_FB_3DFX                                  policy<{'arm64': 'm'}>
 CONFIG_FB_3DFX_ACCEL                            policy<{'arm64': 'n'}>
-CONFIG_FB_3DFX_I2C                              policy<{'arm64': 'y'}>
+CONFIG_FB_3DFX_I2C                              policy<{'arm64': 'n'}>
 CONFIG_FB_ARK                                   policy<{'arm64': 'm'}>
 CONFIG_FB_ASILIANT                              policy<{'arm64': 'y'}>
 CONFIG_FB_ATY                                   policy<{'arm64': 'm'}>
@@ -3762,7 +3762,7 @@ CONFIG_FB_DDC                                   policy<{'arm64': 'm'}>
 CONFIG_FB_DEFERRED_IO                           policy<{'arm64': 'y'}>
 CONFIG_FB_DEVICE                                policy<{'arm64': 'y'}>
 CONFIG_FB_DMAMEM_HELPERS                        policy<{'arm64': 'y'}>
-CONFIG_FB_EFI                                   policy<{'arm64': 'n'}>
+CONFIG_FB_EFI                                   policy<{'arm64': 'y'}>
 CONFIG_FB_FOREIGN_ENDIAN                        policy<{'arm64': 'n'}>
 CONFIG_FB_HYPERV                                policy<{'arm64': 'm'}>
 CONFIG_FB_I740                                  policy<{'arm64': 'm'}>
@@ -4364,12 +4364,6 @@ CONFIG_HAVE_IMA_KEXEC                           policy<{'arm64': 'y'}>
 CONFIG_HAVE_IOREMAP_PROT                        policy<{'arm64': 'y'}>
 CONFIG_HAVE_IRQ_TIME_ACCOUNTING                 policy<{'arm64': 'y'}>
 CONFIG_HAVE_KCSAN_COMPILER                      policy<{'arm64': 'y'}>
-CONFIG_HAVE_KERNEL_GZIP                         policy<{'arm64': 'y'}>
-CONFIG_HAVE_KERNEL_LZ4                          policy<{'arm64': 'y'}>
-CONFIG_HAVE_KERNEL_LZMA                         policy<{'arm64': 'y'}>
-CONFIG_HAVE_KERNEL_LZO                          policy<{'arm64': 'y'}>
-CONFIG_HAVE_KERNEL_XZ                           policy<{'arm64': 'y'}>
-CONFIG_HAVE_KERNEL_ZSTD                         policy<{'arm64': 'y'}>
 CONFIG_HAVE_KPROBES                             policy<{'arm64': 'y'}>
 CONFIG_HAVE_KRETPROBES                          policy<{'arm64': 'y'}>
 CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT             policy<{'arm64': 'y'}>
@@ -5558,13 +5552,7 @@ CONFIG_KDB_KEYBOARD                             policy<{'arm64': 'y'}>
 CONFIG_KEBA_CP500                               policy<{'arm64': 'm'}>
 CONFIG_KEEMBAY_WATCHDOG                         policy<{'arm64': 'm'}>
 CONFIG_KEMPLD_WDT                               policy<{'arm64': 'm'}>
-CONFIG_KERNEL_GZIP                              policy<{'arm64': 'n'}>
-CONFIG_KERNEL_LZ4                               policy<{'arm64': 'n'}>
-CONFIG_KERNEL_LZMA                              policy<{'arm64': 'n'}>
-CONFIG_KERNEL_LZO                               policy<{'arm64': 'n'}>
 CONFIG_KERNEL_MODE_NEON                         policy<{'arm64': 'y'}>
-CONFIG_KERNEL_XZ                                policy<{'arm64': 'n'}>
-CONFIG_KERNEL_ZSTD                              policy<{'arm64': 'y'}>
 CONFIG_KERNFS                                   policy<{'arm64': 'y'}>
 CONFIG_KEXEC                                    policy<{'arm64': 'y'}>
 CONFIG_KEXEC_CORE                               policy<{'arm64': 'y'}>
@@ -9361,6 +9349,7 @@ CONFIG_SCHED_MM_CID                             policy<{'arm64': 'y'}>
 CONFIG_SCHED_SMT                                policy<{'arm64': 'y'}>
 CONFIG_SCHED_STACK_END_CHECK                    policy<{'arm64': 'y'}>
 CONFIG_SCHED_TRACER                             policy<{'arm64': 'y'}>
+CONFIG_SCREEN_INFO                              policy<{'arm64': 'y'}>
 CONFIG_SCSI                                     policy<{'arm64': 'y'}>
 CONFIG_SCSI_3W_9XXX                             policy<{'arm64': 'm'}>
 CONFIG_SCSI_3W_SAS                              policy<{'arm64': 'm'}>
@@ -11165,7 +11154,8 @@ CONFIG_SYSC_R8A779G0                            policy<{'arm64': 'y'}>
 CONFIG_SYSC_R8A779H0                            policy<{'arm64': 'y'}>
 CONFIG_SYSC_RCAR                                policy<{'arm64': 'y'}>
 CONFIG_SYSC_RCAR_GEN4                           policy<{'arm64': 'y'}>
-CONFIG_SYSFB_SIMPLEFB                           policy<{'arm64': 'n'}>
+CONFIG_SYSFB                                    policy<{'arm64': 'y'}>
+CONFIG_SYSFB_SIMPLEFB                           policy<{'arm64': 'y'}>
 CONFIG_SYSFS                                    policy<{'arm64': 'y'}>
 CONFIG_SYSFS_SYSCALL                            policy<{'arm64': 'y'}>
 CONFIG_SYSTEMPORT                               policy<{'arm64': 'm'}>
@@ -11797,13 +11787,17 @@ CONFIG_USB_DSBR                                 policy<{'arm64': 'm'}>
 CONFIG_USB_DUMMY_HCD                            policy<{'arm64': 'n'}>
 CONFIG_USB_DWC2                                 policy<{'arm64': 'y'}>
 CONFIG_USB_DWC2_DEBUG                           policy<{'arm64': 'n'}>
+CONFIG_USB_DWC2_DUAL_ROLE                       policy<{'arm64': 'n'}>
 CONFIG_USB_DWC2_HOST                            policy<{'arm64': 'y'}>
 CONFIG_USB_DWC2_PCI                             policy<{'arm64': 'm'}>
+CONFIG_USB_DWC2_PERIPHERAL                      policy<{'arm64': 'n'}>
 CONFIG_USB_DWC2_TRACK_MISSED_SOFS               policy<{'arm64': 'n'}>
 CONFIG_USB_DWC3                                 policy<{'arm64': 'y'}>
 CONFIG_USB_DWC3_AM62                            policy<{'arm64': 'm'}>
+CONFIG_USB_DWC3_DUAL_ROLE                       policy<{'arm64': 'y'}>
+CONFIG_USB_DWC3_GADGET                          policy<{'arm64': 'n'}>
 CONFIG_USB_DWC3_HAPS                            policy<{'arm64': 'm'}>
-CONFIG_USB_DWC3_HOST                            policy<{'arm64': 'y'}>
+CONFIG_USB_DWC3_HOST                            policy<{'arm64': 'n'}>
 CONFIG_USB_DWC3_IMX8MP                          policy<{'arm64': 'm'}>
 CONFIG_USB_DWC3_KEYSTONE                        policy<{'arm64': 'm'}>
 CONFIG_USB_DWC3_MESON_G12A                      policy<{'arm64': 'm'}>
@@ -11811,6 +11805,7 @@ CONFIG_USB_DWC3_OF_SIMPLE                       policy<{'arm64': 'm'}>
 CONFIG_USB_DWC3_PCI                             policy<{'arm64': 'm'}>
 CONFIG_USB_DWC3_QCOM                            policy<{'arm64': 'y'}>
 CONFIG_USB_DWC3_RTK                             policy<{'arm64': 'm'}>
+CONFIG_USB_DWC3_ULPI                            policy<{'arm64': 'n'}>
 CONFIG_USB_DWC3_XILINX                          policy<{'arm64': 'm'}>
 CONFIG_USB_DYNAMIC_MINORS                       policy<{'arm64': 'y'}>
 CONFIG_USB_EG20T                                policy<{'arm64': 'm'}>
@@ -11855,7 +11850,7 @@ CONFIG_USB_F_UAC1                               policy<{'arm64': 'm'}>
 CONFIG_USB_F_UAC1_LEGACY                        policy<{'arm64': 'm'}>
 CONFIG_USB_F_UAC2                               policy<{'arm64': 'm'}>
 CONFIG_USB_F_UVC                                policy<{'arm64': 'm'}>
-CONFIG_USB_GADGET                               policy<{'arm64': 'm'}>
+CONFIG_USB_GADGET                               policy<{'arm64': 'y'}>
 CONFIG_USB_GADGETFS                             policy<{'arm64': 'm'}>
 CONFIG_USB_GADGET_DEBUG                         policy<{'arm64': 'n'}>
 CONFIG_USB_GADGET_DEBUG_FILES                   policy<{'arm64': 'n'}>
@@ -12144,7 +12139,7 @@ CONFIG_USB_TRANCEVIBRATOR                       policy<{'arm64': 'm'}>
 CONFIG_USB_UAS                                  policy<{'arm64': 'm'}>
 CONFIG_USB_UEAGLEATM                            policy<{'arm64': 'm'}>
 CONFIG_USB_ULPI                                 policy<{'arm64': 'y'}>
-CONFIG_USB_ULPI_BUS                             policy<{'arm64': 'm'}>
+CONFIG_USB_ULPI_BUS                             policy<{'arm64': 'y'}>
 CONFIG_USB_ULPI_VIEWPORT                        policy<{'arm64': 'y'}>
 CONFIG_USB_USBNET                               policy<{'arm64': 'm'}>
 CONFIG_USB_USS720                               policy<{'arm64': 'm'}>
