@@ -1,3 +1,13 @@
+linux-qcom-x1e (6.11.0-24.24) oracular; urgency=medium
+
+  [ Abel Vesa ]
+  * clk: qcom: dispcc-x1e80100: Use non-reset ops for PLLs
+  * arm64: dts: qcom: x1e80100-slim7x: Drop the orientation-switch from USB SS[0-1] QMP PHYs
+  * arm64: dts: qcom: x1e80100-slim7x: Enable external DP support
+  * arm64: dts: qcom: x1e80100-slim7x: Enable external DP support
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 15 Oct 2024 12:23:05 +0200
+
 linux-qcom-x1e (6.11.0-23.23) oracular; urgency=medium
 
   * Merge additional patches for XPS 13 support
