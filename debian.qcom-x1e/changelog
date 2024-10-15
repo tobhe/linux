@@ -1,3 +1,15 @@
+linux-qcom-x1e (6.11.0-25.25) oracular; urgency=medium
+
+  [ Marcus Glocker ]
+  * dt-bindings: crypto: Add X1E80100 Crypto Engine
+  * dt-bindings: phy: Add X1E80100 UFS
+  * dt-bindings: ufs: Add X1E80100 UFS
+  * arm64: dts: qcom: Add UFS node
+  * dt-bindings: arm: Add Samsung Galaxy Book4 Edge
+  * arm64: dts: qcom: Add Samsung Galaxy Book4 Edge DTS
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 15 Oct 2024 22:36:33 +0200
+
 linux-qcom-x1e (6.11.0-24.24) oracular; urgency=medium
 
   [ Abel Vesa ]
