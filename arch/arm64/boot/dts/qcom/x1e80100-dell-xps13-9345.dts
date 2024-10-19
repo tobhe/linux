@@ -12,7 +12,7 @@
 #include "x1e80100-pmics.dtsi"
 
 / {
-	model = "Dell XPS 13 9345";
+	model = "Dell XPS13";
 	compatible = "dell,xps13-9345", "qcom,x1e80100";
 
 	pmic-glink {
