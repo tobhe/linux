@@ -1,3 +1,29 @@
+linux-qcom-x1e (6.11.0-30.30) oracular; urgency=medium
+
+  [ Aleksandrs Vinarskis ]
+  * firmware: qcom: scm: Allow QSEECOM on Dell XPS 13 9345
+  * dt-bindings: arm: qcom: Add Dell XPS 13 9345
+  * arm64: dts: qcom: Add support for X1-based Dell XPS 13 9345
+  * drm/edp-panel: Add panels used by Dell XPS 13 9345
+  * arm64: dts: qcom: x1e80100-dell-xps13-9345: route edp-panel enable gpio
+  * arm64: dts: qcom: x1e80100-dell-xps13-9345: fix nvme regulator boot glitch
+
+  [ Stephan Gerhold ]
+  * arm64: dts: qcom: x1e80100: Add QUP power domains and OPPs
+  * arm64: dts: qcom: x1e80100: Add uart14
+  * arm64: dts: qcom: x1e80100-qcp: Add WiFi/BT pwrseq
+
+  [ Aleksandrs Vinarskis ]
+  * arm64: dts: qcom: x1e80100-dell-xps13-9345: Add bluetooth nodes
+
+  [ Tobias Heider ]
+  * Revert "More verbose model name for Dell XPS 13 9345"
+  * Revert "arm64: dts: qcom: x1e80100: add X1E80100 based Dell XPS 13 devicetree"
+  * Revert "arm64: defconfig: Enable squashfs configs needed for snapd"
+  * Revert "firmware: qcom: uefisecapp: Add additional X1E devices"
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Sun, 20 Oct 2024 00:34:14 +0200
+
 linux-qcom-x1e (6.11.0-29.29) oracular; urgency=medium
 
   * fixup! firmware: qcom: scm: Allow QSEECOM on Surface Laptop 7 models
