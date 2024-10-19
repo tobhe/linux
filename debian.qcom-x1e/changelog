@@ -1,3 +1,14 @@
+linux-qcom-x1e (6.11.0-28.28) oracular; urgency=medium
+
+  [ Konrad Dybcio ]
+  * dt-bindings: arm: qcom: Add Surface Laptop 7 devices
+  * firmware: qcom: scm: Allow QSEECOM on Surface Laptop 7 models
+  * arm64: dts: qcom: x1e80100-pmics: Add PMC8380C PWM
+  * arm64: dts: qcom: x1e80100: Add UART2
+  * arm64: dts: qcom: Add support for X1-based Surface Laptop 7 devices
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Sat, 19 Oct 2024 11:43:32 +0200
+
 linux-qcom-x1e (6.11.0-27.27) oracular; urgency=medium
 
   * firmware: qcom: scm: Allow QSEECOM on Lenovo Yoga Slim 7x
