@@ -985,7 +985,6 @@
 
 	status = "okay";
 };
-};
 
 &tlmm {
 	gpio-reserved-ranges = <34 2>, /* Unused */
