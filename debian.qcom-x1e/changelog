@@ -1,3 +1,19 @@
+linux-qcom-x1e (6.11.0-31.31) oracular; urgency=medium
+
+  [ Tobias Heider ]
+  * firmware: qcom: scm: Allow QSEECOM on HP Omnibook X14
+
+  [ Jens Glathe ]
+  * arm64: dts: qcom: x1e80100-hp-x14: dt definition for HP Omnibook X 14
+  * arm64: dts: qcom: x1e80100-hp-x14: amend bt definition
+  * arm64: dts: qcom: x1e80100-hp-x14: amend keyboard definition
+  * arm64: dts: qcom: x1e80100-hp-x14: add touchscreen definition
+  * arm64: dts: qcom: x1e80100-hp-x14: add lid switch
+  * arm64: dts: qcom: x1e80100-hp-x14: add edp-panel gpios for enable
+  * arm64: dts: qcom: x1e80100-hp-x14: add USB4 retimers, Type-A port
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Mon, 21 Oct 2024 15:58:24 +0200
+
 linux-qcom-x1e (6.11.0-30.30) oracular; urgency=medium
 
   [ Aleksandrs Vinarskis ]
