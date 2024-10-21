@@ -1,3 +1,9 @@
+linux-qcom-x1e (6.11.0-32.32) oracular; urgency=medium
+
+  * fixup! arm64: dts: qcom: x1e80100-hp-x14: add USB4 retimers, Type-A port
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Mon, 21 Oct 2024 18:44:33 +0200
+
 linux-qcom-x1e (6.11.0-31.31) oracular; urgency=medium
 
   [ Tobias Heider ]
