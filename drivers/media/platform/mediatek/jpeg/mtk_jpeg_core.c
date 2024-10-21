@@ -1033,6 +1033,7 @@ static void mtk_jpeg_enc_device_run(void *priv)
 
 	src_buf = v4l2_m2m_next_src_buf(ctx->fh.m2m_ctx);
 	dst_buf = v4l2_m2m_next_dst_buf(ctx->fh.m2m_ctx);
+	dst_buf->vb2_buf.timestamp = src_buf->vb2_buf.timestamp;
 
 	ret = pm_runtime_resume_and_get(jpeg->dev);
 	if (ret < 0)
@@ -1329,6 +1330,7 @@ static void mtk_jpeg_job_timeout_work(struct work_struct *work)
 	ctx = v4l2_m2m_get_curr_priv(jpeg->m2m_dev);
 	src_buf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
 	dst_buf = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
+	dst_buf->vb2_buf.timestamp = src_buf->vb2_buf.timestamp;
 
 	jpeg->variant->hw_reset(jpeg->reg_base);
 
@@ -1660,6 +1662,7 @@ static irqreturn_t mtk_jpeg_enc_done(struct mtk_jpeg_dev *jpeg)
 
 	src_buf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
 	dst_buf = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
+	dst_buf->vb2_buf.timestamp = src_buf->vb2_buf.timestamp;
 
 	result_size = mtk_jpeg_enc_get_file_size(jpeg->reg_base,
 						 jpeg->variant->support_34bit);
@@ -1937,6 +1940,7 @@ static irqreturn_t mtk_jpeg_dec_irq(int irq, void *priv)
 
 	src_buf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
 	dst_buf = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
+	dst_buf->vb2_buf.timestamp = src_buf->vb2_buf.timestamp;
 	jpeg_src_buf = mtk_jpeg_vb2_to_srcbuf(&src_buf->vb2_buf);
 
 	if (dec_irq_ret >= MTK_JPEG_DEC_RESULT_UNDERFLOW)
