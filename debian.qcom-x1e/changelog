@@ -1,3 +1,14 @@
+linux-qcom-x1e (6.11.0-35.35) oracular; urgency=medium
+
+  [ hogliux ]
+  * Add Bluetooth support for the Lenovo Yoga Slim 7x
+
+  [ Tobias Heider ]
+  * arm64: dts: qcom: x1e78100-lenovo-thinkpad-t14s: Add bluetooth
+  * arm64: dts: qcom: x1e80100-asus-vivobook-s15: Add bluetooth
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Wed, 23 Oct 2024 15:16:02 +0200
+
 linux-qcom-x1e (6.11.0-34.34) oracular; urgency=medium
 
   [ SpieringsAE ]
