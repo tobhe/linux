@@ -1,3 +1,18 @@
+linux-qcom-x1e (6.11.0-37.37) oracular; urgency=medium
+
+  [ Tobias Heider ]
+  * Revert "usb: typec: Add support for Parade PS8830 Type-C Retimer"
+
+  [ Abel Vesa ]
+  * usb: typec: Add support for Parade PS8830 Type-C Retimer
+  * clk: qcom: gcc-x1e80100: Add halt_check delay to gpu_memnoc_gfx clock
+  * clk: qcom: gcc-x1e80100: Do not register gpu_cfg_ahb always-on clock
+
+  [ Tobias Heider ]
+  * HACK: workaround for t14s OLED backlight
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Sat, 26 Oct 2024 14:16:52 +0200
+
 linux-qcom-x1e (6.11.0-35.35) oracular; urgency=medium
 
   [ hogliux ]
