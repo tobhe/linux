@@ -4286,6 +4286,14 @@ drm_edp_backlight_init(struct drm_dp_aux *aux, struct drm_edp_backlight_info *bl
 	if (ret < 0)
 		return ret;
 
+	if (bl->max == 0) {
+		/*
+		 * XXX: The T14s oled reports a broken max brightness of 0.
+		 * Actual maximum might be higher than 2047
+		 */
+		bl->max = 2047;
+	}
+
 	ret = drm_edp_backlight_probe_state(aux, bl, current_mode);
 	if (ret < 0)
 		return ret;
