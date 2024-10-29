@@ -1,3 +1,9 @@
+linux-qcom-x1e (6.11.0-38.38) oracular; urgency=medium
+
+  * fixup! HACK: workaround for t14s OLED backlight
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Mon, 28 Oct 2024 22:37:51 +0100
+
 linux-qcom-x1e (6.11.0-37.37) oracular; urgency=medium
 
   [ Tobias Heider ]
