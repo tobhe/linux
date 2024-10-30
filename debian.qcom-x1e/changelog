@@ -1,3 +1,21 @@
+linux-qcom-x1e (6.11.0-41.41) oracular; urgency=medium
+
+  [ Abel Vesa ]
+  * arm64: dts: qcom: x1e80100-t14s: Add external DP support
+
+  [ Johan Hovold ]
+  * fixup: arm64: dts: qcom: x1e78100-t14s: fix usb0 retimer regulators
+  * fixup: arm64: dts: qcom: x1e78100-t14s: fix retimer supplies
+  * fixup: arm64: dts: qcom: x1e78100-t14s: fix retimer regulators
+
+  [ Srinivas Kandagatla ]
+  * arm64: dts: qcom: x1e80100-t14s: add another trackpad support
+
+  [ Johan Hovold ]
+  * arm64: dts: qcom: x1e80100: describe tcsr download mode register
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Wed, 30 Oct 2024 16:02:44 +0100
+
 linux-qcom-x1e (6.11.0-38.38) oracular; urgency=medium
 
   * fixup! HACK: workaround for t14s OLED backlight
