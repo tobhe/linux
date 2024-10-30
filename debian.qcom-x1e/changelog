@@ -1,3 +1,17 @@
+linux-qcom-x1e (6.11.0-42.42) oracular; urgency=medium
+
+  [ Sibi Sankar ]
+  * firmware: arm_scmi: Ensure that the message-id supports fastchannel
+
+  [ Cristian Marussi ]
+  * firmware: arm_scmi: Skip opp duplicates
+
+  [ Sibi Sankar ]
+  * firmware: arm_scmi: Report duplicate opps as firmware bugs
+  * mailbox: qcom-cpucp: Mark the irq with IRQF_NO_SUSPEND flag
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Wed, 30 Oct 2024 20:45:09 +0100
+
 linux-qcom-x1e (6.11.0-41.41) oracular; urgency=medium
 
   [ Abel Vesa ]
