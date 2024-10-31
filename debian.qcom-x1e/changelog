@@ -1,3 +1,9 @@
+linux-qcom-x1e (6.11.0-43.43) oracular; urgency=medium
+
+  * arm64: dts: qcom: x1e80100-t14s: force 2 data lanes for each DP
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 31 Oct 2024 18:16:50 +0100
+
 linux-qcom-x1e (6.11.0-42.42) oracular; urgency=medium
 
   [ Sibi Sankar ]
