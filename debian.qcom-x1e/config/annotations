@@ -12441,6 +12441,7 @@ CONFIG_VIDEO_PVRUSB2_DEBUGIFC                   policy<{'arm64': 'n'}>
 CONFIG_VIDEO_PVRUSB2_DVB                        policy<{'arm64': 'y'}>
 CONFIG_VIDEO_PVRUSB2_SYSFS                      policy<{'arm64': 'y'}>
 CONFIG_VIDEO_QCOM_CAMSS                         policy<{'arm64': 'm'}>
+CONFIG_VIDEO_QCOM_IRIS                          policy<{'arm64': 'm'}>
 CONFIG_VIDEO_QCOM_VENUS                         policy<{'arm64': 'm'}>
 CONFIG_VIDEO_RASPBERRYPI_PISP_BE                policy<{'arm64': 'm'}>
 CONFIG_VIDEO_RCAR_CSI2                          policy<{'arm64': 'm'}>
