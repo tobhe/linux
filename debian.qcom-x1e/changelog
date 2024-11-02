@@ -1,3 +1,56 @@
+linux-qcom-x1e (6.11.0-47.47) oracular; urgency=medium
+
+  * Enable CONFIG_VIDEO_QCOM_IRIS as module
+
+  [ Dikshita Agarwal ]
+  * PM: domains: add device managed version of dev_pm_domain_attach|detach_list()
+  * dt-bindings: media: Add video support for QCOM SM8550 SoC
+  * media: iris: add platform driver for iris video device
+  * media: iris: implement iris v4l2 file ops
+  * media: iris: introduce iris core state management with shared queues
+  * media: iris: implement video firmware load/unload
+  * media: iris: implement boot sequence of the firmware
+  * media: iris: introduce host firmware interface with necessary hooks
+  * media: iris: implement power management
+  * media: iris: implement reqbuf ioctl with vb2_queue_setup
+
+  [ Vedang Nagar ]
+  * media: iris: implement s_fmt, g_fmt and try_fmt ioctls
+  * media: iris: implement g_selection ioctl
+  * media: iris: implement enum_fmt and enum_frameintervals ioctls
+  * media: iris: implement subscribe_event and unsubscribe_event ioctls
+
+  [ Dikshita Agarwal ]
+  * media: iris: implement iris v4l2_ctrl_ops
+
+  [ Vedang Nagar ]
+  * media: iris: implement query_cap, query_ctrl and query_menu ioctls
+
+  [ Dikshita Agarwal ]
+  * media: iris: implement vb2 streaming ops
+
+  [ Vedang Nagar ]
+  * media: iris: implement set properties to firmware during streamon
+  * media: iris: subscribe parameters and properties to firmware for hfi_gen2
+
+  [ Dikshita Agarwal ]
+  * media: iris: allocate, initialize and queue internal buffers
+  * media: iris: implement vb2 ops for buf_queue and firmware response
+  * media: iris: add support for dynamic resolution change
+  * media: iris: handle streamoff/on from client in dynamic resolution change
+  * media: iris: add support for drain sequence
+
+  [ Vedang Nagar ]
+  * media: iris: add check whether the video session is supported or not
+  * media: iris: implement power scaling for vpu2 and vpu3
+  * media: iris: add check to allow sub states transitions
+
+  [ Dikshita Agarwal ]
+  * media: iris: enable video driver probe of SM8250 SoC
+  * media: MAINTAINERS: add Qualcomm iris video accelerator driver
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Sun, 03 Nov 2024 01:05:22 +0100
+
 linux-qcom-x1e (6.11.0-43.43) oracular; urgency=medium
 
   * arm64: dts: qcom: x1e80100-t14s: force 2 data lanes for each DP
