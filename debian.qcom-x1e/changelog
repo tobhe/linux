@@ -1,3 +1,13 @@
+linux-qcom-x1e (6.11.0-48.48) oracular; urgency=medium
+
+  [ Tobias Heider ]
+  * fixup! arm64: dts: qcom: x1e80100-t14s: Add external DP support
+
+  [ Abel Vesa ]
+  * arm64: dts: qcom: x1e80100: t14s: Add audio related nodes
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Wed, 06 Nov 2024 11:54:18 +0100
+
 linux-qcom-x1e (6.11.0-47.47) oracular; urgency=medium
 
   * Enable CONFIG_VIDEO_QCOM_IRIS as module
