@@ -1,3 +1,10 @@
+linux-qcom-x1e (6.11.0-49.49) oracular; urgency=medium
+
+  * Revert "arm64: dts: qcom: x1e80100-t14s: force 2 data lanes for each DP"
+  * Revert "fixup! arm64: dts: qcom: x1e80100-t14s: Add external DP support"
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 07 Nov 2024 17:18:50 +0100
+
 linux-qcom-x1e (6.11.0-48.48) oracular; urgency=medium
 
   [ Tobias Heider ]
