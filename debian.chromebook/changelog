@@ -1,4 +1,4 @@
-linux-chromebook (6.11.0-7.7) oracular; urgency=medium
+linux-chromebook (6.11.0-8.8) oracular; urgency=medium
 
   [ AngeloGioacchino Del Regno ]
   * soc: mediatek: mtk-svs: Use dev_err{_ptr}_probe() for probe error
