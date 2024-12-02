@@ -1,3 +1,22 @@
+linux-chromebook (6.11.0-7.7) oracular; urgency=medium
+
+  [ AngeloGioacchino Del Regno ]
+  * soc: mediatek: mtk-svs: Use dev_err{_ptr}_probe() for probe error
+  * soc: mediatek: mtk-cmdq: Move mask build and append to function
+  * soc: mediatek: mtk-cmdq: Mark very unlikely branches as such
+  * soc: mediatek: mtk-cmdq: Move cmdq_instruction init to declaration
+  * firmware: mtk-adsp-ipc: Switch to using dev_err_probe()
+  * rtc: mt6359: Add RTC hardware range and add support for start-year
+  * rtc: mt6359: Use RTC_TC_DOW hardware register for wday
+  * soc: mediatek: mtk-regulator-coupler: Use of_machine_compatible_match()
+  * soc: mediatek: mtk-regulator-coupler: Allow coupler on MT8188 SoC
+  * mmc: mtk-sd: Implement Host Software Queue for eMMC and SD Card
+
+  [ Nícolas F. R. A. Prado ]
+  * arm64: dts: mediatek: mt8186: Move wakeup to MTU3 to get working suspend
+
+ -- Tobias Heider <me@tobhe.de>  Mon, 02 Dec 2024 13:25:30 +0100
+
 linux-chromebook (6.11.0-6.6) oracular; urgency=medium
 
   * Merge with collabora chromeos kernel
