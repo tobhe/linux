@@ -1,3 +1,21 @@
+linux-chromebook (6.11.0-9.9) oracular; urgency=medium
+
+  [ Fei Shao ]
+  * arm64: dts: mediatek: mt8186-corsola: Update ADSP reserved memory region
+
+  [ Chen-Yu Tsai ]
+  * arm64: dts: mediatek: mt8186-corsola: Disable DPI display interface
+
+  [ Nicolas Pitre ]
+  * arm64: dts: mediatek: mt8186: add lvts definitions
+  * arm64: dts: mediatek: mt8186: add default thermal zones
+
+  [ Rohit Agarwal ]
+  * arm64: dts: mediatek: mt8186: Add power domain for DPI
+  * arm64: dts: mediatek: mt8186: Add svs node
+
+ -- Tobias Heider <me@tobhe.de>  Fri, 06 Dec 2024 17:59:48 +0100
+
 linux-chromebook (6.11.0-8.8) oracular; urgency=medium
 
   [ AngeloGioacchino Del Regno ]
