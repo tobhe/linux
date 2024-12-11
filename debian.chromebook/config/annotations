@@ -432,14 +432,14 @@ CONFIG_SERIAL_DEV_CTRL_TTYPORT                  note<'LP: #1739939'>
 CONFIG_SETEND_EMULATION                         policy<{'arm64': 'y'}>
 CONFIG_SETEND_EMULATION                         note<'LP: #1545542'>
 
-CONFIG_SND                                      policy<{'arm64': 'm'}>
-CONFIG_SND                                      note<'not autoloadable on omap'>
+CONFIG_SND                                      policy<{'arm64': 'y'}>
+CONFIG_SND                                      note<TODO: update note>
 
-CONFIG_SND_SOC                                  policy<{'arm64': 'm'}>
-CONFIG_SND_SOC                                  note<'not autoloadable on omap'>
+CONFIG_SND_SOC                                  policy<{'arm64': 'y'}>
+CONFIG_SND_SOC                                  note<TODO: update note>
 
-CONFIG_SOUND                                    policy<{'arm64': 'm'}>
-CONFIG_SOUND                                    note<'not autoloadable on omap'>
+CONFIG_SOUND                                    policy<{'arm64': 'y'}>
+CONFIG_SOUND                                    note<TODO: update note>
 
 CONFIG_SOUNDWIRE                                policy<{'arm64': 'm'}>
 CONFIG_SOUNDWIRE                                note<'LP: #1855685'>
@@ -2275,6 +2275,7 @@ CONFIG_DRM_MSM_HDMI_HDCP                        policy<{'arm64': 'y'}>
 CONFIG_DRM_MSM_MDP4                             policy<{'arm64': 'n'}>
 CONFIG_DRM_MSM_MDP5                             policy<{'arm64': 'y'}>
 CONFIG_DRM_MSM_MDSS                             policy<{'arm64': 'y'}>
+CONFIG_DRM_MSM_VALIDATE_XML                     policy<{'arm64': 'n'}>
 CONFIG_DRM_NOUVEAU                              policy<{'arm64': 'n'}>
 CONFIG_DRM_NWL_MIPI_DSI                         policy<{'arm64': 'm'}>
 CONFIG_DRM_NXP_PTN3460                          policy<{'arm64': 'n'}>
@@ -6937,9 +6938,9 @@ CONFIG_SND_ATMEL_SOC                            policy<{'arm64': 'n'}>
 CONFIG_SND_AU8810                               policy<{'arm64': 'n'}>
 CONFIG_SND_AU8820                               policy<{'arm64': 'n'}>
 CONFIG_SND_AU8830                               policy<{'arm64': 'n'}>
-CONFIG_SND_AUDIO_GRAPH_CARD                     policy<{'arm64': 'm'}>
-CONFIG_SND_AUDIO_GRAPH_CARD2                    policy<{'arm64': 'm'}>
-CONFIG_SND_AUDIO_GRAPH_CARD2_CUSTOM_SAMPLE      policy<{'arm64': 'm'}>
+CONFIG_SND_AUDIO_GRAPH_CARD                     policy<{'arm64': 'y'}>
+CONFIG_SND_AUDIO_GRAPH_CARD2                    policy<{'arm64': 'y'}>
+CONFIG_SND_AUDIO_GRAPH_CARD2_CUSTOM_SAMPLE      policy<{'arm64': 'y'}>
 CONFIG_SND_AW2                                  policy<{'arm64': 'n'}>
 CONFIG_SND_AZT3328                              policy<{'arm64': 'n'}>
 CONFIG_SND_BCD2000                              policy<{'arm64': 'n'}>
@@ -6947,7 +6948,7 @@ CONFIG_SND_BCM63XX_I2S_WHISTLER                 policy<{'arm64': 'n'}>
 CONFIG_SND_BT87X                                policy<{'arm64': 'n'}>
 CONFIG_SND_CA0106                               policy<{'arm64': 'n'}>
 CONFIG_SND_CMIPCI                               policy<{'arm64': 'n'}>
-CONFIG_SND_COMPRESS_OFFLOAD                     policy<{'arm64': 'm'}>
+CONFIG_SND_COMPRESS_OFFLOAD                     policy<{'arm64': 'y'}>
 CONFIG_SND_CS4281                               policy<{'arm64': 'n'}>
 CONFIG_SND_CS46XX                               policy<{'arm64': 'n'}>
 CONFIG_SND_CTL_FAST_LOOKUP                      policy<{'arm64': 'y'}>
@@ -6957,7 +6958,7 @@ CONFIG_SND_DARLA20                              policy<{'arm64': 'n'}>
 CONFIG_SND_DARLA24                              policy<{'arm64': 'n'}>
 CONFIG_SND_DEBUG                                policy<{'arm64': 'n'}>
 CONFIG_SND_DESIGNWARE_I2S                       policy<{'arm64': 'n'}>
-CONFIG_SND_DMAENGINE_PCM                        policy<{'arm64': 'm'}>
+CONFIG_SND_DMAENGINE_PCM                        policy<{'arm64': 'y'}>
 CONFIG_SND_DRIVERS                              policy<{'arm64': 'y'}>
 CONFIG_SND_DUMMY                                policy<{'arm64': 'n'}>
 CONFIG_SND_DYNAMIC_MINORS                       policy<{'arm64': 'y'}>
@@ -7005,7 +7006,7 @@ CONFIG_SND_NM256                                policy<{'arm64': 'n'}>
 CONFIG_SND_OSSEMUL                              policy<{'arm64': 'n'}>
 CONFIG_SND_OXYGEN                               policy<{'arm64': 'n'}>
 CONFIG_SND_PCI                                  policy<{'arm64': 'y'}>
-CONFIG_SND_PCM                                  policy<{'arm64': 'm'}>
+CONFIG_SND_PCM                                  policy<{'arm64': 'y'}>
 CONFIG_SND_PCMTEST                              policy<{'arm64': 'n'}>
 CONFIG_SND_PCM_ELD                              policy<{'arm64': 'y'}>
 CONFIG_SND_PCM_IEC958                           policy<{'arm64': 'y'}>
@@ -7028,8 +7029,8 @@ CONFIG_SND_SEQ_UMP                              policy<{'arm64': 'y'}>
 CONFIG_SND_SEQ_UMP_CLIENT                       policy<{'arm64': 'm'}>
 CONFIG_SND_SERIAL_GENERIC                       policy<{'arm64': 'n'}>
 CONFIG_SND_SERIAL_U16550                        policy<{'arm64': 'n'}>
-CONFIG_SND_SIMPLE_CARD                          policy<{'arm64': 'm'}>
-CONFIG_SND_SIMPLE_CARD_UTILS                    policy<{'arm64': 'm'}>
+CONFIG_SND_SIMPLE_CARD                          policy<{'arm64': 'y'}>
+CONFIG_SND_SIMPLE_CARD_UTILS                    policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_AC97_CODEC                       policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_ADAU1372_I2C                     policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_ADAU1372_SPI                     policy<{'arm64': 'n'}>
@@ -7060,7 +7061,7 @@ CONFIG_SND_SOC_AW88261                          policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_AW88395                          policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_AW88399                          policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_BD28623                          policy<{'arm64': 'n'}>
-CONFIG_SND_SOC_BT_SCO                           policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_BT_SCO                           policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_CHV3_CODEC                       policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_CHV3_I2S                         policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_COMPRESS                         policy<{'arm64': 'y'}>
@@ -7098,8 +7099,8 @@ CONFIG_SND_SOC_CS530X_I2C                       policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_CS53L30                          policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_CX2072X                          policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_DA7213                           policy<{'arm64': 'n'}>
-CONFIG_SND_SOC_DA7219                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_DMIC                             policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_DA7219                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_DMIC                             policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_ES7134                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_ES7241                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_ES8311                           policy<{'arm64': 'n'}>
@@ -7122,8 +7123,8 @@ CONFIG_SND_SOC_FSL_XCVR                         policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_GENERIC_DMAENGINE_PCM            policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_GTM601                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_HDA                              policy<{'arm64': 'n'}>
-CONFIG_SND_SOC_HDMI_CODEC                       policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_I2C_AND_SPI                      policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_HDMI_CODEC                       policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_I2C_AND_SPI                      policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_ICS43432                         policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_IDT821034                        policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_IMG                              policy<{'arm64': 'n'}>
@@ -7141,19 +7142,19 @@ CONFIG_SND_SOC_LPASS_WSA_MACRO                  policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MAX9759                          policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MAX98088                         policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MAX98090                         policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MAX98357A                        policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_MAX98357A                        policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_MAX98363                         policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MAX98373_I2C                     policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MAX98373_SDW                     policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MAX98388                         policy<{'arm64': 'n'}>
-CONFIG_SND_SOC_MAX98390                         policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_MAX98390                         policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_MAX98396                         policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MAX98504                         policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MAX98520                         policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MAX9860                          policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MAX9867                          policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MAX98927                         policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MEDIATEK                         policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_MEDIATEK                         policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_MSM8916_WCD_ANALOG               policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MSM8916_WCD_DIGITAL              policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MSM8996                          policy<{'arm64': 'm'}>
@@ -7161,9 +7162,9 @@ CONFIG_SND_SOC_MT2701                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MT2701_CS42448                   policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MT2701_WM8960                    policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MT6351                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MT6358                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MT6359                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MT6359_ACCDET                    policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_MT6358                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_MT6359                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_MT6359_ACCDET                    policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_MT6660                           policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_MT6797                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MT6797_MT6351                    policy<{'arm64': 'm'}>
@@ -7177,15 +7178,15 @@ CONFIG_SND_SOC_MT8173_RT5650_RT5676             policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MT8183                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MT8183_DA7219_MAX98357A          policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MT8183_MT6358_TS3A227E_MAX98357A policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MT8186                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MT8186_MT6366                    policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_MT8186                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_MT8186_MT6366                    policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_MT8188                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_MT8188_MT6359                    policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MT8192                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MT8192_MT6359_RT1015_RT5682      policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MT8195                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MT8195_MT6359                    policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_MTK_BTCVSD                       policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_MT8192                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_MT8192_MT6359_RT1015_RT5682      policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_MT8195                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_MT8195_MT6359                    policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_MTK_BTCVSD                       policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_NAU8315                          policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_NAU8540                          policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_NAU8810                          policy<{'arm64': 'n'}>
@@ -7227,10 +7228,10 @@ CONFIG_SND_SOC_QDSP6_CORE                       policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_QDSP6_PRM                        policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_QDSP6_PRM_LPASS_CLOCKS           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_QDSP6_ROUTING                    policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_RL6231                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_RT1011                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_RT1015                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_RT1015P                          policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_RL6231                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_RT1011                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_RT1015                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_RT1015P                          policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_RT1017_SDCA_SDW                  policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_RT1308_SDW                       policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_RT1316_SDW                       policy<{'arm64': 'n'}>
@@ -7240,14 +7241,14 @@ CONFIG_SND_SOC_RT5514                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_RT5616                           policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_RT5631                           policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_RT5640                           policy<{'arm64': 'n'}>
-CONFIG_SND_SOC_RT5645                           policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_RT5645                           policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_RT5659                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_RT5663                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_RT5677                           policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_RT5677_SPI                       policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_RT5682                           policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_RT5682S                          policy<{'arm64': 'm'}>
-CONFIG_SND_SOC_RT5682_I2C                       policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_RT5682                           policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_RT5682S                          policy<{'arm64': 'y'}>
+CONFIG_SND_SOC_RT5682_I2C                       policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_RT5682_SDW                       policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_RT700_SDW                        policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_RT711_SDCA_SDW                   policy<{'arm64': 'n'}>
@@ -7294,7 +7295,7 @@ CONFIG_SND_SOC_SOF_MTK_COMMON                   policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_SOF_MTK_TOPLEVEL                 policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_SOF_NOCODEC_DEBUG_SUPPORT        policy<{'arm64': 'n'}>
 CONFIG_SND_SOC_SOF_NOCODEC_SUPPORT              policy<{'arm64': 'n'}>
-CONFIG_SND_SOC_SOF_OF                           policy<{'arm64': 'm'}>
+CONFIG_SND_SOC_SOF_OF                           policy<{'arm64': 'y'}>
 CONFIG_SND_SOC_SOF_OF_DEV                       policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_SOF_PCI                          policy<{'arm64': 'm'}>
 CONFIG_SND_SOC_SOF_STRICT_ABI_CHECKS            policy<{'arm64': 'n'}>
@@ -7387,7 +7388,7 @@ CONFIG_SND_SONICVIBES                           policy<{'arm64': 'n'}>
 CONFIG_SND_SPI                                  policy<{'arm64': 'y'}>
 CONFIG_SND_SUPPORT_OLD_API                      policy<{'arm64': 'y'}>
 CONFIG_SND_TEST_COMPONENT                       policy<{'arm64': 'n'}>
-CONFIG_SND_TIMER                                policy<{'arm64': 'm'}>
+CONFIG_SND_TIMER                                policy<{'arm64': 'y'}>
 CONFIG_SND_TRIDENT                              policy<{'arm64': 'n'}>
 CONFIG_SND_UMP                                  policy<{'arm64': 'm'}>
 CONFIG_SND_UMP_LEGACY_RAWMIDI                   policy<{'arm64': 'y'}>
