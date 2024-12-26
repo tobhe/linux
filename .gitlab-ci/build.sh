@@ -54,7 +54,7 @@ elif [ "${KERNEL_ARCH}" == "arm64" ]; then
     mediatek/mt8192-asurada-spherion-r0.dtb
     mediatek/mt8183-kukui-jacuzzi-juniper-sku16.dtb
     nvidia/tegra210-p3450-0000.dtb
-    qcom/apq8016-sbc.dtb
+    qcom/apq8016-sbc-usb-host.dtb
     qcom/apq8096-db820c.dtb
     qcom/sc7180-trogdor-lazor-limozeen-nots-r5.dtb
     qcom/sc7180-trogdor-kingoftown.dtb
