@@ -1,3 +1,9 @@
+linux-chromebook (6.11.0-10.10) oracular; urgency=medium
+
+  * UBUNTU: Sync SND config from collabora upstream kernel
+
+ -- Tobias Heider <me@tobhe.de>  Tue, 07 Jan 2025 19:36:33 +0100
+
 linux-chromebook (6.11.0-9.9) oracular; urgency=medium
 
   [ Fei Shao ]
