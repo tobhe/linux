@@ -53,6 +53,8 @@ elif [ "${KERNEL_ARCH}" == "arm64" ]; then
     freescale/imx8mq-nitrogen.dtb
     mediatek/mt8192-asurada-spherion-r0.dtb
     mediatek/mt8183-kukui-jacuzzi-juniper-sku16.dtb
+    mediatek/mt8186-corsola-steelix-sku131072.dtb
+    mediatek/mt8195-cherry-tomato-r2.dtb
     nvidia/tegra210-p3450-0000.dtb
     qcom/apq8016-sbc-usb-host.dtb
     qcom/apq8096-db820c.dtb
