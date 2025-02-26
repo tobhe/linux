@@ -49,6 +49,7 @@ elif [ "${KERNEL_ARCH}" == "arm64" ]; then
     allwinner/sun50i-h6-pine-h64.dtb
     broadcom/bcm2837-rpi-3-b.dtb
     broadcom/bcm2711-rpi-4-b.dtb
+    freescale/imx8mp-tqma8mpql-mba8mpxl.dtb
     freescale/imx8mq-librem5-devkit.dtb
     freescale/imx8mq-nitrogen.dtb
     mediatek/mt8192-asurada-spherion-r0.dtb
