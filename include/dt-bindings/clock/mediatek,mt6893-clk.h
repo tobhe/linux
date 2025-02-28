@@ -399,6 +399,122 @@
 #define CLK_VENC1_SET4_JPGDEC_C1	4
 #define CLK_VENC1_SET5_GALS		5
 
+/* APU_CONN */
+#define CLK_APUC_AHB			0
+#define CLK_APUC_AXI			1
+#define CLK_APUC_ISP			2
+#define CLK_APUC_CAM_ADL		3
+#define CLK_APUC_IMG_ADL		4
+#define CLK_APUC_EMI_26M		5
+#define CLK_APUC_VPU_UDI		6
+#define CLK_APUC_EDMA_0			7
+#define CLK_APUC_EDMA_1			8
+#define CLK_APUC_EDMAL_0		9
+#define CLK_APUC_EDMAL_1		10
+#define CLK_APUC_MNOC			11
+#define CLK_APUC_TCM			12
+#define CLK_APUC_MD32			13
+#define CLK_APUC_IOMMU_0		14
+#define CLK_APUC_IOMMU_1		15
+#define CLK_APUC_MD32_32K		16
+
+/* APU_VCORE */
+#define CLK_APUV_AHB			0
+#define CLK_APUV_AXI			1
+#define CLK_APUV_ADL			2
+#define CLK_APUV_QOS			3
+
+/* APU0 */
+#define CLK_APU0_APU			0
+#define CLK_APU0_AXI_M			1
+#define CLK_APU0_JTAG			2
+
+/* APU1 */
+#define CLK_APU1_APU			0
+#define CLK_APU1_AXI_M			1
+#define CLK_APU1_JTAG			2
+
+/* APU2 */
+#define CLK_APU2_APU			0
+#define CLK_APU2_AXI_M			1
+#define CLK_APU2_JTAG			2
+
+/* APU_MDLA0 */
+#define CLK_APUM0_MDLA_CG0		0
+#define CLK_APUM0_MDLA_CG1		1
+#define CLK_APUM0_MDLA_CG2		2
+#define CLK_APUM0_MDLA_CG3		3
+#define CLK_APUM0_MDLA_CG4		4
+#define CLK_APUM0_MDLA_CG5		5
+#define CLK_APUM0_MDLA_CG6		6
+#define CLK_APUM0_MDLA_CG7		7
+#define CLK_APUM0_MDLA_CG8		8
+#define CLK_APUM0_MDLA_CG9		9
+#define CLK_APUM0_MDLA_CG10		10
+#define CLK_APUM0_MDLA_CG11		11
+#define CLK_APUM0_MDLA_CG12		12
+#define CLK_APUM0_APB			13
+#define CLK_APUM0_AXI_M			14
+
+/* APU_MDLA1 */
+#define CLK_APUM1_MDLA_CG0		0
+#define CLK_APUM1_MDLA_CG1		1
+#define CLK_APUM1_MDLA_CG2		2
+#define CLK_APUM1_MDLA_CG3		3
+#define CLK_APUM1_MDLA_CG4		4
+#define CLK_APUM1_MDLA_CG5		5
+#define CLK_APUM1_MDLA_CG6		6
+#define CLK_APUM1_MDLA_CG7		7
+#define CLK_APUM1_MDLA_CG8		8
+#define CLK_APUM1_MDLA_CG9		9
+#define CLK_APUM1_MDLA_CG10		10
+#define CLK_APUM1_MDLA_CG11		11
+#define CLK_APUM1_MDLA_CG12		12
+#define CLK_APUM1_APB			13
+#define CLK_APUM1_AXI_M			14
+
+/* CAMSYS_MAIN */
+#define CLK_CAM_M_LARB13		0
+#define CLK_CAM_M_DFP_VAD		1
+#define CLK_CAM_M_LARB14		2
+#define CLK_CAM_M_LARB15		3
+#define CLK_CAM_M_CAM			4
+#define CLK_CAM_M_CAMTG			5
+#define CLK_CAM_M_SENINF		6
+#define CLK_CAM_M_CAMSV0		7
+#define CLK_CAM_M_CAMSV1		8
+#define CLK_CAM_M_CAMSV2		9
+#define CLK_CAM_M_CAMSV3		10
+#define CLK_CAM_M_CCU0			11
+#define CLK_CAM_M_CCU1			12
+#define CLK_CAM_M_MRAW0			13
+#define CLK_CAM_M_MRAW1			14
+#define CLK_CAM_M_FAKE_ENG		15
+
+/* CAMSYS_RAWA */
+#define CLK_CAM_RA_LARBX		0
+#define CLK_CAM_RA_CAM			1
+#define CLK_CAM_RA_CAMTG		2
+
+/* CAMSYS_RAWB */
+#define CLK_CAM_RB_LARBX		0
+#define CLK_CAM_RB_CAM			1
+#define CLK_CAM_RB_CAMTG		2
+
+/* CAMSYS_RAWC */
+#define CLK_CAM_RC_LARBX		0
+#define CLK_CAM_RC_CAM			1
+#define CLK_CAM_RC_CAMTG		2
+
+/* IPESYS */
+#define CLK_IPE_LARB19			0
+#define CLK_IPE_LARB20			1
+#define CLK_IPE_SMI_SUBCOM		2
+#define CLK_IPE_FD			3
+#define CLK_IPE_FE			4
+#define CLK_IPE_RSC			5
+#define CLK_IPE_DPE			6
+
 /* MDPSYS_CONFIG */
 #define CLK_MDP_RDMA0			0
 #define CLK_MDP_FG0			1
