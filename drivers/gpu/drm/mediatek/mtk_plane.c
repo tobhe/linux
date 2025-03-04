@@ -21,9 +21,11 @@
 
 static const u64 modifiers[] = {
 	DRM_FORMAT_MOD_LINEAR,
+	/* HACK disable AFBC support for now
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_32x8 |
 				AFBC_FORMAT_MOD_SPLIT |
 				AFBC_FORMAT_MOD_SPARSE),
+				*/
 	DRM_FORMAT_MOD_INVALID,
 };
 
@@ -73,6 +75,9 @@ static bool mtk_plane_format_mod_supported(struct drm_plane *plane,
 {
 	if (modifier == DRM_FORMAT_MOD_LINEAR)
 		return true;
+
+	/* HACK: Disable AFBC support for all planes */
+	return false;
 
 	if (modifier != DRM_FORMAT_MOD_ARM_AFBC(
 				AFBC_FORMAT_MOD_BLOCK_SIZE_32x8 |
