@@ -777,6 +777,18 @@ config DRM_PANEL_SAMSUNG_S6E3FA7
 	  Say Y here if you want to enable support for the Samsung S6E3FA7
 	  1920x2220 panel.
 
+config DRM_PANEL_SAMSUNG_S6E3FC3
+	tristate "Samsung S6E3FC3 DSI panels driver"
+	depends on OF
+	depends on DRM_MIPI_DSI
+	depends on BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here if you want to enable support for the panels built
+	  around the Samsung S6E3FC3 Display DriverIC, such as some
+	  Samsung AMOLED panels used mainly in smartphones from various
+	  manufaturers, including OnePlus, Realme, Oppo, Samsung Mobile
+	  and others.
+
 config DRM_PANEL_SAMSUNG_S6D16D0
 	tristate "Samsung S6D16D0 DSI video mode panel"
 	depends on OF
