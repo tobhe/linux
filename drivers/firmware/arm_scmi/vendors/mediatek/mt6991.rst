@@ -1,0 +1,242 @@
+.. SPDX-License-Identifier: GPL-2.0
+.. include:: <isonum.txt>
+
+===============================================================================
+MT6991 System Control and Management Interface(SCMI) Vendor Protocols Extension
+===============================================================================
+
+:Copyright: |copy| 2025 Collabora Ltd.
+
+:Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+MediaTek TinySYS is a hardware subsystem providing a Tiny System MCU which is
+capable of controlling various aspects of the SoC, including interactions with
+other hardware subsystems and other integrated MCUs.
+
+The main TinySYS function typically routes SCMI messages to various MCUs in
+other hardware subsystems, or internally converts requests to Inter Processor
+Interrupts (IPI) requests and forwards those to the target remote processor.
+
+The TinySYS hardware subsystem implements an interface compliant with the Arm
+SCMI Specification with additional vendor specific extensions.
+
+System Control and Management Interface - MediaTek TinySYS Vendor Protocol
+========================================================================
+
+MediaTek TinySYS is a low-level system function which runs on a SoC-integrated
+MCU to support various power management and performance settings including, but
+not limited to:
+
+- GPU power limit indications
+- DRAM Power Manager (DPM) low power setting
+- System Level Buffer and Cache (SLBC) resources management
+  - SRAM and Cache partitioning, assignment, activation and power control
+- Secure System Power Manager (SSPM) power control
+- MCU Power Manager (MCUPM)'s Power Select (PWRSEL) functions
+- Various performance logging functions in remote processors
+
+This protocol provides three main commands:
+
+- Common (generic) set/get
+- Power State Notification
+- SLBC Control
+
+Commands:
+_________
+
+PROTOCOL_VERSION
+~~~~~~~~~~~~~~~~
+
+message_id: 0x0
+protocol_id: 0x80
+This command is mandatory.
+
++---------------+--------------------------------------------------------------+
+|Return values                                                                 |
++---------------+--------------------------------------------------------------+
+|Name           |Description                                                   |
++---------------+--------------------------------------------------------------+
+|int32 status   | See ARM SCMI Specification for status code definitions.      |
++---------------+--------------------------------------------------------------+
+|uint32 version | For this revision of the specification, this value must be   |
+|               | 0x10000.                                                     |
++---------------+--------------------------------------------------------------+
+
+PROTOCOL_ATTRIBUTES
+~~~~~~~~~~~~~~~~~~~
+
+message_id: 0x1
+protocol_id: 0x80
+This command is mandatory.
+
++------------------+-----------------------------------------------------------+
+|Return values                                                                 |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|int32 status      | See ARM SCMI Specification for status code definitions.   |
++------------------+-----------------------------------------------------------+
+|int32 num_domains | Number of TinySYS domains. The TinySYS protocol assumes   |
+|                  | that each domain provides one event source.               |
++------------------+-----------------------------------------------------------+
+
+PROTOCOL_MESSAGE_ATTRIBUTES
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+message_id: 0x2
+protocol_id: 0x80
+This command is mandatory.
+
++------------------+-----------------------------------------------------------+
+|Return values                                                                 |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|int32 status      |SUCCESS: in case the message is implemented and available  |
+|                  |to use.                                                    |
+|                  |NOT_FOUND: if the message identified by message_id is      |
+|                  |invalid or not implemented                                 |
++------------------+-----------------------------------------------------------+
+|uint32 attributes |Flags that are associated with a specific command in the   |
+|                  |protocol. For all commands in this protocol, this          |
+|                  |parameter has a value of 0                                 |
++------------------+-----------------------------------------------------------+
+
+COMMON_GET
+~~~~~~~~~~~~~~
+
+message_id: 0x3
+protocol_id: 0x80
+This command is mandatory.
+
++------------------+-----------------------------------------------------------+
+|Parameters                                                                    |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|uint32 ctrl_id    | Control Identifier (index)                                |
++------------------+-----------------------------------------------------------+
+|uint32 cmd        | Index (identifier) of the control                         |
++------------------+-----------------------------------------------------------+
+|Return values                                                                 |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|int32 status      | SUCCESS: if the control was get successfully.             |
+|                  | ERR_ENTRY: if the index is not valid (not found).         |
+|                  | ERR_GENERIC: generic error                                |
++------------------+-----------------------------------------------------------+
+|uint32 rsvd       | Reserved for future use                                   |
++------------------+-----------------------------------------------------------+
+|uint32 reply[2]   | Value data array, the contents differ for each of the     |
+|                  | different controls that are supported by the protocol.    |
++------------------+-----------------------------------------------------------+
+
+COMMON_SET
+~~~~~~~~
+
+message_id: 0x4
+protocol_id: 0x80
+This command is mandatory.
+
++------------------+-----------------------------------------------------------+
+|Parameters                                                                    |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|uint32 ctrl_id    | Control Identifier (index)                                |
++------------------+-----------------------------------------------------------+
+|uint32            | Parameters data array, the contents differ for each of    |
+|param[1..5]       | the different controls that are supported by the protocol |
++------------------+-----------------------------------------------------------+
+|uint8 num_params  | Size of the parameters data in words                      |
++------------------+-----------------------------------------------------------+
+|Return values                                                                 |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|int32 status      | SUCCESS: if the parameters were set successfully.         |
+|                  | ERR_ENTRY: if the index is not valid (not found).         |
+|                  | ERR_GENERIC: generic error                                |
++------------------+-----------------------------------------------------------+
+
+POWER_STATE_NOTIFY
+~~~~~~~~~
+
+message_id: 0x5
+protocol_id: 0x80
+This command is mandatory.
+
+look at slbc_ipi, mtk_qos_scmi, ssc_module
+
++------------------+-----------------------------------------------------------+
+|Parameters                                                                    |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|uint32 fid        | Feature Identifier                                        |
++------------------+-----------------------------------------------------------+
+|uint32            | Parameters data array, used to notify power states to the |
+|param[0..3]       | different MCUs integrated into the SoC. This can be used  |
+|                  | to control power of a HW subsystem or internal MCU.       |
+|                  | The contents of this array differ for each feature that   |
+|                  | is supported by the power state notifier in the protocol. | 
++------------------+-----------------------------------------------------------+
+|Return values                                                                 |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|int32 status      | SUCCESS: if the parameters were set successfully.         |
+|                  | ERR_ENTRY: if the index is not valid (not found).         |
+|                  | ERR_GENERIC: generic error                                |
++------------------+-----------------------------------------------------------+
+
+SLBC_CTRL
+~~~~~~~~~~~~
+
+message_id: 0x6
+protocol_id: 0x80
+This command is mandatory.
+
++------------------+-----------------------------------------------------------+
+|Parameters                                                                    |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|uint32 rsvd       | Reserved for future use                                   |
++------------------+-----------------------------------------------------------+
+|uint32 fid        | Feature (command) Identifier                              |
++------------------+-----------------------------------------------------------+
+|uint32            | Parameters data array, the contents differ for each of    |
+|param[0..3]       | the different features that are supported by the System   |
+|                  | Level Buffer and Cache (SLBC) controls in TinySYS.        |
++------------------+-----------------------------------------------------------+
+|Return values                                                                 |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|int32 status      | SUCCESS: if the parameters were set successfully.         |
+|                  | ERR_ENTRY: if the index is not valid (not found).         |
+|                  | ERR_GENERIC: generic error                                |
++------------------+-----------------------------------------------------------+
+
+Notifications
+_____________
+
+POWER_STATE_NOTIFIER_EVENT
+~~~~~~~~~~~~~~~~~~
+
+message_id: 0x0
+protocol_id: 0x80
+
++------------------+-----------------------------------------------------------+
+|Parameters                                                                    |
++------------------+-----------------------------------------------------------+
+|Name              |Description                                                |
++------------------+-----------------------------------------------------------+
+|uint32 fid        | Feature Identifier                                        |
++------------------+-----------------------------------------------------------+
+|uint32            | Parameters data array, the contents differ for each of    |
+|param[0..3]       | the different features that are supported by the power    |
+|                  | state notifier in the TinySYS protocol.                   |
++------------------+-----------------------------------------------------------+
