@@ -226,6 +226,9 @@ static int mtk_jpeg_enum_fmt_vid_out(struct file *file, void *priv,
 	struct mtk_jpeg_ctx *ctx = mtk_jpeg_file_to_ctx(file);
 	struct mtk_jpeg_dev *jpeg = ctx->jpeg;
 
+	if (strcmp((const char *)jpeg->variant->dev_name, "mtk-jpeg-dec") == 0)
+		f->flags = V4L2_FMT_FLAG_DYN_RESOLUTION;
+
 	return mtk_jpeg_enum_fmt(jpeg->variant->formats,
 				 jpeg->variant->num_formats, f,
 				 MTK_JPEG_FMT_FLAG_OUTPUT);
