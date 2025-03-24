@@ -5,6 +5,7 @@ variables:
   FDO_UPSTREAM_REPO: gfx-ci/linux
   DEBIAN_DISTRO: bookworm
   S3_JWT_FILE: /s3_jwt
+  S3_JWT_HEADER_FILE: /s3_jwt_header
   S3_HOST: s3.freedesktop.org
 
 include:
@@ -48,7 +49,10 @@ build-kernel:
     S3_JWT:
       aud: https://s3.freedesktop.org
   before_script:
-    - echo -n "${S3_JWT}" > "${S3_JWT_FILE}" && unset CI_JOB_JWT S3_JWT  # Unsetting vulnerable env variables
+    - |
+      echo -n "${S3_JWT}" > "${S3_JWT_FILE}" &&
+      echo -n "Authorization: Bearer ${S3_JWT}" > "${S3_JWT_HEADER_FILE}" &&
+      unset CI_JOB_JWT S3_JWT  # Unsetting vulnerable env variables
     - export PATH="/usr/lib/ccache:$PATH"
     - export CCACHE_BASEDIR="$PWD"
     - export CCACHE_DIR="$PWD/ccache"
