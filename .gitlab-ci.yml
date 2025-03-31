@@ -43,8 +43,6 @@ build-kernel:
   extends:
     - .fdo.distribution-image@debian
     - .debian-image
-  tags:
-    - packet.net
   id_tokens:
     S3_JWT:
       aud: https://s3.freedesktop.org
