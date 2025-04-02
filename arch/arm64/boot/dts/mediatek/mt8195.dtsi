@@ -794,12 +794,16 @@
 
 				power-domain@MT8195_POWER_DOMAIN_PCIE_MAC_P0 {
 					reg = <MT8195_POWER_DOMAIN_PCIE_MAC_P0>;
+					clocks = <&pericfg_ao CLK_PERI_AO_PCIE_P0_MEM>;
+					clock-names = "ss-pextp0-mem";
 					mediatek,infracfg = <&infracfg_ao>;
 					#power-domain-cells = <0>;
 				};
 
 				power-domain@MT8195_POWER_DOMAIN_PCIE_MAC_P1 {
 					reg = <MT8195_POWER_DOMAIN_PCIE_MAC_P1>;
+					clocks = <&pericfg_ao CLK_PERI_AO_PCIE_P1_MEM>;
+					clock-names = "ss-pextp1-mem";
 					mediatek,infracfg = <&infracfg_ao>;
 					#power-domain-cells = <0>;
 				};
