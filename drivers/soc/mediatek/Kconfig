@@ -69,6 +69,14 @@ config MTK_MMSYS
 	  Say yes here to add support for the MediaTek Multimedia
 	  Subsystem (MMSYS).
 
+config MTK_SSPM
+	tristate "MediaTek Secure System Power Manager (SSPM)"
+	depends on NVMEM_MTK_EFUSE && NVMEM
+	help
+	  SSPM is used for power management of various co-processors
+	  found in MediaTek SoCs in secure world.
+	  Say yes here to add support for communication with the SSPM MCU.
+
 config MTK_SVS
 	tristate "MediaTek Smart Voltage Scaling(SVS)"
 	depends on NVMEM_MTK_EFUSE && NVMEM
