@@ -293,6 +293,11 @@
 	};
 };
 
+&gpu {
+	/* TODO: add missing mali-supply propery */
+	status = "okay";
+};
+
 &i2c0 {
 	clock-frequency = <100000>;
 	pinctrl-0 = <&i2c0_pins>;
