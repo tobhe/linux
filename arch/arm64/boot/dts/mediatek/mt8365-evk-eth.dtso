@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Mediatek Genio 350-EVK Ethernet overlay
+ * Copyright (C) 2025 Collabora Ltd.
+ */
+
+/dts-v1/;
+/plugin/;
+
+/*
+ * Ethernet and HDMI (DPI0) are sharing pins.
+ * Only one can be enabled at a time and require the physical switch
+ * SW2101 to be set on LAN position
+ */
+
+&ethernet {
+    status = "okay";
+};
+
+&dpi0 {
+    status = "disabled";
+};
+
+&it66121_hdmi {
+    status = "disabled";
+};
