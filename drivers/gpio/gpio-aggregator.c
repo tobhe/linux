@@ -625,8 +625,10 @@ static int aggr_activate(struct gpio_aggregator *aggr)
 		return -ENOMEM;
 
 	swnode = aggr_make_device_swnode(aggr);
-	if (IS_ERR(swnode))
+	if (IS_ERR(swnode)) {
+		ret = PTR_ERR(swnode);
 		goto err_remove_lookups;
+	}
 
 	memset(&pdevinfo, 0, sizeof(pdevinfo));
 	pdevinfo.name = DRV_NAME;
