@@ -980,8 +980,8 @@ gpio_aggr_device_make_group(struct config_group *group, const char *name)
 			return ERR_PTR(-EINVAL);
 
 	line = aggr_line_alloc(aggr, idx, NULL, -1);
-	if (!line)
-		return ERR_PTR(-ENOMEM);
+	if (IS_ERR(line))
+		return ERR_CAST(line);
 
 	config_group_init_type_name(&line->group, name, &gpio_aggr_line_type);
 
@@ -1071,8 +1071,8 @@ static int aggr_parse(struct gpio_aggregator *aggr)
 			/* Named GPIO line */
 			scnprintf(name, sizeof(name), "line%u", n);
 			line = aggr_line_alloc(aggr, n, key, -1);
-			if (!line) {
-				error = -ENOMEM;
+			if (IS_ERR(line)) {
+				error = PTR_ERR(line);
 				goto err;
 			}
 			config_group_init_type_name(&line->group, name,
@@ -1102,8 +1102,8 @@ static int aggr_parse(struct gpio_aggregator *aggr)
 		for_each_set_bit(i, bitmap, AGGREGATOR_MAX_GPIOS) {
 			scnprintf(name, sizeof(name), "line%u", n);
 			line = aggr_line_alloc(aggr, n, key, i);
-			if (!line) {
-				error = -ENOMEM;
+			if (IS_ERR(line)) {
+				error = PTR_ERR(line);
 				goto err;
 			}
 			config_group_init_type_name(&line->group, name,
