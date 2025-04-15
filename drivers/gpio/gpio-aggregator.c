@@ -1012,7 +1012,7 @@ gpio_aggr_make_group(struct config_group *group, const char *name)
 	 * for devices create via legacy sysfs interface.
 	 */
 	if (strncmp(name, AGGREGATOR_LEGACY_PREFIX,
-		    sizeof(AGGREGATOR_LEGACY_PREFIX)) == 0)
+		    sizeof(AGGREGATOR_LEGACY_PREFIX) - 1) == 0)
 		return ERR_PTR(-EINVAL);
 
 	/* arg space is unneeded */
