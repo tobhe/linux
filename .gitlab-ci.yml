@@ -1,11 +1,10 @@
-.templates_sha: &templates_sha 08fce249df1067b52423a6532fb66ad6bd96a79f
+.templates_sha: &templates_sha 1a1fb9ebb233afded69c3dbde51fc58e6d706509
 
 variables:
   TEMPLATES_SHA: *templates_sha
   FDO_UPSTREAM_REPO: gfx-ci/linux
   DEBIAN_DISTRO: bookworm
   S3_JWT_FILE: /s3_jwt
-  S3_JWT_HEADER_FILE: /s3_jwt_header
   S3_HOST: s3.freedesktop.org
 
 include:
@@ -20,7 +19,7 @@ stages:
 
 .debian-image:
   variables:
-    FDO_DISTRIBUTION_TAG: '2023-06-10.4'
+    FDO_DISTRIBUTION_TAG: '2025-04-17.0'
     FDO_DISTRIBUTION_VERSION: 'bookworm-slim'
 
 debian-image:
@@ -33,10 +32,9 @@ debian-image:
     - .fdo.container-build@debian
     - .debian-image
   variables:
-    FDO_DISTRIBUTION_EXEC: 'pip3 install --break-system-packages git+http://gitlab.freedesktop.org/freedesktop/ci-templates@$TEMPLATES_SHA'
+    FDO_DISTRIBUTION_EXEC: 'pip3 install --break-system-packages "ci-fairy[s3] @ git+http://gitlab.freedesktop.org/freedesktop/ci-templates@$TEMPLATES_SHA"'
     FDO_DISTRIBUTION_PACKAGES: 'git python3-pip ccache apt-utils curl build-essential linux-source bc kmod cpio flex libncurses5-dev libelf-dev libssl-dev dwarves bison crossbuild-essential-armhf crossbuild-essential-arm64 u-boot-tools zstd'
     GIT_STRATEGY: none
-    FDO_DISTRIBUTION_EXEC: 'pip3 install --break-system-packages git+http://gitlab.freedesktop.org/freedesktop/ci-templates@08fce249df1067b52423a6532fb66ad6bd96a79f'
 
 build-kernel:
   stage: build
@@ -47,10 +45,7 @@ build-kernel:
     S3_JWT:
       aud: https://s3.freedesktop.org
   before_script:
-    - |
-      echo -n "${S3_JWT}" > "${S3_JWT_FILE}" &&
-      echo -n "Authorization: Bearer ${S3_JWT}" > "${S3_JWT_HEADER_FILE}" &&
-      unset CI_JOB_JWT S3_JWT  # Unsetting vulnerable env variables
+    - echo -n "${S3_JWT}" > "${S3_JWT_FILE}" && unset CI_JOB_JWT S3_JWT  # Unsetting vulnerable env variables
     - export PATH="/usr/lib/ccache:$PATH"
     - export CCACHE_BASEDIR="$PWD"
     - export CCACHE_DIR="$PWD/ccache"

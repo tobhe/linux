@@ -125,9 +125,7 @@ if [ "${KERNEL_ARCH}" != "x86_64" ]; then
 fi
 
 for f in "${FILES_TO_UPLOAD[@]}"; do
-  curl --fail --retry-all-errors --retry 4 --retry-delay 60 \
-    --header @${S3_JWT_HEADER_FILE} -X PUT \
-    --form file=@"$f" "https://${S3_PATH}/"
+  ci-fairy s3cp --token-file "${S3_JWT_FILE}" "$f" "https://${S3_PATH}/$(basename -a "$f")"
 done
 
 git clean --quiet -fdx -e 'ccache/' -e '.config' -e 'defconfig' -e 'modules.tar.zst' -e 'kernels/' -e 'dtbs/'
