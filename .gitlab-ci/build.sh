@@ -23,44 +23,11 @@ elif [ "${KERNEL_ARCH}" == "arm" ]; then
   DEFCONFIG="arch/arm/configs/multi_v7_defconfig"
   KERNEL_IMAGE_NAME=( zImage )
   DT_PATH="arch/arm/boot/dts"
-  DT=(
-    allwinner/sun8i-h3-libretech-all-h3-cc.dtb
-    broadcom/bcm2837-rpi-3-b.dtb
-    broadcom/bcm2711-rpi-4-b.dtb
-    rockchip/rk3288-veyron-jaq.dtb
-    nxp/imx/imx6q-cubox-i.dtb
-    nvidia/tegra124-jetson-tk1.dtb
-  )
-
 elif [ "${KERNEL_ARCH}" == "arm64" ]; then
   CROSS_COMPILE=aarch64-linux-gnu-
   DEFCONFIG="arch/arm64/configs/defconfig"
   KERNEL_IMAGE_NAME=( Image )
   DT_PATH="arch/arm64/boot/dts"
-  DT=(
-    rockchip/rk3399-gru-kevin.dtb
-    rockchip/rk3588-rock-5b.dtb
-    amlogic/meson-g12b-a311d-khadas-vim3.dtb
-    amlogic/meson-gxl-s805x-libretech-ac.dtb
-    amlogic/meson-gxm-khadas-vim2.dtb
-    allwinner/sun50i-h6-pine-h64.dtb
-    broadcom/bcm2837-rpi-3-b.dtb
-    broadcom/bcm2711-rpi-4-b.dtb
-    freescale/imx8mp-tqma8mpql-mba8mpxl.dtb
-    freescale/imx8mq-librem5-devkit.dtb
-    freescale/imx8mq-nitrogen.dtb
-    mediatek/mt8192-asurada-spherion-r0.dtb
-    mediatek/mt8183-kukui-jacuzzi-juniper-sku16.dtb
-    mediatek/mt8186-corsola-steelix-sku131072.dtb
-    mediatek/mt8195-cherry-tomato-r2.dtb
-    nvidia/tegra210-p3450-0000.dtb
-    qcom/apq8016-sbc-usb-host.dtb
-    qcom/apq8096-db820c.dtb
-    qcom/sc7180-trogdor-lazor-limozeen-nots-r5.dtb
-    qcom/sc7180-trogdor-kingoftown.dtb
-    qcom/sdm845-cheza-r3.dtb
-    qcom/sm8350-hdk.dtb
-  )
 else
   exit 1
 fi
@@ -80,10 +47,10 @@ for image in "${KERNEL_IMAGE_NAME[@]}"; do
   cp -v "arch/${KERNEL_ARCH}/boot/${image}" kernels/
 done
 
-for dtb_file in "${DT[@]}"; do
-    make "$dtb_file"
-    cp -v "${DT_PATH}/${dtb_file}" dtbs/
-done
+if [ -n "${DT_PATH:-}" ]; then
+  make dtbs
+  find "${DT_PATH}" -type f -name '*.dtb' -exec cp --update=none-fail -v {} dtbs/ \;
+fi
 
 # workarounds and specific stuff
 if [[ ${KERNEL_ARCH} = "arm64" ]]; then
