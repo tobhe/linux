@@ -267,6 +267,24 @@
 		clock-output-names = "clk26m";
 	};
 
+	gpu_opp_table: opp-table-gpu {
+		compatible = "operating-points-v2";
+		opp-shared;
+
+		opp-450000000 {
+			opp-hz = /bits/ 64 <450000000>;
+			opp-microvolt = <650000>;
+		};
+		opp-560000000 {
+			opp-hz = /bits/ 64 <560000000>;
+			opp-microvolt = <700000>;
+		};
+		opp-800000000 {
+			opp-hz = /bits/ 64 <800000000>;
+			opp-microvolt = <800000>;
+		};
+	};
+
 	psci {
 		compatible = "arm,psci-1.0";
 		method = "smc";
@@ -311,24 +329,6 @@
 			operating-points-v2 = <&gpu_opp_table>;
 			power-domains = <&spm MT8365_POWER_DOMAIN_MFG>;
 			status = "disabled";
-		};
-
-		gpu_opp_table: opp-table-gpu {
-			compatible = "operating-points-v2";
-			opp-shared;
-
-			opp-450000000 {
-				opp-hz = /bits/ 64 <450000000>;
-				opp-microvolt = <650000>;
-			};
-			opp-560000000 {
-				opp-hz = /bits/ 64 <560000000>;
-				opp-microvolt = <700000>;
-			};
-			opp-800000000 {
-				opp-hz = /bits/ 64 <800000000>;
-				opp-microvolt = <800000>;
-			};
 		};
 
 		topckgen: syscon@10000000 {
