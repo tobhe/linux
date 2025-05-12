@@ -294,7 +294,7 @@
 };
 
 &gpu {
-	/* TODO: add missing mali-supply propery */
+	mali-supply = <&mt6357_vcore_reg>;
 	status = "okay";
 };
 
@@ -366,6 +366,10 @@
 		AVDD28-supply = <&touch0_fixed_3v3>;
 		VDDIO-supply = <&mt6357_vrf12_reg>;
 	};
+};
+
+&mfg {
+	domain-supply = <&mt6357_vsram_others_reg>;
 };
 
 &mmc0 {
