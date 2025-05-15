@@ -1,0 +1,6 @@
+arch="arm64"
+supported="Chromebook"
+target="Geared toward arm64 Chromebooks."
+desc="=HUMAN= SMP"
+bootloader="grub-efi-arm64 [arm64]"
+provides="kvm-api-4"
