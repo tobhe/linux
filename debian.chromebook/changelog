@@ -1,3 +1,9 @@
+linux-chromebook (6.15.0-1.1) plucky; urgency=medium
+
+  * Update to 6.15
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 15 May 2025 11:40:10 +0200
+
 linux-chromebook (6.14.0-16.16) plucky; urgency=medium
 
   * Disable AFBC in mediatek-drm for now since it is broken on mt818*
