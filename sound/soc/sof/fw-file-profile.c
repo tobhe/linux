@@ -6,6 +6,7 @@
 // Copyright(c) 2023 Intel Corporation
 //
 
+#include <linux/device/driver.h>
 #include <linux/firmware.h>
 #include <sound/sof.h>
 #include <sound/sof/ext_manifest4.h>
@@ -290,7 +291,7 @@ int sof_create_ipc_file_profile(struct snd_sof_dev *sdev,
 				struct sof_loadable_file_profile *out_profile)
 {
 	const struct sof_dev_desc *desc = sdev->pdata->desc;
-	int ipc_fallback_start, ret, i;
+	int ipc_fallback_start, ret, ret_defer, i;
 
 	memset(out_profile, 0, sizeof(*out_profile));
 
@@ -323,11 +324,16 @@ int sof_create_ipc_file_profile(struct snd_sof_dev *sdev,
 	}
 
 out:
-	if (ret)
-		sof_print_missing_firmware_info(sdev, base_profile->ipc_type,
-						base_profile);
-	else
+	if (ret) {
+		ret_defer = driver_deferred_probe_check_state(sdev->dev);
+		if (ret_defer == -EPROBE_DEFER)
+			ret = -EPROBE_DEFER;
+		else
+			sof_print_missing_firmware_info(sdev, base_profile->ipc_type,
+							base_profile);
+	} else {
 		sof_print_profile_info(sdev, base_profile->ipc_type, out_profile);
+	}
 
 	return ret;
 }
