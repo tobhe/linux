@@ -3574,7 +3574,7 @@
 
 		hdmi: hdmi@1c300000 {
 			compatible = "mediatek,mt8188-hdmi-tx";
-			#sound-dai-cells = <0>;
+			#sound-dai-cells = <1>;
 			reg = <0 0x1c300000 0 0x1000>;
 			clocks = <&topckgen CLK_TOP_HDMI_APB>,
 				 <&topckgen CLK_TOP_HDCP>,
