@@ -21,6 +21,10 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
+#define MT6363_TOPSTATUS	0x1e
+#define MT6363_PSC_TOP_INT_CON0	0x90f
+#define MT6363_STRUP_CON12	0xa0f
+
 #define MTK_PMIC_RST_DU_MASK	GENMASK(9, 8)
 #define MTK_PMIC_PWRKEY_RST	BIT(6)
 #define MTK_PMIC_HOMEKEY_RST	BIT(5)
@@ -28,6 +32,10 @@
 #define MTK_PMIC_MT6331_RST_DU_MASK	GENMASK(13, 12)
 #define MTK_PMIC_MT6331_PWRKEY_RST	BIT(9)
 #define MTK_PMIC_MT6331_HOMEKEY_RST	BIT(8)
+
+#define MTK_PMIC_MT6363_RST_DU_MASK	GENMASK(7, 6)
+#define MTK_PMIC_MT6363_PWRHOMEKEYS_RST	BIT(4)
+#define MTK_PMIC_MT6363_PWRKEY_ONLY_RST	0
 
 #define MTK_PMIC_PWRKEY_INDEX	0
 #define MTK_PMIC_HOMEKEY_INDEX	1
@@ -56,6 +64,7 @@ struct mtk_pmic_regs {
 	u32 pmic_rst_reg;
 	u32 rst_lprst_mask; /* Long-press reset timeout bitmask */
 	bool key_release_irq;
+	bool is_spmi;
 };
 
 static const struct mtk_pmic_regs mt6397_regs = {
@@ -104,6 +113,22 @@ static const struct mtk_pmic_regs mt6357_regs = {
 				   MTK_PMIC_HOMEKEY_INDEX),
 	.pmic_rst_reg = MT6357_TOP_RST_MISC,
 	.rst_lprst_mask = MTK_PMIC_RST_DU_MASK,
+	.key_release_irq = true,
+};
+
+static const struct mtk_pmic_regs mt6363_regs = {
+	.keys_regs[MTK_PMIC_PWRKEY_INDEX] =
+		MTK_PMIC_KEYS_REGS(MT6363_TOPSTATUS,
+				   0x1, MT6363_PSC_TOP_INT_CON0, 0x1,
+				   MTK_PMIC_MT6363_PWRKEY_ONLY_RST),
+	.keys_regs[MTK_PMIC_HOMEKEY_INDEX] =
+		MTK_PMIC_KEYS_REGS(MT6363_TOPSTATUS,
+				   0x3, MT6363_PSC_TOP_INT_CON0, 0x2,
+				   MTK_PMIC_MT6363_PWRHOMEKEYS_RST),
+	.pmic_rst_reg = MT6363_STRUP_CON12,
+	.rst_lprst_mask = MTK_PMIC_MT6363_RST_DU_MASK,
+	.key_release_irq = true,
+	.is_spmi = true,
 };
 
 static const struct mtk_pmic_regs mt6358_regs = {
@@ -314,6 +339,9 @@ static const struct of_device_id of_mtk_pmic_keys_match_tbl[] = {
 		.compatible = "mediatek,mt6358-keys",
 		.data = &mt6358_regs,
 	}, {
+		.compatible = "mediatek,mt6363-keys",
+		.data = &mt6363_regs,
+	}, {
 		.compatible = "mediatek,mt6359-keys",
 		.data = &mt6359_regs,
 	}, {
@@ -344,8 +372,17 @@ static int mtk_pmic_keys_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	keys->dev = &pdev->dev;
-	keys->regmap = pmic_chip->regmap;
 	mtk_pmic_regs = of_id->data;
+
+	if (mtk_pmic_regs->is_spmi) {
+		keys->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+	} else {
+		pmic_chip = dev_get_drvdata(pdev->dev.parent);
+		keys->regmap = pmic_chip->regmap;
+	}
+
+	if (!keys->regmap)
+		return -EINVAL;
 
 	keys->input_dev = input_dev = devm_input_allocate_device(keys->dev);
 	if (!input_dev) {
