@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-if [ -z "$KERNEL_ARCH" ] || [ -z "$S3_HOST" ]; then
+if [ -z "$KERNEL_ARCH" ]; then
   exit 1
 fi
 
@@ -14,9 +14,6 @@ export LOCALVERSION
 export MAKEFLAGS="-j${FDO_CI_CONCURRENT:-4}"
 
 GIT_TAG=$(git describe --tags --always)
-# FIXME: drop DEBIAN_ARCH
-S3_BUCKET="mesa-rootfs"
-S3_PATH="${S3_HOST}/${S3_BUCKET}/${CI_PROJECT_PATH}/${GIT_TAG}/${DEBIAN_ARCH}"
 
 if [ "${KERNEL_ARCH}" == "x86_64" ]; then
   DEFCONFIG="arch/x86/configs/x86_64_defconfig"
@@ -118,15 +115,23 @@ rm modules -rf
 # defconfig template
 make savedefconfig
 
-# upload
-FILES_TO_UPLOAD=( modules.tar.zst kernels/* )
-if [ "${KERNEL_ARCH}" != "x86_64" ]; then
-  FILES_TO_UPLOAD+=( dtbs/* )
-fi
+if [ -n "$S3_HOST" ] && [ -n "$CI_PROJECT_PATH" ] && [ -n "$DEBIAN_ARCH" ] && [ -n "$S3_JWT_FILE" ]; then
+  # FIXME: drop DEBIAN_ARCH
+  S3_BUCKET="mesa-rootfs"
+  S3_PATH="${S3_HOST}/${S3_BUCKET}/${CI_PROJECT_PATH}/${GIT_TAG}/${DEBIAN_ARCH}"
 
-for f in "${FILES_TO_UPLOAD[@]}"; do
-  ci-fairy s3cp --token-file "${S3_JWT_FILE}" "$f" "https://${S3_PATH}/$(basename -a "$f")"
-done
+  # upload
+  FILES_TO_UPLOAD=( modules.tar.zst kernels/* )
+  if [ "${KERNEL_ARCH}" != "x86_64" ]; then
+    FILES_TO_UPLOAD+=( dtbs/* )
+  fi
+
+  for f in "${FILES_TO_UPLOAD[@]}"; do
+    ci-fairy s3cp --token-file "${S3_JWT_FILE}" "$f" "https://${S3_PATH}/$(basename -a "$f")"
+  done
+else
+  echo "Skipping upload as one of the these vars is not set: S3_HOST, CI_PROJECT_PATH, DEBIAN_ARCH, S3_JWT_FILE"
+fi
 
 git clean --quiet -fdx -e 'ccache/' -e '.config' -e 'defconfig' -e 'modules.tar.zst' -e 'kernels/' -e 'dtbs/'
 
