@@ -76,7 +76,7 @@ fi
 make modules
 make INSTALL_MOD_PATH=modules modules_install
 rm modules/lib/modules/*/build
-tar --zstd -cvf modules.tar.zst -C modules .
+tar -cvf modules.tar -C modules .
 rm modules -rf
 
 # defconfig template
@@ -88,7 +88,7 @@ if [ -n "$S3_HOST" ] && [ -n "$CI_PROJECT_PATH" ] && [ -n "$DEBIAN_ARCH" ] && [ 
   S3_PATH="${S3_HOST}/${S3_BUCKET}/${CI_PROJECT_PATH}/${GIT_TAG}/${DEBIAN_ARCH}"
 
   # upload
-  FILES_TO_UPLOAD=( modules.tar.zst kernels/* )
+  FILES_TO_UPLOAD=( modules.tar kernels/* )
   if [ "${KERNEL_ARCH}" != "x86_64" ]; then
     FILES_TO_UPLOAD+=( dtbs/* )
   fi
@@ -100,6 +100,6 @@ else
   echo "Skipping upload as one of the these vars is not set: S3_HOST, CI_PROJECT_PATH, DEBIAN_ARCH, S3_JWT_FILE"
 fi
 
-git clean --quiet -fdx -e 'ccache/' -e '.config' -e 'defconfig' -e 'modules.tar.zst' -e 'kernels/' -e 'dtbs/'
+git clean --quiet -fdx -e 'ccache/' -e '.config' -e 'defconfig' -e 'modules.tar' -e 'kernels/' -e 'dtbs/'
 
 echo "GIT_TAG: ${GIT_TAG}"
