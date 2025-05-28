@@ -122,6 +122,22 @@ static void parse_driver_options(struct arm_smmu_device *smmu)
 	} while (arm_smmu_options[++i].opt);
 }
 
+static int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
+{
+	if (smmu && smmu->impl && smmu->impl->smmu_power_get)
+		return smmu->impl->smmu_power_get(smmu);
+
+	return 0;
+}
+
+static int arm_smmu_rpm_put(struct arm_smmu_device *smmu)
+{
+	if (smmu && smmu->impl && smmu->impl->smmu_power_put)
+		return smmu->impl->smmu_power_put(smmu);
+
+	return 0;
+}
+
 /* Low-level queue manipulation functions */
 static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
 {
@@ -1941,6 +1957,7 @@ static void arm_smmu_dump_event(struct arm_smmu_device *smmu, u64 *raw,
 
 static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
 {
+	int ret, ret_impl = 0;
 	u64 evt[EVTQ_ENT_DWORDS];
 	struct arm_smmu_event event = {0};
 	struct arm_smmu_device *smmu = dev;
@@ -1948,11 +1965,19 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
 	struct arm_smmu_ll_queue *llq = &q->llq;
 	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
 				      DEFAULT_RATELIMIT_BURST);
+	bool ratelimited;
 
 	do {
 		while (!queue_remove_raw(q, evt)) {
+			ratelimited = !__ratelimit(&rs);
+
 			arm_smmu_decode_event(smmu, evt, &event);
-			if (arm_smmu_handle_event(smmu, evt, &event))
+			ret = arm_smmu_handle_event(smmu, evt, &event);
+
+			if (smmu->impl && smmu->impl->smmu_evt_handler)
+				ret_impl = smmu->impl->smmu_evt_handler(irq, smmu, evt, ratelimited);
+
+			if (ret || ret_impl)
 				arm_smmu_dump_event(smmu, evt, &event, &rs);
 
 			put_device(event.dev);
@@ -2081,17 +2106,38 @@ static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
 static irqreturn_t arm_smmu_combined_irq_thread(int irq, void *dev)
 {
 	struct arm_smmu_device *smmu = dev;
+	int ret;
+
+	ret = arm_smmu_rpm_get(smmu);
+	if (ret) {
+		dev_dbg(smmu->dev, "[%s] power_status:%d\n", __func__, ret);
+		return IRQ_HANDLED;
+	}
 
 	arm_smmu_evtq_thread(irq, dev);
 	if (smmu->features & ARM_SMMU_FEAT_PRI)
 		arm_smmu_priq_thread(irq, dev);
+
+	arm_smmu_rpm_put(smmu);
 
 	return IRQ_HANDLED;
 }
 
 static irqreturn_t arm_smmu_combined_irq_handler(int irq, void *dev)
 {
+	struct arm_smmu_device *smmu = dev;
+	int ret;
+
+	ret = arm_smmu_rpm_get(smmu);
+	if (ret)
+		return IRQ_WAKE_THREAD;
+
 	arm_smmu_gerror_handler(irq, dev);
+
+	if (smmu->impl && smmu->impl->combined_irq_handle)
+		smmu->impl->combined_irq_handle(irq, smmu);
+
+	arm_smmu_rpm_put(smmu);
 	return IRQ_WAKE_THREAD;
 }
 
@@ -2248,6 +2294,13 @@ static void arm_smmu_tlb_inv_context(void *cookie)
 	struct arm_smmu_domain *smmu_domain = cookie;
 	struct arm_smmu_device *smmu = smmu_domain->smmu;
 	struct arm_smmu_cmdq_ent cmd;
+	int ret;
+
+	ret = arm_smmu_rpm_get(smmu);
+	if (ret) {
+		dev_dbg(smmu->dev, "[%s] power_status:%d\n", __func__, ret);
+		return;
+	}
 
 	/*
 	 * NOTE: when io-pgtable is in non-strict mode, we may get here with
@@ -2264,6 +2317,8 @@ static void arm_smmu_tlb_inv_context(void *cookie)
 		arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
 	}
 	arm_smmu_atc_inv_domain(smmu_domain, 0, 0);
+
+	arm_smmu_rpm_put(smmu);
 }
 
 static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
@@ -2346,6 +2401,15 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
 			.leaf	= leaf,
 		},
 	};
+	int ret;
+
+	ret = arm_smmu_rpm_get(smmu_domain->smmu);
+	if (ret) {
+		dev_dbg(smmu_domain->smmu->dev,
+			"[%s] power_status:%d iova:0x%lx size:0x%zx granule:0x%zx leaf:%d\n",
+			__func__, ret, iova, size, granule, leaf);
+		return;
+	}
 
 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
 		cmd.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
@@ -2371,6 +2435,8 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
 	 * zapped an entire table.
 	 */
 	arm_smmu_atc_inv_domain(smmu_domain, iova, size);
+
+	arm_smmu_rpm_put(smmu_domain->smmu);
 }
 
 void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
@@ -2385,8 +2451,17 @@ void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int asid,
 			.leaf	= leaf,
 		},
 	};
+	int ret;
+
+	ret = arm_smmu_rpm_get(smmu_domain->smmu);
+	if (ret) {
+		dev_dbg(smmu_domain->smmu->dev, "[%s] power_status:%d\n", __func__, ret);
+		return;
+	}
 
 	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
+
+	arm_smmu_rpm_put(smmu_domain->smmu);
 }
 
 static void arm_smmu_tlb_inv_page_nosync(struct iommu_iotlb_gather *gather,
@@ -3032,6 +3107,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
 	} else if (arm_smmu_ssids_in_use(&master->cd_table))
 		return -EBUSY;
 
+	ret = arm_smmu_rpm_get(smmu);
+	if (ret) {
+		dev_info(smmu->dev, "[%s] power_status:%d\n", __func__, ret);
+		return -EBUSY;
+	}
+
 	/*
 	 * Prevent arm_smmu_share_asid() from trying to change the ASID
 	 * of either the old or new domain while we are working on it.
@@ -3068,6 +3149,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
 
 	arm_smmu_attach_commit(&state);
 	mutex_unlock(&arm_smmu_asid_lock);
+	arm_smmu_rpm_put(smmu);
 	return 0;
 }
 
@@ -4757,6 +4839,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
 	if (IS_ERR(smmu))
 		return PTR_ERR(smmu);
 
+	smmu = arm_smmu_v3_impl_init(smmu);
+	if (IS_ERR(smmu))
+		return PTR_ERR(smmu);
+
 	/* Base address */
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
@@ -4802,10 +4888,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
 		if (irq > 0)
 			smmu->gerr_irq = irq;
 	}
+
+	ret = arm_smmu_rpm_get(smmu);
+	if (ret) {
+		dev_info(smmu->dev, "[%s] power_status fail:%d\n", __func__, ret);
+		return ret;
+	}
+
 	/* Probe the h/w */
 	ret = arm_smmu_device_hw_probe(smmu);
 	if (ret)
-		return ret;
+		goto pm_put;
 
 	/* Initialise in-memory data structures */
 	ret = arm_smmu_init_structures(smmu);
@@ -4843,6 +4936,8 @@ err_disable:
 	arm_smmu_device_disable(smmu);
 err_free_iopf:
 	iopf_queue_free(smmu->evtq.iopf);
+pm_put:
+	arm_smmu_rpm_put(smmu);
 	return ret;
 }
 
@@ -4860,8 +4955,16 @@ static void arm_smmu_device_remove(struct platform_device *pdev)
 static void arm_smmu_device_shutdown(struct platform_device *pdev)
 {
 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+	int ret;
 
+	ret = arm_smmu_rpm_get(smmu);
+	if (ret) {
+		dev_info(smmu->dev, "[%s] power_status:%d\n", __func__, ret);
+		return;
+	}
 	arm_smmu_device_disable(smmu);
+
+	arm_smmu_rpm_put(smmu);
 }
 
 static const struct of_device_id arm_smmu_of_match[] = {
