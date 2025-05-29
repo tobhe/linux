@@ -1,0 +1,78 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright (C) 2024 Google LLC
+ * Copyright (C) 2025 Collabora Ltd.
+ */
+
+/dts-v1/;
+#include "mt8196-rauru.dtsi"
+
+&i2c0 {
+	/* focal trackpad */
+	trackpad@38 {
+		compatible = "hid-over-i2c";
+		reg = <0x38>;
+		hid-descr-addr = <0x0020>;
+		interrupts-extended = <&pio 8 IRQ_TYPE_LEVEL_LOW>;
+		vdd-supply = <&mt6373_vcn33_2>;
+		wakeup-source;
+	};
+};
+
+&i2c2 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2_pins>;
+
+	touchscreen: touchscreen@14 {
+		compatible = "goodix,gt7986u", "goodix,gt7375p";
+		reg = <0x14>;
+		interrupts-extended = <&pio 7 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&touchscreen_pins>;
+		reset-gpios = <&pio 31 GPIO_ACTIVE_LOW>;
+		vdd-supply = <&mt6373_vtp>;
+		status = "disabled";
+	};
+};
+
+&keyboard_controller {
+	function-row-physmap = <
+		MATRIX_KEY(0x00, 0x02, 0)		/* T1 */
+		MATRIX_KEY(0x03, 0x02, 0)		/* T2 */
+		MATRIX_KEY(0x02, 0x02, 0)		/* T3 */
+		MATRIX_KEY(0x01, 0x02, 0)		/* T4 */
+		MATRIX_KEY(0x04, 0x04, 0)		/* T5 */
+		MATRIX_KEY(0x02, 0x04, 0)		/* T6 */
+		MATRIX_KEY(0x01, 0x04, 0)		/* T7 */
+		MATRIX_KEY(0x02, 0x0b, 0)		/* T8 */
+		MATRIX_KEY(0x01, 0x09, 0)		/* T9 */
+		MATRIX_KEY(0x00, 0x04, 0)		/* T10 */
+		MATRIX_KEY(0x00, 0x01, 0)		/* T11 */
+		MATRIX_KEY(0x01, 0x05, 0)		/* T12 */
+		MATRIX_KEY(0x03, 0x05, 0)		/* T13 */
+		MATRIX_KEY(0x00, 0x0b, 0)		/* T14 */
+	>;
+
+	keypad,num-columns = <18>;
+
+	linux,keymap = <
+		CROS_TOP_ROW_KEYMAP_V30
+		CROS_MAIN_KEYMAP_V30
+
+		MATRIX_KEY(0x00, 0x02, KEY_BACK)		/* T1 */
+		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)		/* T2 */
+		MATRIX_KEY(0x02, 0x02, KEY_ZOOM)		/* T3 */
+		MATRIX_KEY(0x01, 0x02, KEY_SCALE)		/* T4 */
+		MATRIX_KEY(0x04, 0x04, KEY_SYSRQ)		/* T5 */
+		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)	/* T6 */
+		MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)	/* T7 */
+		MATRIX_KEY(0x02, 0x0b, KEY_KBDILLUMTOGGLE)	/* T8 */
+		MATRIX_KEY(0x01, 0x09, KEY_MICMUTE)		/* T9 */
+		MATRIX_KEY(0x00, 0x04, KEY_MUTE)		/* T10 */
+		MATRIX_KEY(0x00, 0x01, KEY_VOLUMEDOWN)		/* T11 */
+		MATRIX_KEY(0x01, 0x05, KEY_VOLUMEUP)		/* T12 */
+		MATRIX_KEY(0x03, 0x05, KEY_ACCESSIBILITY)	/* T13 */
+		MATRIX_KEY(0x00, 0x0b, KEY_DICTATE)		/* T14 */
+	>;
+};

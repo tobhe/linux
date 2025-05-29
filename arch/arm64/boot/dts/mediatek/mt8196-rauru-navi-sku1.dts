@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright (C) 2024 Google LLC
+ * Copyright (C) 2025 Collabora Ltd
+ */
+
+/dts-v1/;
+#include "mt8196-rauru-navi.dtsi"
+
+/ {
+	chassis-type = "laptop";
+	compatible = "google,navi-sku1", "google,navi", "mediatek,mt8196";
+	model = "Google Navi SKU1";
+};
