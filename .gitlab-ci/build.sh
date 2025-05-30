@@ -49,7 +49,7 @@ done
 
 if [ -n "${DT_PATH:-}" ]; then
   make dtbs
-  find "${DT_PATH}" -type f -name '*.dtb' -exec cp --update=none-fail -v {} dtbs/ \;
+  find "${DT_PATH}" -type f -name '*.dtb' -exec cp -v {} dtbs/ \;
 fi
 
 # workarounds and specific stuff
