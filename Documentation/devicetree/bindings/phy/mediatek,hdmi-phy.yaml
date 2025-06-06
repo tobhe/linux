@@ -45,8 +45,7 @@ properties:
     maxItems: 4
 
   clock-output-names:
-    items:
-      - const: hdmitx_dig_cts
+    maxItems: 1
 
   "#phy-cells":
     const: 0
@@ -106,6 +105,21 @@ allOf:
         clock-names:
           items:
             - const: pll_ref
+  - if:
+      properties:
+        compatible:
+          contains:
+            const: mediatek,mt8195-hdmi-phy
+    then:
+      properties:
+        clock-output-names:
+          items:
+            - const: hdmi_txpll
+    else:
+      properties:
+        clock-output-names:
+          items:
+            - const: hdmitx_dig_cts
 
 additionalProperties: false
 
