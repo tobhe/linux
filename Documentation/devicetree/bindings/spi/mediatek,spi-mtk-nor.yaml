@@ -39,6 +39,7 @@ properties:
       - items:
           - enum:
               - mediatek,mt8188-nor
+              - mediatek,mt8196-nor
           - const: mediatek,mt8186-nor
 
   reg:
