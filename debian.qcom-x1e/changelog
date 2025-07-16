@@ -1,3 +1,41 @@
+linux-qcom-x1e (6.16.0-10.10) plucky; urgency=medium
+
+  [ Tobias Heider ]
+  * Merge jhovold/wip/x1e80100-6.16-rc6
+  * Revert "UBUNTU: SAUCE: Change: cracking sound fix"
+  * Changelog for 6.16.0-10.10
+
+  [ Aleksandrs Vinarskis ]
+  * arm64: dts: qcom: x1e80100-dell-xps13-9345: enable MICs LDO
+
+  [ Bjorn Andersson ]
+  * arm64: dts: qcom: x1e80100-dell-xps13-9345: Enable fingerprint sensor
+
+  [ Aleksandrs Vinarskis ]
+  * arm64: dts: qcom: x1-crd: Enable HBR3 on external DPs
+  * drm/panel-edp: Add BOE NV140WUM-N64
+  * dt-bindings: display: panel: samsung,atna40cu11: document ATNA40CU11
+  * dt-bindings: display: panel: samsung,atna40ct06: document ATNA40CT06
+  * dt-bindings: arm: qcom: Add Asus Zenbook A14 UX3407QA LCD/OLED variants
+  * arm64: dts: qcom: Rework X1-based Asus Zenbook A14's displays
+
+  [ Val Packett ]
+  * drm/panel-edp: Add BOE NE14QDM panel for Dell Latitude 7455
+
+  [ Bryan O'Donoghue ]
+  * dt-bindings: arm: qcom: Add Dell Inspiron 14 Plus 7441
+
+  [ Val Packett ]
+  * dt-bindings: arm: qcom: Add Dell Latitude 7455
+
+  [ Bryan O'Donoghue ]
+  * arm64: dts: qcom: Add support for Dell Inspiron 7441 / Latitude 7455
+
+  [ Val Packett ]
+  * firmware: qcom: scm: Allow QSEECOM on Dell Inspiron 7441 / Latitude 7455
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Wed, 16 Jul 2025 11:57:33 +0200
+
 linux-qcom-x1e (6.16.0-9.9) plucky; urgency=medium
 
   [ Rob Clark ]
