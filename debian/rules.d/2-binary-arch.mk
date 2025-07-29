@@ -123,6 +123,7 @@ $(stampdir)/stamp-install-%: pkgdir = $(CURDIR)/debian/$(mods_pkg_name)-$*
 $(stampdir)/stamp-install-%: pkgdir_bldinfo = $(CURDIR)/debian/$(bldinfo_pkg_name)-$*
 $(stampdir)/stamp-install-%: bindoc = $(pkgdir)/usr/share/doc/$(bin_pkg_name)-$*
 $(stampdir)/stamp-install-%: dbgpkgdir = $(CURDIR)/debian/$(bin_pkg_name)-$*-dbgsym
+$(stampdir)/stamp-install-%: ubustubpkgdir = $(CURDIR)/debian/$(bin_pkg_name)-$*-ubustub
 $(stampdir)/stamp-install-%: signingv = $(CURDIR)/debian/$(bin_pkg_name)-signing/$(DEB_VERSION_UPSTREAM)-$(DEB_REVISION)
 $(stampdir)/stamp-install-%: toolspkgdir = $(CURDIR)/debian/$(tools_flavour_pkg_name)-$*
 $(stampdir)/stamp-install-%: cloudpkgdir = $(CURDIR)/debian/$(cloud_flavour_pkg_name)-$*
@@ -160,6 +161,9 @@ endif
 ifeq ($(do_dbgsym_package),true)
 	dh_prep -p$(bin_pkg_name)-$*-dbgsym
 endif
+ifeq ($(do_ubustub),true)
+	dh_prep -p$(bin_pkg_name)-$*-ubustub
+endif
 ifeq ($(do_linux_tools),true)
  ifeq ($(do_tools_bpftool),true)
   ifneq ($(filter linux-bpf-dev,$(packages_enabled)),)
@@ -180,6 +184,22 @@ endif
 		$(pkgdir)/boot/config-$(abi_release)-$*
 	install -m600 $(build_dir)/System.map \
 		$(pkgdir)/boot/System.map-$(abi_release)-$*
+
+ifeq ($(do_ubustub),true)
+	# Build kernel+stub image
+	dtb_files="$$(find $(build_dir)/arch/arm64/boot/dts/qcom/ \
+		  -name "x1*.dtb" -not -name "*-el2.dtb")" \
+        args=""; for f in $${dtb_files}; do args="$${args} --devicetree-auto=$${f}"; done; \
+	/usr/bin/ukify build --linux=$(build_dir)/$(kernfile) \
+	        --stub=/usr/lib/ubustub/ubustub.efi \
+	        --hwids=/usr/share/ubustub/hwids \
+		$$args \
+	        --output=$(build_dir)/$(kernfile).ubustub
+
+	# The main image
+	install -m600 -D $(build_dir)/$(kernfile).ubustub \
+		$(ubustubpkgdir)/boot/$(instfile)-$(abi_release)-$*
+endif
 
 ifeq ($(do_dtbs),true)
 	$(kmake) O=$(build_dir) $(conc_level) dtbs_install \
@@ -530,6 +550,7 @@ binary-%: pkghdr = $(hdrs_pkg_name)-$*
 binary-%: pkgrust = $(rust_pkg_name)-$*
 binary-%: dbgpkg = $(bin_pkg_name)-$*-dbgsym
 binary-%: dbgpkgdir = $(CURDIR)/debian/$(bin_pkg_name)-$*-dbgsym
+binary-%: ubustubpkg = $(bin_pkg_name)-$*-ubustub
 binary-%: pkgtools = $(tools_flavour_pkg_name)-$*
 binary-%: pkgcloud = $(cloud_flavour_pkg_name)-$*
 $(foreach _m,$(all_dkms_modules), \
@@ -552,6 +573,9 @@ binary-%: $(stampdir)/stamp-install-%
 	$(call dh_all,$(pkghdr))
 ifeq ($(do_lib_rust),true)
 	$(call dh_all,$(pkgrust))
+endif
+ifeq ($(do_ubustub),true)
+	$(call dh_all,$(ubustubpkg))
 endif
 
 ifeq ($(do_dbgsym_package),true)
