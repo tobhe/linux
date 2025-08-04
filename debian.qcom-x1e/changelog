@@ -1,3 +1,9 @@
+linux-qcom-x1e (6.16.0-18.18) plucky; urgency=medium
+
+  * Build ubustub kernel image
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Wed, 06 Aug 2025 12:25:33 +0200
+
 linux-qcom-x1e (6.16.0-12.12) plucky; urgency=medium
 
   * UBUNTU: Fix Acer Swift 14 AI which was lost in the
