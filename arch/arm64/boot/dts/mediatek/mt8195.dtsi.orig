@@ -491,7 +491,6 @@
 		infracfg_ao: syscon@10001000 {
 			compatible = "mediatek,mt8195-infracfg_ao", "syscon";
 			reg = <0 0x10001000 0 0x1000>;
-			#access-controller-cells = <0>;
 			#clock-cells = <1>;
 			#reset-cells = <1>;
 		};
@@ -533,7 +532,6 @@
 				#address-cells = <1>;
 				#size-cells = <0>;
 				#power-domain-cells = <1>;
-				access-controllers = <&infracfg_ao>;
 
 				/* power domain of the SoC */
 				mfg0: power-domain@MT8195_POWER_DOMAIN_MFG0 {
@@ -547,6 +545,7 @@
 						clocks = <&apmixedsys CLK_APMIXED_MFGPLL>,
 							 <&topckgen CLK_TOP_MFG_CORE_TMP>;
 						clock-names = "mfg", "alt";
+						mediatek,infracfg = <&infracfg_ao>;
 						#address-cells = <1>;
 						#size-cells = <0>;
 						#power-domain-cells = <1>;
@@ -615,6 +614,7 @@
 						      "vppsys0-12", "vppsys0-13", "vppsys0-14",
 						      "vppsys0-15", "vppsys0-16", "vppsys0-17",
 						      "vppsys0-18";
+					mediatek,infracfg = <&infracfg_ao>;
 					#address-cells = <1>;
 					#size-cells = <0>;
 					#power-domain-cells = <1>;
@@ -631,6 +631,7 @@
 						clock-names = "vdosys0", "vdosys0-0", "vdosys0-1",
 							      "vdosys0-2", "vdosys0-3",
 							      "vdosys0-4", "vdosys0-5";
+						mediatek,infracfg = <&infracfg_ao>;
 						#address-cells = <1>;
 						#size-cells = <0>;
 						#power-domain-cells = <1>;
@@ -642,6 +643,7 @@
 								 <&vppsys1 CLK_VPP1_VPPSYS1_LARB>;
 							clock-names = "vppsys1", "vppsys1-0",
 								      "vppsys1-1";
+							mediatek,infracfg = <&infracfg_ao>;
 							#power-domain-cells = <0>;
 						};
 
@@ -653,6 +655,7 @@
 								 <&wpesys CLK_WPE_SMI_LARB8_P>;
 							clock-names = "wepsys-0", "wepsys-1", "wepsys-2",
 								      "wepsys-3";
+							mediatek,infracfg = <&infracfg_ao>;
 							#power-domain-cells = <0>;
 						};
 
@@ -660,6 +663,7 @@
 							reg = <MT8195_POWER_DOMAIN_VDEC0>;
 							clocks = <&vdecsys_soc CLK_VDEC_SOC_LARB1>;
 							clock-names = "vdec0-0";
+							mediatek,infracfg = <&infracfg_ao>;
 							#address-cells = <1>;
 							#size-cells = <0>;
 							#power-domain-cells = <0>;
@@ -668,6 +672,7 @@
 								reg = <MT8195_POWER_DOMAIN_VDEC1>;
 								clocks = <&vdecsys CLK_VDEC_LARB1>;
 								clock-names = "vdec1-0";
+								mediatek,infracfg = <&infracfg_ao>;
 								#power-domain-cells = <0>;
 							};
 
@@ -675,6 +680,7 @@
 								reg = <MT8195_POWER_DOMAIN_VDEC2>;
 								clocks = <&vdecsys_core1 CLK_VDEC_CORE1_LARB1>;
 								clock-names = "vdec2-0";
+								mediatek,infracfg = <&infracfg_ao>;
 								#power-domain-cells = <0>;
 							};
 						};
@@ -683,6 +689,7 @@
 							reg = <MT8195_POWER_DOMAIN_VENC>;
 							clocks = <&vencsys CLK_VENC_LARB>;
 							clock-names = "venc0-larb";
+							mediatek,infracfg = <&infracfg_ao>;
 							#address-cells = <1>;
 							#size-cells = <0>;
 							#power-domain-cells = <0>;
@@ -691,6 +698,7 @@
 								reg = <MT8195_POWER_DOMAIN_VENC_CORE1>;
 								clocks = <&vencsys_core1 CLK_VENC_CORE1_LARB>;
 								clock-names = "venc1-larb";
+								mediatek,infracfg = <&infracfg_ao>;
 								#power-domain-cells = <0>;
 							};
 						};
@@ -703,17 +711,20 @@
 								 <&vdosys1 CLK_VDO1_GALS>;
 							clock-names = "vdosys1", "vdosys1-0",
 								      "vdosys1-1", "vdosys1-2";
+							mediatek,infracfg = <&infracfg_ao>;
 							#address-cells = <1>;
 							#size-cells = <0>;
 							#power-domain-cells = <1>;
 
 							power-domain@MT8195_POWER_DOMAIN_DP_TX {
 								reg = <MT8195_POWER_DOMAIN_DP_TX>;
+								mediatek,infracfg = <&infracfg_ao>;
 								#power-domain-cells = <0>;
 							};
 
 							power-domain@MT8195_POWER_DOMAIN_EPD_TX {
 								reg = <MT8195_POWER_DOMAIN_EPD_TX>;
+								mediatek,infracfg = <&infracfg_ao>;
 								#power-domain-cells = <0>;
 							};
 
@@ -730,6 +741,7 @@
 							clocks = <&imgsys CLK_IMG_LARB9>,
 								 <&imgsys CLK_IMG_GALS>;
 							clock-names = "img-0", "img-1";
+							mediatek,infracfg = <&infracfg_ao>;
 							#address-cells = <1>;
 							#size-cells = <0>;
 							#power-domain-cells = <1>;
@@ -745,6 +757,7 @@
 									 <&imgsys CLK_IMG_IPE>,
 									 <&ipesys CLK_IPE_SMI_LARB12>;
 								clock-names = "ipe", "ipe-0", "ipe-1";
+								mediatek,infracfg = <&infracfg_ao>;
 								#power-domain-cells = <0>;
 							};
 						};
@@ -758,6 +771,7 @@
 								 <&camsys CLK_CAM_CAM2SYS_GALS>;
 							clock-names = "cam-0", "cam-1", "cam-2", "cam-3",
 								      "cam-4";
+							mediatek,infracfg = <&infracfg_ao>;
 							#address-cells = <1>;
 							#size-cells = <0>;
 							#power-domain-cells = <1>;
@@ -828,6 +842,7 @@
 					clock-names = "adsp", "adsp1";
 					#address-cells = <1>;
 					#size-cells = <0>;
+					mediatek,infracfg = <&infracfg_ao>;
 					#power-domain-cells = <1>;
 
 					power-domain@MT8195_POWER_DOMAIN_AUDIO {
@@ -838,6 +853,7 @@
 							 <&infracfg_ao CLK_INFRA_AO_AUDIO_26M_B>;
 						clock-names = "audio", "audio1", "audio2",
 							      "audio3";
+						mediatek,infracfg = <&infracfg_ao>;
 						#power-domain-cells = <0>;
 					};
 				};
@@ -1577,6 +1593,9 @@
 			phy-names = "pcie-phy";
 
 			power-domains = <&spm MT8195_POWER_DOMAIN_PCIE_MAC_P0>;
+
+			resets = <&infracfg_ao MT8195_INFRA_RST2_PCIE_P0_SWRST>;
+			reset-names = "mac";
 
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 7>;
