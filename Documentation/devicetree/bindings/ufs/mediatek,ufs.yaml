@@ -22,11 +22,11 @@ properties:
 
   clocks:
     minItems: 1
-    maxItems: 8
+    maxItems: 11
 
   clock-names:
     minItems: 1
-    maxItems: 8
+    maxItems: 11
 
   phys:
     maxItems: 1
@@ -73,6 +73,9 @@ allOf:
             - const: unipro_mp_bclk
             - const: ufs_tx_symbol
             - const: ufs_mem_sub
+            - const: crypt_mux
+            - const: crypt_lp
+            - const: crypt_perf
     else:
       properties:
         clocks:
