@@ -193,6 +193,16 @@
 	cpu-supply = <&mt6316kp_vbuck0>;
 };
 
+&gpu {
+       status = "okay";
+};
+
+&gpufreq {
+       core-supply = <&mt6373_vbuck7>;
+       stack-supply = <&mt6316dp_vbuck0>;
+       sram-supply = <&mt6316kp_vbuck1>;
+};
+
 &i2c0 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
@@ -364,7 +374,9 @@
 };
 
 &mt6373_vbuck7 {
-	regulator-always-on;
+	regulator-name = "dvdd_gpu";
+	regulator-max-microvolt = <935000>;
+	regulator-min-microvolt = <490000>;
 };
 
 &mt6373_vbuck8 {
@@ -1050,6 +1062,19 @@
 			regulator-max-microvolt = <1122500>;
 			regulator-enable-ramp-delay = <256>;
 			regulator-always-on;
+		};
+	};
+
+	pmic@7 {
+		compatible = "mediatek,mt6316d-regulator";
+		reg = <0x7 SPMI_USID>;
+		#address-cells = <0>;
+
+		mt6316dp_vbuck0: vbuck1234 {
+			regulator-enable-ramp-delay = <256>;
+			regulator-name = "dvdd_gpustack";
+			regulator-max-microvolt = <935000>;
+			regulator-min-microvolt = <490000>;
 		};
 	};
 
