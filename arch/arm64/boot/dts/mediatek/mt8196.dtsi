@@ -414,6 +414,21 @@
 		method = "smc";
 	};
 
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		gpueb_shared_memory: gpueb-shared@a0000000 {
+			reg = <0x0 0xa0000000 0x0 0x4000>;
+		};
+
+		gpueb_private_memory: gpueb-private@a0004000 {
+			reg = <0x0 0xa0004000 0x0 0x1fc000>;
+			no-map;
+		};
+	};
+
 	soc {
 		compatible = "simple-bus";
 		#address-cells = <2>;
@@ -1613,6 +1628,68 @@
 			reg = <0 0x1c400000 0 0x1000>;
 			interrupts = <GIC_SPI 813 IRQ_TYPE_LEVEL_HIGH 0>;
 			clocks = <&clk13m>;
+		};
+
+		gpu: gpu@48000000 {
+			compatible = "mediatek,mt8196-mali", "arm,mali-valhall-csf";
+			reg = <0 0x48000000 0 0x480000>;
+			clocks = <&gpufreq 0>, <&gpufreq 1>;
+			clock-names = "core", "stacks";
+			interrupts = <GIC_SPI 606 IRQ_TYPE_LEVEL_HIGH 0>,
+				     <GIC_SPI 605 IRQ_TYPE_LEVEL_HIGH 0>,
+				     <GIC_SPI 604 IRQ_TYPE_LEVEL_HIGH 0>;
+			interrupt-names = "job",
+					  "mmu",
+					  "gpu";
+			power-domains = <&gpufreq>;
+			#cooling-cells = <2>;
+			status = "disabled";
+		};
+
+		gpufreq: performance-controller@4b09fd00 {
+			compatible = "mediatek,mt8196-gpufreq";
+			reg = <0 0x4b09fd00 0 0x80>,
+			      <0 0x4b800000 0 0x1000>,
+			      <0 0x4b860128 0 0x4>;
+			reg-names = "gpr", "rpc", "hw-revision";
+			clocks = <&topckgen CLK_TOP_MFG_EB>,
+				 <&mfgpll CLK_MFG_AO_MFGPLL>,
+				 <&mfgpll_sc0 CLK_MFGSC0_AO_MFGPLL_SC0>,
+				 <&mfgpll_sc1 CLK_MFGSC1_AO_MFGPLL_SC1>;
+			clock-names = "eb", "core", "stack0", "stack1";
+			mboxes = <&gpueb_mbox 1>, <&gpueb_mbox 2>;
+			mbox-names = "gpufreq", "sleep";
+			memory-region = <&gpueb_shared_memory>;
+			#clock-cells = <1>;
+			#power-domain-cells = <0>;
+		};
+
+		gpueb_mbox: mailbox@4b09fd80 {
+			compatible = "mediatek,mt8196-gpueb-mbox";
+			reg = <0 0x4b09fd80 0 0x280>,
+			      <0 0x4b170000 0 0x7c>;
+			reg-names = "data", "ctl";
+			clocks = <&topckgen CLK_TOP_MFG_EB>;
+			interrupts = <GIC_SPI 608 IRQ_TYPE_LEVEL_HIGH 0>;
+			#mbox-cells = <1>;
+		};
+
+		mfgpll: clock-controller@4b810000 {
+			compatible = "mediatek,mt8196-mfgpll-pll-ctrl";
+			reg = <0 0x4b810000 0 0x400>;
+			#clock-cells = <1>;
+		};
+
+		mfgpll_sc0: clock-controller@4b810400 {
+			compatible = "mediatek,mt8196-mfgpll-sc0-pll-ctrl";
+			reg = <0 0x4b810400 0 0x400>;
+			#clock-cells = <1>;
+		};
+
+		mfgpll_sc1: clock-controller@4b810800 {
+			compatible = "mediatek,mt8196-mfgpll-sc1-pll-ctrl";
+			reg = <0 0x4b810800 0 0x1000>;
+			#clock-cells = <1>;
 		};
 	};
 
