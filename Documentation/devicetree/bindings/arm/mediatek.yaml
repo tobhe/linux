@@ -425,10 +425,25 @@ properties:
               - mediatek,mt8195-demo
               - mediatek,mt8195-evb
           - const: mediatek,mt8195
-      - description: Google Navi (Lenovo Chromebook Plus (14", 10))
+      - description: Google Navi SKU0 (Lenovo Chromebook Plus (14", 10))
+        items:
+          - const: google,navi-sku0
+          - const: google,navi
+          - const: mediatek,mt8196
+      - description: Google Navi SKU1 (Lenovo Chromebook Plus (14", 10))
+        items:
+          - const: google,navi-sku1
+          - const: google,navi
+          - const: mediatek,mt8196
+      - description: Google Navi SKU2, SKU7 (Lenovo Chromebook Plus (14", 10))
         items:
           - const: google,navi-sku2
           - const: google,navi-sku7
+          - const: google,navi
+          - const: mediatek,mt8196
+      - description: Google Navi SKU5
+        items:
+          - const: google,navi-sku5
           - const: google,navi
           - const: mediatek,mt8196
       - items:
