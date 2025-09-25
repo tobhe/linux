@@ -492,11 +492,10 @@
 			      <0 0x12080000 0 0x1000>, <0 0x12880000 0 0x1000>,
 			      <0 0x13080000 0 0x1000>, <0 0x13880000 0 0x1000>,
 			      <0 0x1c54a000 0 0x1000>;
-			reg-names = "iocfg0", "iocfg_rt", "iocfg_rm1", "iocfg_rm2",
-				    "iocfg_rb", "iocfg_bm1", "iocfg_bm2", "iocfg_bm3",
-				    "iocfg_lt", "iocfg_lm1", "iocfg_lm2", "iocfg_lb1",
-				    "iocfg_lb2", "iocfg_tm1", "iocfg_tm2", "iocfg_tm3",
-				    "eint0", "eint1", "eint2", "eint3", "eint4";
+			reg-names = "base", "rt", "rm1", "rm2", "rb", "bm1",
+				    "bm2", "bm3", "lt", "lm1", "lm2", "lb1",
+				    "lb2", "tm1", "tm2", "tm3", "eint0",
+				    "eint1", "eint2", "eint3", "eint4";
 			gpio-controller;
 			#gpio-cells = <2>;
 			gpio-ranges = <&pio 0 0 271>;
