@@ -24,6 +24,7 @@
 #include <linux/smp.h>
 #include <linux/seq_file.h>
 #include <linux/irq.h>
+#include <linux/nmi.h>
 #include <linux/irqchip/arm-gic-v3.h>
 #include <linux/percpu.h>
 #include <linux/clockchips.h>
@@ -73,6 +74,7 @@ enum ipi_msg_type {
 	IPI_TIMER,
 	IPI_IRQ_WORK,
 	IPI_WAKEUP,
+	IPI_CPU_BACKTRACE,
 	NR_IPI
 };
 
@@ -767,6 +769,7 @@ static const char *ipi_types[NR_IPI] __tracepoint_string = {
 	[IPI_TIMER]		= "Timer broadcast interrupts",
 	[IPI_IRQ_WORK]		= "IRQ work interrupts",
 	[IPI_WAKEUP]		= "CPU wake-up interrupts",
+	[IPI_CPU_BACKTRACE]	= "Backtrace interrupts",
 };
 
 static void smp_cross_call(const struct cpumask *target, unsigned int ipinr);
@@ -813,8 +816,19 @@ void arch_irq_work_raise(void)
 }
 #endif
 
+/*
+ *  Don't need to call show_extra_register_data when cpu handling IPI_STOP.
+ *  Declared in <asm/smp.h>
+ */
+unsigned int g_cpu_in_ipi_stop;
 static void __noreturn local_cpu_stop(void)
 {
+	unsigned int mask;
+
+	mask = 0x1 << get_cpu();
+	g_cpu_in_ipi_stop |= mask;
+	put_cpu();
+
 	set_cpu_online(smp_processor_id(), false);
 
 	local_daif_mask();
@@ -906,7 +920,11 @@ static void do_handle_IPI(int ipinr)
 			  cpu);
 		break;
 #endif
-
+	case IPI_CPU_BACKTRACE:
+		printk_deferred_enter();
+		nmi_cpu_backtrace(get_irq_regs());
+		printk_deferred_exit();
+		break;
 	default:
 		pr_crit("CPU%u: Unknown IPI message 0x%x\n", cpu, ipinr);
 		break;
@@ -1095,4 +1113,14 @@ bool cpus_are_stuck_in_kernel(void)
 
 	return !!cpus_stuck_in_kernel || smp_spin_tables ||
 		is_protected_kvm_enabled();
+}
+
+static void raise_nmi(cpumask_t *mask)
+{
+	smp_cross_call(mask, IPI_CPU_BACKTRACE);
+}
+
+void arch_trigger_cpumask_backtrace(const cpumask_t *mask, bool exclude_self)
+{
+	nmi_trigger_cpumask_backtrace(mask, exclude_self, raise_nmi);
 }

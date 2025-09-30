@@ -47,4 +47,11 @@ config ANDROID_BINDER_IPC_SELFTEST
 	  exhaustively with combinations of various buffer sizes and
 	  alignments.
 
+config MPAM_ARCH
+	tristate "MPAM module based architecture driver"
+
+config MPAM_POLICY
+	tristate "MPAM policy module"
+	depends on ANDROID_MPAM_ARCH
+
 endmenu
