@@ -6,6 +6,14 @@ config INTERCONNECT_MTK
 	help
 	  Support for MediaTek's bus interconnect hardware.
 
+config INTERCONNECT_MTK_CM_MGR
+	tristate "MediaTek CPU Memory Latency Manager driver"
+	depends on INTERCONNECT_MTK && MTK_SCMI_TINYSYS
+	help
+	  This is a driver for the MediaTek CPU Memory Latency Manager
+	  (CM_MGR) allowing to change the DRAM OPP level depending on
+	  bandwidth usage with the aim to improve power efficiency
+
 config INTERCONNECT_MTK_DVFSRC_EMI
 	tristate "MediaTek DVFSRC EMI interconnect driver"
 	depends on INTERCONNECT_MTK && MTK_DVFSRC
