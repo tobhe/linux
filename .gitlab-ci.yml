@@ -341,73 +341,73 @@ generate-tests:
     LAVA_TEST_RTCWAKE: true
     FS_VARIANT: minimal
 
-lava-test-dmesg-genio-350:
+.lava-test-dmesg-genio-350:
   extends:
     - .lava-test
     - .lava-test-dmesg
     - .genio-350
 
-lava-test-dmesg-genio-510:
+.lava-test-dmesg-genio-510:
   extends:
     - .lava-test
     - .lava-test-dmesg
     - .genio-510
 
-lava-test-dmesg-genio-700:
+.lava-test-dmesg-genio-700:
   extends:
     - .lava-test
     - .lava-test-dmesg
     - .genio-700
 
-lava-test-dmesg-genio-1200:
+.lava-test-dmesg-genio-1200:
   extends:
     - .lava-test
     - .lava-test-dmesg
     - .genio-1200
 
-lava-test-kselftest-dt-genio-350:
+.lava-test-kselftest-dt-genio-350:
   extends:
     - .lava-test
     - .lava-test-kselftest-dt
     - .genio-350
 
-lava-test-kselftest-dt-genio-510:
+.lava-test-kselftest-dt-genio-510:
   extends:
     - .lava-test
     - .lava-test-kselftest-dt
     - .genio-510
 
-lava-test-kselftest-dt-genio-700:
+.lava-test-kselftest-dt-genio-700:
   extends:
     - .lava-test
     - .lava-test-kselftest-dt
     - .genio-700
 
-lava-test-kselftest-dt-genio-1200:
+.lava-test-kselftest-dt-genio-1200:
   extends:
     - .lava-test
     - .lava-test-kselftest-dt
     - .genio-1200
 
-lava-test-glmark2-genio-350:
+.lava-test-glmark2-genio-350:
   extends:
     - .lava-test
     - .lava-test-glmark2
     - .genio-350
 
-lava-test-glmark2-genio-510:
+.lava-test-glmark2-genio-510:
   extends:
     - .lava-test
     - .lava-test-glmark2
     - .genio-510
 
-lava-test-glmark2-genio-700:
+.lava-test-glmark2-genio-700:
   extends:
     - .lava-test
     - .lava-test-glmark2
     - .genio-700
 
-lava-test-glmark2-genio-1200:
+.lava-test-glmark2-genio-1200:
   extends:
     - .lava-test
     - .lava-test-glmark2
@@ -420,25 +420,25 @@ lava-test-glmark2-genio-1200:
     - .lava-test-fluster-vp8
     - .genio-350
 
-lava-test-fluster-vp8-genio-510:
+.lava-test-fluster-vp8-genio-510:
   extends:
     - .lava-test
     - .lava-test-fluster-vp8
     - .genio-510
 
-lava-test-fluster-vp8-genio-700:
+.lava-test-fluster-vp8-genio-700:
   extends:
     - .lava-test
     - .lava-test-fluster-vp8
     - .genio-700
 
-lava-test-fluster-vp8-genio-1200:
+.lava-test-fluster-vp8-genio-1200:
   extends:
     - .lava-test
     - .lava-test-fluster-vp8
     - .genio-1200
 
-lava-test-fluster-vp9-genio-700:
+.lava-test-fluster-vp9-genio-700:
   extends:
     - .lava-test
     - .lava-test-fluster-vp9
@@ -451,37 +451,37 @@ lava-test-fluster-vp9-genio-700:
     - .lava-test-fluster-h264
     - .genio-700
 
-lava-test-fluster-h264-genio-1200:
+.lava-test-fluster-h264-genio-1200:
   extends:
     - .lava-test
     - .lava-test-fluster-h264
     - .genio-1200
 
-lava-test-fluster-h265-genio-700:
+.lava-test-fluster-h265-genio-700:
   extends:
     - .lava-test
     - .lava-test-fluster-h265
     - .genio-700
 
-lava-test-fluster-av1-genio-700:
+.lava-test-fluster-av1-genio-700:
   extends:
     - .lava-test
     - .lava-test-fluster-av1
     - .genio-700
 
-lava-test-avvideocompare-jpeg-genio-700:
+.lava-test-avvideocompare-jpeg-genio-700:
   extends:
     - .lava-test
     - .lava-test-avvideocompare-jpeg
     - .genio-700
 
-lava-test-avvideocompare-mdp-genio-700:
+.lava-test-avvideocompare-mdp-genio-700:
   extends:
     - .lava-test
     - .lava-test-avvideocompare-mdp
     - .genio-700
 
-lava-test-rtcwake-genio-350:
+.lava-test-rtcwake-genio-350:
   extends:
     - .lava-test
     - .lava-test-rtcwake
@@ -501,7 +501,7 @@ lava-test-rtcwake-genio-350:
     - .lava-test-rtcwake
     - .genio-700
 
-lava-test-rtcwake-genio-1200:
+.lava-test-rtcwake-genio-1200:
   extends:
     - .lava-test
     - .lava-test-rtcwake
@@ -514,7 +514,7 @@ lava-test-rtcwake-genio-1200:
     - .lava-test-watchdog
     - .genio-350
 
-lava-test-watchdog-genio-510:
+.lava-test-watchdog-genio-510:
   extends:
     - .lava-test
     - .lava-test-watchdog
@@ -541,7 +541,7 @@ lava-test-watchdog-genio-510:
     - .lava-test-wifi
     - .genio-350
 
-lava-test-wifi-genio-700:
+.lava-test-wifi-genio-700:
   extends:
     - .lava-test
     - .lava-test-wifi
