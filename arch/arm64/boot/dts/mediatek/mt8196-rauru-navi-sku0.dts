@@ -18,7 +18,7 @@
 };
 
 &i2c2 {
-	status = "okay";
+	status = "disabled";
 };
 
 &spi5 {
@@ -26,5 +26,5 @@
 };
 
 &touchscreen {
-	status = "okay";
+	status = "disabled";
 };
