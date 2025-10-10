@@ -308,10 +308,6 @@
 	regulator-always-on;
 };
 
-&mt6363_vemc {
-	regulator-always-on;
-};
-
 &mt6363_vio18 {
 	regulator-name = "pp1800_vio18_s3";
 	regulator-min-microvolt = <1800000>;
@@ -319,6 +315,7 @@
 };
 
 &mt6363_vm18 {
+	/* TODO: Supplies EMI, should be a supplier of that, not always-on */
 	regulator-always-on;
 };
 
@@ -330,6 +327,10 @@
 	regulator-always-on;
 };
 
+&mt6363_vsram_cpum {
+	regulator-always-on;
+};
+
 &mt6363_vsram_cpul {
 	regulator-always-on;
 };
@@ -338,11 +339,7 @@
 	regulator-always-on;
 };
 
-&mt6363_vufs12 {
-	regulator-always-on;
-};
-
-&mt6363_vufs18 {
+&mt6373_vbuck1 {
 	regulator-always-on;
 };
 
@@ -350,10 +347,13 @@
 	regulator-always-on;
 };
 
-&mt6373_vbuck4 {
+&mt6373_vbuck3 {
 	regulator-always-on;
 };
 
+&mt6373_vbuck4 {
+	regulator-always-on;
+};
 
 &mt6373_vbuck5 {
 	regulator-always-on;
@@ -364,6 +364,14 @@
 };
 
 &mt6373_vbuck7 {
+	regulator-always-on;
+};
+
+&mt6373_vbuck8 {
+	regulator-always-on;
+};
+
+&mt6373_vbuck9 {
 	regulator-always-on;
 };
 
