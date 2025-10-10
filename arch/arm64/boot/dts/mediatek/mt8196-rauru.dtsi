@@ -1045,7 +1045,7 @@
 		};
 	};
 
-	pmic@15 {
+	pmic@f {
 		compatible = "mediatek,mt6316c-regulator";
 		reg = <0xf SPMI_USID>;
 		#address-cells = <0>;
