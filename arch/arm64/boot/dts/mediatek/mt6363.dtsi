@@ -15,11 +15,245 @@
 		reg = <0x4 SPMI_USID>;
 		interrupts = <4 64 IRQ_TYPE_NONE>;
 		interrupt-controller;
-		#address-cells = <0>;
+		#address-cells = <1>;
 		#interrupt-cells = <3>;
+		#size-cells = <0>;
 
-		mt6363_adc: adc {
+#if 0 /* Not for upstream yet - working but removing for now */
+		keys@0 {
+			compatible = "mediatek,mt6363-keys";
+			reg = <0x0>;
+			interrupts = <4 48 IRQ_TYPE_LEVEL_HIGH>,
+				     <4 49 IRQ_TYPE_LEVEL_HIGH>,
+				     <4 51 IRQ_TYPE_LEVEL_HIGH>,
+				     <4 52 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "powerkey", "homekey", "powerkey_r", "homekey_r";
+			mediatek,long-press-mode = <1>;
+
+			power {
+				linux,keycodes = <KEY_POWER>;
+				wakeup-source;
+			};
+
+			home {
+				linux,keycodes = <KEY_VOLUMEUP>;
+			};
+		};
+#endif
+
+		regulators@30 {
+			compatible = "mediatek,mt6363-regulator";
+			reg = <0x30>;
+
+			mt6363_vbuck1: vbuck1 {
+				regulator-name = "mt6363-vbuck1";
+				regulator-allowed-modes = <0 1 2>;
+			};
+
+			mt6363_vbuck2: vbuck2 {
+				regulator-name = "mt6363-vbuck2";
+				regulator-allowed-modes = <0 1 2>;
+			};
+
+			mt6363_vbuck3: vbuck3 {
+				regulator-name = "mt6363-vbuck3";
+				regulator-allowed-modes = <0 1 2>;
+			};
+
+			mt6363_vbuck4: vbuck4 {
+				regulator-name = "mt6363-vbuck4";
+				regulator-allowed-modes = <0 1 2>;
+			};
+
+			mt6363_vbuck5: vbuck5 {
+				regulator-name = "mt6363-vbuck5";
+				regulator-allowed-modes = <0 1 2>;
+			};
+
+			mt6363_vbuck6: vbuck6 {
+				regulator-name = "mt6363-vbuck6";
+				regulator-allowed-modes = <0 1 2>;
+			};
+
+			mt6363_vbuck7: vbuck7 {
+				regulator-name = "mt6363-vbuck7";
+				regulator-allowed-modes = <0 1 2>;
+			};
+
+			mt6363_vs1: vs1 {
+				regulator-name = "mt6363-vs1";
+				regulator-allowed-modes = <0 1 2>;
+				regulator-always-on;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vs2: vs2 {
+				regulator-name = "mt6363-vs2";
+				regulator-allowed-modes = <0 1 2>;
+				regulator-always-on;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vs3: vs3 {
+				regulator-name = "mt6363-vs3";
+				regulator-allowed-modes = <0 1 2>;
+				regulator-always-on;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vsram_digrf: vsram-digrf {
+				regulator-name = "mt6363-vsram-digrf";
+				regulator-allowed-modes = <0 2>;
+			};
+
+			mt6363_vsram_mdfe: vsram-mdfe {
+				regulator-name = "mt6363-vsram-mdfe";
+				regulator-allowed-modes = <0 2>;
+			};
+
+			mt6363_vsram_modem: vsram-modem {
+				regulator-name = "mt6363-vsram-modem";
+				regulator-allowed-modes = <0 2>;
+			};
+
+			mt6363_vsram_cpub: vsram-cpub {
+				regulator-name = "mt6363-vsram-cpub";
+				regulator-allowed-modes = <0 2>;
+			};
+
+			mt6363_vsram_cpum: vsram-cpum {
+				regulator-name = "mt6363-vsram-cpum";
+				regulator-allowed-modes = <0 2>;
+			};
+
+			mt6363_vsram_cpul: vsram-cpul {
+				regulator-name = "mt6363-vsram-cpul";
+				regulator-allowed-modes = <0 2>;
+			};
+
+			mt6363_vsram_apu: vsram-apu {
+				regulator-name = "mt6363-vsram-apu";
+				regulator-allowed-modes = <0 2>;
+			};
+
+			mt6363_vemc: vemc {
+				regulator-name = "mt6363-vemc";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vcn13: vcn13 {
+				regulator-name = "mt6363-vcn13";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vtref18: vtref18 {
+				regulator-name = "mt6363-vtref18";
+				regulator-allowed-modes = <0 2>;
+				regulator-always-on;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vaux18: vaux18 {
+				regulator-name = "mt6363-vaux18";
+				regulator-allowed-modes = <0 2>;
+				regulator-always-on;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vcn15: vcn15 {
+				regulator-name = "mt6363-vcn15";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vufs18: vufs18 {
+				regulator-name = "mt6363-vufs18";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vio18: vio18 {
+				regulator-name = "mt6363-vio18";
+				regulator-allowed-modes = <0 2>;
+				regulator-always-on;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vm18: vm18 {
+				regulator-name = "mt6363-vm18";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_va15: va15 {
+				regulator-name = "mt6363-va15";
+				regulator-allowed-modes = <0 2>;
+				regulator-always-on;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vrf18: vrf18 {
+				regulator-name = "mt6363-vrf18";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vrf_io18: vrf-io18 {
+				regulator-name = "mt6363-vrfio18";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vio075: vio0p75 {
+				regulator-name = "mt6363-vio0p75";
+				regulator-allowed-modes = <0 2>;
+				regulator-always-on;
+			};
+
+			mt6363_vufs12: vufs12 {
+				regulator-name = "mt6363-vufs12";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_va12_1: va12-1 {
+				regulator-name = "mt6363-va12-1";
+				regulator-allowed-modes = <0 2>;
+				regulator-always-on;
+				regulator-allow-set-load;
+			};
+
+			mt6363_va12_2: va12-2 {
+				regulator-name = "mt6363-va12-2";
+				regulator-allowed-modes = <0 2>;
+				regulator-always-on;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vrf12: vrf12 {
+				regulator-name = "mt6363-vrf12";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vrf13: vrf13 {
+				regulator-name = "mt6363-vrf13";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+
+			mt6363_vrf09: vrf0p9 {
+				regulator-name = "mt6363-vrf0p9";
+				regulator-allowed-modes = <0 2>;
+				regulator-allow-set-load;
+			};
+		};
+
+		mt6363_adc: adc@1000 {
 			compatible = "mediatek,mt6363-auxadc";
+			reg = <0x1000>;
 			#io-channel-cells = <1>;
 
 			batadc {
@@ -80,267 +314,6 @@
 
 			vin7 {
 				channel = <MT6363_AUXADC_VIN7>;
-			};
-		};
-
-		keys {
-			compatible = "mediatek,mt6363-keys";
-			interrupts = <4 48 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 49 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 51 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 52 IRQ_TYPE_LEVEL_HIGH>;
-			interrupt-names = "powerkey", "homekey", "powerkey_r", "homekey_r";
-			mediatek,long-press-mode = <1>;
-
-			power {
-				linux,keycodes = <KEY_POWER>;
-				wakeup-source;
-			};
-
-			home {
-				linux,keycodes = <KEY_VOLUMEUP>;
-			};
-		};
-
-		regulators {
-			compatible = "mediatek,mt6363-regulator";
-			interrupts = <4 16 IRQ_TYPE_LEVEL_HIGH>, <4 17 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 18 IRQ_TYPE_LEVEL_HIGH>, <4 19 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 20 IRQ_TYPE_LEVEL_HIGH>, <4 21 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 22 IRQ_TYPE_LEVEL_HIGH>, <4 24 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 26 IRQ_TYPE_LEVEL_HIGH>, <4 30 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 31 IRQ_TYPE_LEVEL_HIGH>, <4 32 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 33 IRQ_TYPE_LEVEL_HIGH>, <4 34 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 35 IRQ_TYPE_LEVEL_HIGH>, <4 36 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 37 IRQ_TYPE_LEVEL_HIGH>, <4 38 IRQ_TYPE_LEVEL_HIGH>,
-				     <4 39 IRQ_TYPE_LEVEL_HIGH>, <4 40 IRQ_TYPE_LEVEL_HIGH>;
-			interrupt-names = "ldo-vcn15", "ldo-vcn13", "ldo-vrf0p9",
-					  "ldo-vrf12", "ldo-vrf13", "ldo-vrf18",
-					  "ldo-vrfio18", "ldo-vsram-mdfe", "ldo-vtref18",
-					  "ldo-vsram-apu", "ldo-vaux18", "ldo-vemc",
-					  "ldo-vufs12", "ldo-vufs18", "ldo-vio18",
-					  "ldo-vio0p75", "ldo-va12-1", "ldo-va12-2",
-					  "ldo-va15", "ldo-vm18";
-
-			mt6363_vbuck1: buck-vb1 {
-				regulator-name = "mt6363-vbuck1";
-				regulator-allowed-modes = <0 1 2>;
-			};
-
-			mt6363_vbuck2: buck-vb2 {
-				regulator-name = "mt6363-vbuck2";
-				regulator-allowed-modes = <0 1 2>;
-			};
-
-			mt6363_vbuck3: buck-vb3 {
-				regulator-name = "mt6363-vbuck3";
-				regulator-allowed-modes = <0 1 2>;
-			};
-
-			mt6363_vbuck4: buck-vb4 {
-				regulator-name = "mt6363-vbuck4";
-				regulator-allowed-modes = <0 1 2>;
-			};
-
-			mt6363_vbuck5: buck-vb5 {
-				regulator-name = "mt6363-vbuck5";
-				regulator-allowed-modes = <0 1 2>;
-			};
-
-			mt6363_vbuck6: buck-vb6 {
-				regulator-name = "mt6363-vbuck6";
-				regulator-allowed-modes = <0 1 2>;
-			};
-
-			mt6363_vbuck7: buck-vb7 {
-				regulator-name = "mt6363-vbuck7";
-				regulator-allowed-modes = <0 1 2>;
-			};
-
-			mt6363_vs1: buck-vs1 {
-				regulator-name = "mt6363-vs1";
-				regulator-allowed-modes = <0 1 2>;
-				regulator-always-on;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vs2: buck-vs2 {
-				regulator-name = "mt6363-vs2";
-				regulator-allowed-modes = <0 1 2>;
-				regulator-always-on;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vs3: buck-vs3 {
-				regulator-name = "mt6363-vs3";
-				regulator-allowed-modes = <0 1 2>;
-				regulator-always-on;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vbuck1_sshub: buck-sshub1 {
-				regulator-name = "mt6363-vbuck1-sshub";
-			};
-
-			mt6363_vbuck2_sshub: buck-sshub2 {
-				regulator-name = "mt6363-vbuck2-sshub";
-			};
-
-			mt6363_vbuck4_sshub: buck-sshub4 {
-				regulator-name = "mt6363-vbuck4-sshub";
-			};
-
-			mt6363_vsram_digrf: ldo-vsram-digrf {
-				regulator-name = "mt6363-vsram-digrf";
-				regulator-allowed-modes = <0 2>;
-			};
-
-			mt6363_vsram_mdfe: ldo-vsram-mdfe {
-				regulator-name = "mt6363-vsram-mdfe";
-				regulator-allowed-modes = <0 2>;
-			};
-
-			mt6363_vsram_modem: ldo-vsram-modem {
-				regulator-name = "mt6363-vsram-modem";
-				regulator-allowed-modes = <0 2>;
-			};
-
-			mt6363_vsram_cpub: ldo-vsram-cpub {
-				regulator-name = "mt6363-vsram-cpub";
-				regulator-allowed-modes = <0 2>;
-			};
-
-			mt6363_vsram_cpum: ldo-vsram-cpum {
-				regulator-name = "mt6363-vsram-cpum";
-				regulator-allowed-modes = <0 2>;
-			};
-
-			mt6363_vsram_cpul: ldo-vsram-cpul {
-				regulator-name = "mt6363-vsram-cpul";
-				regulator-allowed-modes = <0 2>;
-			};
-
-			mt6363_vsram_apu: ldo-vsram-apu {
-				regulator-name = "mt6363-vsram-apu";
-				regulator-allowed-modes = <0 2>;
-			};
-
-			mt6363_vemc: ldo-vemc {
-				regulator-name = "mt6363-vemc";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vcn13: ldo-vcn13 {
-				regulator-name = "mt6363-vcn13";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vtref18: ldo-vtref18 {
-				regulator-name = "mt6363-vtref18";
-				regulator-allowed-modes = <0 2>;
-				regulator-always-on;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vaux18: ldo-vaux18 {
-				regulator-name = "mt6363-vaux18";
-				regulator-allowed-modes = <0 2>;
-				regulator-always-on;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vcn15: ldo-vcn15 {
-				regulator-name = "mt6363-vcn15";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vufs18: ldo-vufs18 {
-				regulator-name = "mt6363-vufs18";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vio18: ldo-vio18 {
-				regulator-name = "mt6363-vio18";
-				regulator-allowed-modes = <0 2>;
-				regulator-always-on;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vm18: ldo-vm18 {
-				regulator-name = "mt6363-vm18";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_va15: ldo-va15 {
-				regulator-name = "mt6363-va15";
-				regulator-allowed-modes = <0 2>;
-				regulator-always-on;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vrf18: ldo-vrf18 {
-				regulator-name = "mt6363-vrf18";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vrfio18: ldo-vrfio18 {
-				regulator-name = "mt6363-vrfio18";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vio075: ldo-vio0p75 {
-				regulator-name = "mt6363-vio0p75";
-				regulator-allowed-modes = <0 2>;
-				regulator-always-on;
-			};
-
-			mt6363_vufs12: ldo-vufs12 {
-				regulator-name = "mt6363-vufs12";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_va12_1: ldo-va12-1 {
-				regulator-name = "mt6363-va12-1";
-				regulator-allowed-modes = <0 2>;
-				regulator-always-on;
-				regulator-allow-set-load;
-			};
-
-			mt6363_va12_2: ldo-va12-2 {
-				regulator-name = "mt6363-va12-2";
-				regulator-allowed-modes = <0 2>;
-				regulator-always-on;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vrf12: ldo-vrf12 {
-				regulator-name = "mt6363-vrf12";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vrf13: ldo-vrf13 {
-				regulator-name = "mt6363-vrf13";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_vrf09: ldo-vrf0p9 {
-				regulator-name = "mt6363-vrf0p9";
-				regulator-allowed-modes = <0 2>;
-				regulator-allow-set-load;
-			};
-
-			mt6363_isink_load: isink-load {
-				regulator-name = "mt6363-isink-load";
 			};
 		};
 	};
