@@ -5,6 +5,7 @@
  *                    AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
  */
 #include <dt-bindings/iio/adc/mediatek,mt6373-auxadc.h>
+#include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/spmi/spmi.h>
 
 &spmi0 {
@@ -13,67 +14,13 @@
 		reg = <0x5 SPMI_USID>;
 		interrupts = <5 56 IRQ_TYPE_NONE>;
 		interrupt-controller;
-		#address-cells = <0>;
+		#address-cells = <1>;
 		#interrupt-cells = <3>;
+		#size-cells = <0>;
 
-		mt6373_adc: adc {
-			compatible = "mediatek,mt6373-auxadc";
-			#io-channel-cells = <1>;
-
-			chip-temp {
-				channel = <MT6373_AUXADC_CHIP_TEMP>;
-			};
-
-			vcore-temp {
-				channel = <MT6373_AUXADC_VCORE_TEMP>;
-			};
-
-			vproc-temp {
-				channel = <MT6373_AUXADC_VPROC_TEMP>;
-			};
-
-			vgpu-temp {
-				channel = <MT6373_AUXADC_VGPU_TEMP>;
-			};
-
-			vin1 {
-				channel = <MT6373_AUXADC_VIN1>;
-			};
-
-			vin2 {
-				channel = <MT6373_AUXADC_VIN2>;
-			};
-
-			vin3 {
-				channel = <MT6373_AUXADC_VIN3>;
-			};
-
-			vin4 {
-				channel = <MT6373_AUXADC_VIN4>;
-			};
-
-			vin5 {
-				channel = <MT6373_AUXADC_VIN5>;
-			};
-		};
-
-		regulators {
+		regulators@30 {
 			compatible = "mediatek,mt6373-regulator";
-			interrupts = <5 17 IRQ_TYPE_LEVEL_HIGH>, <5 18 IRQ_TYPE_LEVEL_HIGH>,
-				     <5 19 IRQ_TYPE_LEVEL_HIGH>, <5 20 IRQ_TYPE_LEVEL_HIGH>,
-				     <5 21 IRQ_TYPE_LEVEL_HIGH>, <5 22 IRQ_TYPE_LEVEL_HIGH>,
-				     <5 23 IRQ_TYPE_LEVEL_HIGH>, <5 24 IRQ_TYPE_LEVEL_HIGH>,
-				     <5 25 IRQ_TYPE_LEVEL_HIGH>, <5 26 IRQ_TYPE_LEVEL_HIGH>,
-				     <5 27 IRQ_TYPE_LEVEL_HIGH>, <5 28 IRQ_TYPE_LEVEL_HIGH>,
-				     <5 29 IRQ_TYPE_LEVEL_HIGH>, <5 31 IRQ_TYPE_LEVEL_HIGH>,
-				     <5 32 IRQ_TYPE_LEVEL_HIGH>, <5 33 IRQ_TYPE_LEVEL_HIGH>,
-				     <5 34 IRQ_TYPE_LEVEL_HIGH>, <5 35 IRQ_TYPE_LEVEL_HIGH>,
-				     <5 36 IRQ_TYPE_LEVEL_HIGH>, <5 37 IRQ_TYPE_LEVEL_HIGH>;
-			interrupt-names = "vusb", "vaux18", "vrf13-aif", "vrf18-aif",
-					  "vrfio18-aif", "vcn33-1", "vcn33-2", "vcn33-3",
-					  "vcn18io", "vrf09-aif", "vrf12-aif", "vant18",
-					  "vsram-digrf-aif", "vefuse", "vmch", "vmc",
-					  "vibr", "vio28", "vfp", "vtp";
+			reg = <0x30>;
 
 			mt6373_vbuck0: vbuck0 {
 				regulator-name = "mt6373-vbuck0";
@@ -97,11 +44,6 @@
 
 			mt6373_vbuck4: vbuck4 {
 				regulator-name = "mt6373-vbuck4";
-				regulator-allowed-modes = <0 1 2>;
-			};
-
-			mt6373_vbuck4_ufs: vbuck4-ufs {
-				regulator-name = "mt6373-vbuck4-ufs";
 				regulator-allowed-modes = <0 1 2>;
 			};
 
@@ -213,16 +155,6 @@
 				regulator-allowed-modes = <0 2>;
 			};
 
-			mt6373_vsim1: vsim1 {
-				regulator-name = "mt6373-vsim1";
-				regulator-allowed-modes = <0 2>;
-			};
-
-			mt6373_vsim2: vsim2 {
-				regulator-name = "mt6373-vsim2";
-				regulator-allowed-modes = <0 2>;
-			};
-
 			mt6373_vcn33_1: vcn33-1 {
 				regulator-name = "mt6373-vcn33-1";
 				regulator-allowed-modes = <0 2>;
@@ -251,6 +183,48 @@
 			mt6373_vmch_eint_high: vmch-eint-high {
 				regulator-name = "mt6373-vmch-eint-high";
 				regulator-allowed-modes = <0 2>;
+			};
+		};
+
+		mt6373_adc: adc@1000 {
+			compatible = "mediatek,mt6373-auxadc";
+			reg = <0x1000>;
+			#io-channel-cells = <1>;
+
+			chip-temp {
+				channel = <MT6373_AUXADC_CHIP_TEMP>;
+			};
+
+			vcore-temp {
+				channel = <MT6373_AUXADC_VCORE_TEMP>;
+			};
+
+			vproc-temp {
+				channel = <MT6373_AUXADC_VPROC_TEMP>;
+			};
+
+			vgpu-temp {
+				channel = <MT6373_AUXADC_VGPU_TEMP>;
+			};
+
+			vin1 {
+				channel = <MT6373_AUXADC_VIN1>;
+			};
+
+			vin2 {
+				channel = <MT6373_AUXADC_VIN2>;
+			};
+
+			vin3 {
+				channel = <MT6373_AUXADC_VIN3>;
+			};
+
+			vin4 {
+				channel = <MT6373_AUXADC_VIN4>;
+			};
+
+			vin5 {
+				channel = <MT6373_AUXADC_VIN5>;
 			};
 		};
 	};
