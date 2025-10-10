@@ -154,11 +154,11 @@ static int mtk_spmi_pmic_irq_xlate(struct irq_domain *d, struct device_node *ctr
 {
 	struct mtk_spmi_pmic *pmic = d->host_data;
 	struct device *dev = pmic->dev;
-	struct irq_fwspec fwspec;
 
-	of_phandle_args_to_fwspec(ctrlr, intspec, intsize, &fwspec);
-	if (WARN_ON(fwspec.param_count < 3))
+	if (intsize < 3) {
+		dev_err(dev, "Expected IRQ specifier of size 3, got %u\n", intsize);
 		return -EINVAL;
+	}
 
 	/*
 	 * The IRQ number in intspec[0] is ignored on purpose here!
