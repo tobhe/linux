@@ -854,8 +854,8 @@ static struct regmap *mt6363_spmi_register_regmap(struct device *dev)
 static int mt6363_regulator_probe(struct platform_device *pdev)
 {
 	struct irq_fwspec fwspec = {
-		.param_count = 2,
-		.param = { 0, IRQ_TYPE_LEVEL_HIGH },
+		.param_count = 3,
+		.param = {0, 0, IRQ_TYPE_LEVEL_HIGH },
 	};
 	struct device_node *interrupt_parent;
 	struct regulator_config config = {};
@@ -882,7 +882,8 @@ static int mt6363_regulator_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(mt6363_regulators); i++) {
 		info = &mt6363_regulators[i];
 
-		fwspec.param[0] = info->hwirq;
+		fwspec.param[0] = to_spmi_device(dev->parent)->usid;
+		fwspec.param[1] = info->hwirq;
 		info->virq = irq_create_fwspec_mapping(&fwspec);
 		if (!info->virq)
 			return dev_err_probe(dev, -EINVAL,
