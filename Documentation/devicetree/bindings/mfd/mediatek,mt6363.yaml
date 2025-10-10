@@ -56,16 +56,9 @@ patternProperties:
 
   "^regulators@[0-9a-f]+$":
     type: object
-    properties:
-      compatible:
-        contains:
-          enum:
-            - mediatek,mt6363-regulator
-            - mediatek,mt6373-regulator
     oneOf:
       - $ref: /schemas/regulator/mediatek,mt6363-regulator.yaml#
       - $ref: /schemas/regulator/mediatek,mt6373-regulator.yaml#
-    additionalProperties: true
 
 required:
   - compatible
