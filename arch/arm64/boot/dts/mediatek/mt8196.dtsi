@@ -12,6 +12,7 @@
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/phy/phy.h>
 #include <dt-bindings/power/mediatek,mt8196-power.h>
+#include <dt-bindings/reset/mediatek,mt8196-resets.h>
 #include "mt8196-pinfunc.h"
 
 / {
@@ -1097,6 +1098,81 @@
 				clock-names = "ref";
 				#phy-cells = <1>;
 			};
+		};
+
+		ufsphy: ufs-phy@16800000 {
+			compatible = "mediatek,mt8196-ufsphy", "mediatek,mt8183-ufsphy";
+			reg = <0 0x16800000 0 0x10000>;
+			clocks = <&ufs_ao_clk CLK_UFSAO_UNIPRO_SYS>,
+				 <&ufs_ao_clk CLK_UFSAO_PHY_SAP>;
+			clock-names = "unipro", "mp";
+			resets = <&ufs_ao_clk MT8196_UFSAO_RST0_UFS_MPHY>;
+			#phy-cells = <0>;
+			status = "disabled";
+		};
+
+		ufshci: ufshci@16810000 {
+			compatible = "mediatek,mt8196-ufshci", "mediatek,mt8195-ufshci";
+			reg = <0 0x16810000 0 0x2a00>;
+
+			interrupts = <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH 0>;
+			clocks = <&ufs_ao_clk CLK_UFSAO_UFSHCI_UFS>,
+				 <&ufs_ao_clk CLK_UFSAO_UFSHCI_AES>,
+				 <&clk26m>,
+				 <&ufs_ao_clk CLK_UFSAO_UNIPRO_SYS>,
+				 <&clk26m>,
+				 <&ufs_ao_clk CLK_UFSAO_UNIPRO_SAP>,
+				 <&ufs_ao_clk CLK_UFSAO_UNIPRO_TX_SYM>,
+				 <&topckgen CLK_TOP_PEXPT0_MEM_SUB>,
+				 <&topckgen CLK_TOP_AES_UFSFDE>,
+				 <&topckgen CLK_TOP_UNIVPLL_D6>,
+				 <&topckgen CLK_TOP_MAINPLL_D4>,
+				 <&topckgen CLK_TOP_UFS>,
+				 <&topckgen CLK_TOP_MAINPLL_D4_D2>,
+				 <&topckgen CLK_TOP_UNIVPLL_D5>,
+				 <&ufs_ao_clk CLK_UFSAO_UNIPRO_RX_SYM0>,
+				 <&ufs_ao_clk CLK_UFSAO_UNIPRO_RX_SYM1>;
+			clock-names = "ufs",
+				      "ufs_aes",
+				      "ufs_tick",
+				      "unipro_sysclk",
+				      "unipro_tick",
+				      "unipro_mp_bclk",
+				      "ufs_tx_symbol",
+				      "ufs_mem_sub",
+				      "crypt_mux",
+				      "crypt_lp",
+				      "crypt_perf",
+				      "ufs_sel",
+				      "ufs_sel_min_src",
+				      "ufs_sel_max_src",
+				      "ufs_rx_symbol0",
+				      "ufs_rx_symbol1";
+
+			phys = <&ufsphy>;
+
+			dvfsrc-vcore-supply = <&dvfsrc_vcore>;
+
+			freq-table-hz = <273000000 499200000>,
+					<0 0>, <0 0>, <0 0>, <0 0>, <0 0>,
+					<0 0>, <0 0>, <0 0>, <0 0>, <0 0>,
+					<0 0>, <0 0>, <0 0>, <0 0>, <0 0>;
+
+			resets = <&ufs_ao_clk MT8196_UFSAO_RST1_UFS_UNIPRO>,
+				 <&ufs_ao_clk MT8196_UFSAO_RST1_UFS_CRYPTO>,
+				 <&ufs_ao_clk MT8196_UFSAO_RST1_UFSHCI>;
+			reset-names = "unipro_rst",
+				      "crypto_rst",
+				      "hci_rst";
+			mediatek,ufs-disable-mcq;
+			status = "disabled";
+		};
+
+		ufs_ao_clk: clock-controller@168a0000 {
+			compatible = "mediatek,mt8196-ufscfg-ao", "syscon";
+			reg = <0 0x168a0000 0 0x1000>;
+			#clock-cells = <1>;
+			#reset-cells = <1>;
 		};
 
 		pciephy0: phy@16900000 {
