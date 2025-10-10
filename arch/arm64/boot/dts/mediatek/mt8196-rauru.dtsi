@@ -265,11 +265,20 @@
 
 &mt6363_vbuck2 {
 	regulator-name = "dvdd_mm";
+	regulator-coupled-with = <&mt6363_vbuck3>;
+	regulator-coupled-max-spread = <28500>;
 	regulator-min-microvolt = <462500>;
 	regulator-max-microvolt = <1050000>;
 	regulator-always-on;
 };
 
+&mt6363_vbuck3 {
+	regulator-coupled-with = <&mt6363_vbuck2>;
+	regulator-coupled-max-spread = <28500>;
+	regulator-min-microvolt = <462500>;
+	regulator-max-microvolt = <1050000>;
+	regulator-always-on;
+};
 
 &mt6363_vbuck4 {
 	regulator-name = "dvdd_sram_core";
@@ -278,9 +287,22 @@
 	regulator-always-on;
 };
 
+&mt6363_vbuck5 {
+	regulator-always-on;
+};
 
 &mt6363_vbuck6 {
 	regulator-name = "dvdd_modem";
+	regulator-coupled-with = <&mt6363_vbuck7>;
+	regulator-coupled-max-spread = <28500>;
+	regulator-min-microvolt = <518750>;
+	regulator-max-microvolt = <881250>;
+	regulator-always-on;
+};
+
+&mt6363_vbuck7 {
+	regulator-coupled-with = <&mt6363_vbuck6>;
+	regulator-coupled-max-spread = <28500>;
 	regulator-min-microvolt = <518750>;
 	regulator-max-microvolt = <881250>;
 	regulator-always-on;
