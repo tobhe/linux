@@ -674,8 +674,15 @@ static int mt6373_regulator_probe(struct platform_device *pdev)
 	of_node_put(interrupt_parent);
 	fwspec.fwnode = domain->fwnode;
 
-	/* Read PMIC variant information */
-	ret = regmap_read(config.regmap, MT6373_PLG_CFG_ELR1, &val);
+	/*
+	 * Read PMIC variant information. Two tries as PMIC may fail to respond
+	 * if it's the first communication with it. Subsequent comms work.
+	 */
+	i = 0;
+	do {
+		ret = regmap_read(config.regmap, MT6373_PLG_CFG_ELR1, &val);
+		i++;
+	} while (ret == -ETIMEDOUT && i < 2);
 	if (ret)
 		return dev_err_probe(dev, ret, "Cannot read ID register\n");
 
