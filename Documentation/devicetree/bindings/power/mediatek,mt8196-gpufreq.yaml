@@ -74,8 +74,14 @@ properties:
   "#clock-cells":
     const: 1
 
+  "#nvmem-cell-cells":
+    const: 0
+
   "#power-domain-cells":
     const: 0
+
+  shader-present:
+    type: object
 
 required:
   - compatible
@@ -87,6 +93,7 @@ required:
   - mbox-names
   - memory-region
   - "#clock-cells"
+  - "#nvmem-cell-cells"
   - "#power-domain-cells"
 
 additionalProperties: false
@@ -113,5 +120,9 @@ examples:
                      "ccf", "fast-dvfs";
         memory-region = <&gpueb_shared_memory>;
         #clock-cells = <1>;
+        #nvmem-cell-cells = <0>;
         #power-domain-cells = <0>;
+
+        shader-present {
+        };
     };
