@@ -1641,6 +1641,8 @@
 			interrupt-names = "job",
 					  "mmu",
 					  "gpu";
+			nvmem-cells = <&shader_present>;
+			nvmem-cell-names = "shader-present";
 			power-domains = <&gpufreq>;
 			#cooling-cells = <2>;
 			status = "disabled";
@@ -1661,7 +1663,11 @@
 			mbox-names = "gpufreq", "sleep";
 			memory-region = <&gpueb_shared_memory>;
 			#clock-cells = <1>;
+			#nvmem-cell-cells = <0>;
 			#power-domain-cells = <0>;
+
+			shader_present: shader-present {
+			};
 		};
 
 		gpueb_mbox: mailbox@4b09fd80 {
