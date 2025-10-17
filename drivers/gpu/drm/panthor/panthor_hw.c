@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0 or MIT
 /* Copyright 2025 ARM Limited. All rights reserved. */
 
+#include <linux/nvmem-consumer.h>
+
 #include "panthor_device.h"
 #include "panthor_hw.h"
 #include "panthor_regs.h"
@@ -58,9 +60,58 @@ static char *get_gpu_model_name(struct panthor_device *ptdev)
 	return "(Unknown Mali GPU)";
 }
 
-static void panthor_gpu_info_init(struct panthor_device *ptdev)
+static int panthor_gpu_get_shader_present(struct panthor_device *ptdev, __u64 *reg)
+{
+	struct device *dev =ptdev->base.dev;
+	struct nvmem_cell *cell = nvmem_cell_get(dev, "shader-present");
+	ssize_t len;
+	void *buf;
+	int ret;
+
+	if (IS_ERR(cell)) {
+		/* On platforms without this cell, use the Mali register */
+		if (PTR_ERR(cell) == -ENOENT) {
+			*reg = gpu_read64(ptdev, GPU_SHADER_PRESENT);
+			return 0;
+		}
+
+		return dev_err_probe(dev, PTR_ERR(cell),
+				     "Failed to get shader-present nvmem cell\n");
+	}
+
+	buf = nvmem_cell_read(cell, &len);
+	if (IS_ERR(buf)) {
+		ret = dev_err_probe(dev, PTR_ERR(buf),
+				    "Failed to read shader-present nvmem cell\n");
+		goto err_put_cell;
+	}
+
+	if (!len || len > 8) {
+		ret = dev_err_probe(dev, -EINVAL, "shader-present cell can't be length %ld\n",
+				    len);
+		goto err_free;
+	}
+
+	*reg = 0;
+	memcpy(reg, buf, len);
+
+	kfree(buf);
+	nvmem_cell_put(cell);
+
+	return 0;
+
+err_free:
+	kfree(buf);
+err_put_cell:
+	nvmem_cell_put(cell);
+
+	return ret;
+}
+
+static int panthor_gpu_info_init(struct panthor_device *ptdev)
 {
 	unsigned int i;
+	int ret;
 
 	ptdev->gpu_info.gpu_id = gpu_read(ptdev, GPU_ID);
 	ptdev->gpu_info.csf_id = gpu_read(ptdev, GPU_CSF_ID);
@@ -80,19 +131,27 @@ static void panthor_gpu_info_init(struct panthor_device *ptdev)
 
 	ptdev->gpu_info.as_present = gpu_read(ptdev, GPU_AS_PRESENT);
 
-	ptdev->gpu_info.shader_present = gpu_read64(ptdev, GPU_SHADER_PRESENT);
+	ret = panthor_gpu_get_shader_present(ptdev, &ptdev->gpu_info.shader_present);
+	if (ret)
+		return ret;
+
 	ptdev->gpu_info.tiler_present = gpu_read64(ptdev, GPU_TILER_PRESENT);
 	ptdev->gpu_info.l2_present = gpu_read64(ptdev, GPU_L2_PRESENT);
 
 	/* Introduced in arch 11.x */
 	ptdev->gpu_info.gpu_features = gpu_read64(ptdev, GPU_FEATURES);
+
+	return 0;
 }
 
-static void panthor_hw_info_init(struct panthor_device *ptdev)
+static int panthor_hw_info_init(struct panthor_device *ptdev)
 {
 	u32 major, minor, status;
+	int ret;
 
-	panthor_gpu_info_init(ptdev);
+	ret = panthor_gpu_info_init(ptdev);
+	if (ret)
+		return ret;
 
 	major = GPU_VER_MAJOR(ptdev->gpu_info.gpu_id);
 	minor = GPU_VER_MINOR(ptdev->gpu_info.gpu_id);
@@ -115,11 +174,11 @@ static void panthor_hw_info_init(struct panthor_device *ptdev)
 		 "shader_present=0x%0llx l2_present=0x%0llx tiler_present=0x%0llx",
 		 ptdev->gpu_info.shader_present, ptdev->gpu_info.l2_present,
 		 ptdev->gpu_info.tiler_present);
+
+	return 0;
 }
 
 int panthor_hw_init(struct panthor_device *ptdev)
 {
-	panthor_hw_info_init(ptdev);
-
-	return 0;
+	return panthor_hw_info_init(ptdev);
 }
