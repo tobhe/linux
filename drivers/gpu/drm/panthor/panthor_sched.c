@@ -2754,8 +2754,8 @@ void panthor_sched_suspend(struct panthor_device *ptdev)
 				/* Reset the queue slots manually if the termination
 				 * request failed.
 				 */
-				for (i = 0; i < group->queue_count; i++) {
-					if (group->queues[i])
+				for (i = 0; i < csg_slot->group->queue_count; i++) {
+					if (csg_slot->group->queues[i])
 						cs_slot_reset_locked(ptdev, csg_id, i);
 				}
 			}
