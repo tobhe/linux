@@ -52,24 +52,10 @@ if [ -n "${DT_PATH:-}" ]; then
   find "${DT_PATH}" -type f -name '*.dtb' -exec cp -v {} dtbs/ \;
 fi
 
-# workarounds and specific stuff
+# Compress kernel image for certain Qualcomm devices
 if [[ ${KERNEL_ARCH} = "arm64" ]]; then
-  { # Google's Cheza
-    make Image.lzma  # Google's Cheza
-    mkimage \
-        -f auto \
-        -A arm \
-        -O linux \
-        -d arch/arm64/boot/Image.lzma \
-        -C lzma\
-        -b arch/arm64/boot/dts/qcom/sdm845-cheza-r3.dtb \
-        kernels/cheza-kernel
-    KERNEL_IMAGE_NAME+=( cheza-kernel )
-  }
-  { # db410c
-    gzip -k kernels/Image
-    KERNEL_IMAGE_NAME+=( Image.gz )
-  }
+  gzip -k kernels/Image
+  KERNEL_IMAGE_NAME+=( Image.gz )
 fi
 
 # modules
