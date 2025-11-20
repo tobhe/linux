@@ -38,6 +38,7 @@
 *.o
 *.o.*
 *.patch
+*.pyc
 *.rmeta
 *.rpm
 *.rsi
