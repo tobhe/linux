@@ -47,8 +47,9 @@
 static unsigned int read_reg_field(void __iomem *base, unsigned int offset, unsigned int mask)
 {
 	unsigned int val = readl(base + offset);
+	unsigned int shift = __ffs(mask);
 
-	return FIELD_GET(mask, val);
+	return (val & mask) >> shift;
 }
 
 struct mtk_dramc_pdata {
