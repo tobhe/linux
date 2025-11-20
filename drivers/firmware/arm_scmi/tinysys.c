@@ -9,8 +9,8 @@
 
 #include <linux/module.h>
 #include <linux/scmi_protocol.h>
-#include <common.h>
-#include <notify.h>
+#include "common.h"
+#include "notify.h"
 
 #include "tinysys-scmi.h"
 
