@@ -410,7 +410,7 @@ static void vcp_A_notify_ws(struct work_struct *ws)
 	if (core_id < VCP_CORE_TOTAL) {
 		mutex_lock(&vcp_ready_mutex);
 		vcp_ready[core_id] = 1;
-		vcp_ipidev.prdata = core_id;
+		vcp_ipidev.prdata = (void*)core_id;
 		mutex_unlock(&vcp_ready_mutex);
 
 		mutex_lock(&vcp_A_notify_mutex);
