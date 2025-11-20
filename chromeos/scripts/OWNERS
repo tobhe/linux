@@ -1,7 +1,0 @@
-set noparent
-
-include chromiumos/owners:v1:/kernel/OWNERS.build
-
-per-file cros_fit_lib.py = file:chromiumos/owners:v1:/kernel/OWNERS.build_arm
-per-file cros_fit_lib_test.py = file:chromiumos/owners:v1:/kernel/OWNERS.build_arm
-per-file cros_make_fit.py = file:chromiumos/owners:v1:/kernel/OWNERS.build_arm
