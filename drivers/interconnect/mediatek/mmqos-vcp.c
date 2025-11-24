@@ -31,7 +31,7 @@ void *mmqos_get_vcp_base(phys_addr_t *pa)
 	mmqos = mtk_mmqos_get_drv_data();
 	if (IS_ERR_OR_NULL(mmqos)) {
 		mmqos_err(mmqos->dev, "not ready");
-		*pa = NULL;
+		*pa = (u64)NULL;
 	}
 
 	if (pa)
@@ -292,7 +292,7 @@ err:
 	return 0;
 }
 
-int mmqos_get_vcp_mmqos_log(char *buf, const struct kernel_param *kp)
+static int mmqos_get_vcp_mmqos_log(char *buf, const struct kernel_param *kp)
 {
 	int len = 0, ret;
 
@@ -305,7 +305,7 @@ int mmqos_get_vcp_mmqos_log(char *buf, const struct kernel_param *kp)
 	return len;
 }
 
-int mmqos_set_vcp_mmqos_log(const char *val, const struct kernel_param *kp)
+static int mmqos_set_vcp_mmqos_log(const char *val, const struct kernel_param *kp)
 {
 	struct mtk_mmqos *mmqos = mtk_mmqos_get_drv_data();
 	struct mtk_vcp_device  *vcp_device;
@@ -349,7 +349,7 @@ static const struct kernel_param_ops mmqos_set_vcp_mmqos_log_ops = {
 module_param_cb(vcp_mmqos_log, &mmqos_set_vcp_mmqos_log_ops, NULL, 0644);
 MODULE_PARM_DESC(vcp_mmqos_log, "mmqos vcp log");
 
-int mmqos_get_vcp_smi_log(char *buf, const struct kernel_param *kp)
+static int mmqos_get_vcp_smi_log(char *buf, const struct kernel_param *kp)
 {
 	int len = 0, ret;
 
@@ -362,7 +362,7 @@ int mmqos_get_vcp_smi_log(char *buf, const struct kernel_param *kp)
 	return len;
 }
 
-int mmqos_set_vcp_smi_log(const char *val, const struct kernel_param *kp)
+static int mmqos_set_vcp_smi_log(const char *val, const struct kernel_param *kp)
 {
 	struct mtk_mmqos *mmqos = mtk_mmqos_get_drv_data();
 	struct mtk_vcp_device  *vcp_device;
