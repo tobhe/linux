@@ -490,9 +490,8 @@ static int mtk_jpegenc_smmu_init(struct mtk_jpegenc_comp_dev *dev)
                 syscon_regmap_lookup_by_phandle(dev->plat_dev->dev.of_node,
 						"mediatek,smmu-config");
         if (IS_ERR(dev->smmu_regmap)) {
-		return dev_err_probe(dev->dev, dev->smmu_regmap,
-				     "mmap smmu_base failed(%ld)\n",
-				     PTR_ERR(dev->smmu_regmap));
+		return dev_err_probe(dev->dev, PTR_ERR(dev->smmu_regmap),
+				     "mmap smmu_base failed\n");
 	}
 
 	return 0;

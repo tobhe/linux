@@ -521,7 +521,7 @@ static void jpeg_drv_hybrid_dec_prepare_dvfs(struct mtk_jpegdec_comp_dev *jpeg)
 	}
 }
 
-void jpeg_drv_hybrid_dec_end_dvfs(struct mtk_jpegdec_comp_dev *jpeg)
+static void jpeg_drv_hybrid_dec_end_dvfs(struct mtk_jpegdec_comp_dev *jpeg)
 {
 	bool mmdfvs_enable_flag;
 	struct dev_pm_opp *opp;
@@ -529,7 +529,7 @@ void jpeg_drv_hybrid_dec_end_dvfs(struct mtk_jpegdec_comp_dev *jpeg)
 	int ret;
 
 	if (jpeg->jpeg_reg) {
-		opp = dev_pm_opp_find_freq_ceil(jpeg->dev, jpeg->freqs[0]);
+		opp = dev_pm_opp_find_freq_ceil(jpeg->dev, &jpeg->freqs[0]);
 		if (IS_ERR(opp)) {
 			dev_err(jpeg->dev, "Failed to get dev_pm_opp");
 			return;
@@ -747,9 +747,8 @@ static int mtk_jpegdec_smmu_init(struct mtk_jpegdec_comp_dev *dev)
                 syscon_regmap_lookup_by_phandle(dev->plat_dev->dev.of_node,
 						"mediatek,smmu-config");
         if (IS_ERR(dev->smmu_regmap)) {
-		return dev_err_probe(dev->dev, dev->smmu_regmap,
-				     "mmap smmu_base failed(%ld)\n",
-				     PTR_ERR(dev->smmu_regmap));
+		return dev_err_probe(dev->dev, PTR_ERR(dev->smmu_regmap),
+				     "mmap smmu_base failed\n");
 	}
 
 	return 0;
