@@ -34,17 +34,6 @@
 #include "mtk_disp_drv.h"
 #include "mtk_drm_drv.h"
 
-#define REG_FLD_SHIFT(field) ((unsigned int)((field) & 0xff))
-#define REG_FLD_WIDTH(field) ((unsigned int)(((field) >> 16) & 0xff))
-#define REG_FLD_MASK(field)							\
-	((unsigned int)((1ULL << REG_FLD_WIDTH(field)) - 1)			\
-	 << REG_FLD_SHIFT(field))
-#define REG_FLD_VAL(field, val)							\
-	(((val) << REG_FLD_SHIFT(field)) & REG_FLD_MASK(field))
-#define REG_FLD(width, shift)							\
-	((unsigned int)((((width) & 0xff) << 16) | ((shift) & 0xff)))
-#define REG_FLD_MSB_LSB(msb, lsb) REG_FLD((msb) - (lsb) + 1, (lsb))
-
 #define DSI_START		0x00
 
 #define DSI_INTEN		0x08
@@ -116,11 +105,6 @@
 					(data)->dsi_hstx_ckl_wc : 0x64)
 #define HSTX_CKL_WC			GENMASK(15, 2)
 
-#define DSI_BLLP_WC		0x5c
-
-#define DSI_CMD_TYPE1_HS		0x6c
-#define CPHY_6BYE_EN			BIT(18)
-
 #define DSI_RX_DATA0(data)		(0x74 + (data)->reg_30_ofs)
 #define DSI_RX_DATA1(data)		(0x78 + (data)->reg_30_ofs)
 #define DSI_RX_DATA2(data)		(0x7c + (data)->reg_30_ofs)
@@ -145,20 +129,12 @@
 #define HS_PREP				(0xff << 8)
 #define HS_ZERO				(0xff << 16)
 #define HS_TRAIL			(0xff << 24)
-#define FLD_LPX				REG_FLD_MSB_LSB(7, 0)
-#define FLD_HS_PREP			REG_FLD_MSB_LSB(15, 8)
-#define FLD_HS_ZERO			REG_FLD_MSB_LSB(23, 16)
-#define FLD_HS_TRAIL			REG_FLD_MSB_LSB(31, 24)
 
 #define DSI_PHY_TIMECON1(data)		(DSI_PHY_TIMECON0(data) + 0x4)
 #define TA_GO				(0xff << 0)
 #define TA_SURE				(0xff << 8)
 #define TA_GET				(0xff << 16)
 #define DA_HS_EXIT			(0xff << 24)
-#define FLD_TA_GO			REG_FLD_MSB_LSB(7, 0)
-#define FLD_TA_SURE			REG_FLD_MSB_LSB(15, 8)
-#define FLD_TA_GET			REG_FLD_MSB_LSB(23, 16)
-#define FLD_DA_HS_EXIT			REG_FLD_MSB_LSB(31, 24)
 
 #define DSI_PHY_TIMECON2(data)		(DSI_PHY_TIMECON0(data) + 0x8)
 #define CONT_DET			(0xff << 0)
@@ -174,9 +150,6 @@
 #define VM_CMD_EN			BIT(0)
 #define TS_VFP_EN			BIT(5)
 
-#define DSI_CPHY_CON0			0x120
-#define CPHY_EN			BIT(0)
-#define CPHY_CON0_VAL			0x012c0003
 #define DSI_SHADOW_DEBUG(data)		((data)->dsi_shadow_dbg ? \
 					(data)->dsi_shadow_dbg : 0x190)
 #define FORCE_COMMIT			BIT(0)
@@ -304,8 +277,6 @@ struct mtk_dsi {
 	const struct mtk_dsi_driver_data *driver_data;
 	struct drm_dsc_config *dsc_config;
 	bool dsc_enable;
-	u32 data_phy_cycle;
-	bool is_cphy;
 };
 
 static inline struct mtk_dsi *bridge_to_dsi(struct drm_bridge *b)
@@ -334,59 +305,6 @@ static int mtk_get_dsi_buffer_bpp(int format) {
 	default:
 		return 0;
 	}
-}
-
-static void mtk_dsi_cphy_timconfig(struct mtk_dsi *dsi)
-{
-	u32 ui = 0, cycle_time = 0;
-	u32 value = 0;
-	u32 data_rate = dsi->data_rate / 1000000;
-	struct mtk_phy_timing *timing = &dsi->phy_timing;
-
-	ui = (1000 / data_rate > 0) ? 1000 / data_rate : 1;
-	cycle_time = 7000 / data_rate;
-	/* spec. lpx > 50ns */
-	timing->lpx = (data_rate * 80) / 7000 + 1;
-	round_up(timing->lpx, 2);
-	/* spec.  38ns < hs_prpr < 95ns */
-	timing->da_hs_prepare = (data_rate * 50) / 7000 + 1;
-	round_up(timing->da_hs_prepare, 2);
-	/* spec.  7ui < hs_zero(prebegin) < 448ui
-	 * The PreBegin part of the Preamble may
-	 * range from 1 to 64 Words, or 7 to 448 symbols.
-	 */
-	timing->da_hs_zero = 48;
-
-	/* spec.  7ui < hs_trail(post) < 224ui
-	 * The Post field may range from 1 to 32 Words,
-	 * or 7 to 224 symbols.
-	 */
-	timing->da_hs_trail = 32;
-
-	/* spec. ta_get = 5*lpx */
-	timing->ta_get = 5 * timing->lpx;
-	/* spec. ta_sure = 1.5*lpx */
-	timing->ta_sure = 3 * timing->lpx / 2;
-	/* spec. ta_go = 4*lpx */
-	timing->ta_go = 4 * timing->lpx;
-	/* spec. da_hs_exit > 100ns */
-	timing->da_hs_exit = round_up((data_rate * 118) / 7000 + 1, 2) + 1;
-	dsi->data_phy_cycle = timing->da_hs_prepare + timing->da_hs_zero + timing->da_hs_exit + timing->lpx + 5;
-	value = REG_FLD_VAL(FLD_LPX, timing->lpx)
-		| REG_FLD_VAL(FLD_HS_PREP, timing->da_hs_prepare)
-		| REG_FLD_VAL(FLD_HS_ZERO, timing->da_hs_zero)
-		| REG_FLD_VAL(FLD_HS_TRAIL, timing->da_hs_trail);
-
-	writel(value, dsi->regs + DSI_PHY_TIMECON0(dsi->driver_data));
-
-	value = REG_FLD_VAL(FLD_TA_GO, timing->ta_go)
-		| REG_FLD_VAL(FLD_TA_SURE, timing->ta_sure)
-		| REG_FLD_VAL(FLD_TA_GET, timing->ta_get)
-		| REG_FLD_VAL(FLD_DA_HS_EXIT, timing->da_hs_exit);
-
-	writel(value, dsi->regs + DSI_PHY_TIMECON1(dsi->driver_data));
-	writel(CPHY_CON0_VAL, dsi->regs + DSI_CPHY_CON0);
-	writel(16 * dsi->lanes, dsi->regs + DSI_BLLP_WC);
 }
 
 static void mtk_dsi_phy_timconfig(struct mtk_dsi *dsi)
@@ -579,8 +497,6 @@ static void mtk_dsi_ps_control(struct mtk_dsi *dsi, bool config_vact)
 		writel(ps_wc, dsi->regs + DSI_HSTX_CKL_WC(dsi->driver_data));
 	}
 	writel(ps_val, dsi->regs + DSI_PSCTRL(dsi->driver_data));
-	if (dsi->is_cphy)
-		mtk_dsi_mask(dsi, DSI_CMD_TYPE1_HS, CPHY_6BYE_EN, 0);
 }
 
 static void mtk_dsi_config_vdo_timing_per_frame_lp(struct mtk_dsi *dsi)
@@ -588,18 +504,14 @@ static void mtk_dsi_config_vdo_timing_per_frame_lp(struct mtk_dsi *dsi)
 	u32 horizontal_sync_active_byte;
 	u32 horizontal_backporch_byte;
 	u32 horizontal_frontporch_byte;
-	u32 hfp_byte_adjust = 0;;
-	u32 v_active_adjust = 0;
-	u32 cklp_wc_min_adjust = 0;
-	u32 cklp_wc_max_adjust = 0;;
-	u32 dsi_tmp_buf_bpp = 0;;
+	u32 hfp_byte_adjust, v_active_adjust;
+	u32 cklp_wc_min_adjust, cklp_wc_max_adjust;
+	u32 dsi_tmp_buf_bpp;
 	unsigned int da_hs_trail;
 	unsigned int ps_wc, hs_vb_ps_wc;
 	u32 v_active_roundup, hstx_cklp_wc;
 	u32 hstx_cklp_wc_max, hstx_cklp_wc_min;
 	struct videomode *vm = &dsi->vm;
-	struct mtk_phy_timing *timing = &dsi->phy_timing;
-	u32 tmp = 0;
 
 	if (dsi->format == MIPI_DSI_FMT_RGB565)
 		dsi_tmp_buf_bpp = 2;
@@ -614,20 +526,6 @@ static void mtk_dsi_config_vdo_timing_per_frame_lp(struct mtk_dsi *dsi)
 			vm->hsync_len * dsi_tmp_buf_bpp - 10;
 		horizontal_backporch_byte =
 			vm->hback_porch * dsi_tmp_buf_bpp - 10;
-		if (dsi->is_cphy) {
-			if (vm->hsync_len * dsi_tmp_buf_bpp < 10 * dsi->lanes + 26 + 5)
-				horizontal_sync_active_byte = 4;
-			else
-				horizontal_frontporch_byte =
-					vm->hsync_len * dsi_tmp_buf_bpp - 10 * dsi->lanes - 26;
-
-			if (vm->hback_porch * dsi_tmp_buf_bpp < 12 * dsi->lanes + 26 + 5)
-				horizontal_backporch_byte = 4;
-			else
-				horizontal_backporch_byte =
-					vm->hback_porch * dsi_tmp_buf_bpp -
-					12 * dsi->lanes - 26;
-		}
 		hfp_byte_adjust = 12;
 		v_active_adjust = 32 + horizontal_sync_active_byte;
 		cklp_wc_min_adjust = 12 + 2 + 4 + horizontal_sync_active_byte;
@@ -647,19 +545,6 @@ static void mtk_dsi_config_vdo_timing_per_frame_lp(struct mtk_dsi *dsi)
 		}
 	}
 	horizontal_frontporch_byte = vm->hfront_porch * dsi_tmp_buf_bpp - hfp_byte_adjust;
-	if (dsi->is_cphy) {
-		tmp = 8 * dsi->lanes + 28 + 2 * dsi->data_phy_cycle * dsi->lanes;
-		if (vm->hfront_porch * dsi_tmp_buf_bpp < tmp + 9)
-			horizontal_frontporch_byte = 8;
-		else if ((vm->hfront_porch * dsi_tmp_buf_bpp > tmp  + 8) &&
-				(vm->hfront_porch * dsi_tmp_buf_bpp < tmp + 2 *
-				(timing->da_hs_trail + 1) * dsi->lanes - 6 * dsi->lanes - 14))
-			horizontal_frontporch_byte = 2 * (timing->da_hs_trail + 1) *
-						     dsi->lanes - 6 * dsi->lanes - 14;
-		else
-			horizontal_frontporch_byte = vm->hfront_porch * dsi_tmp_buf_bpp - tmp;
-	}
-
 	v_active_roundup = (v_active_adjust + horizontal_backporch_byte + ps_wc +
 			   horizontal_frontporch_byte) % dsi->lanes;
 	if (v_active_roundup)
@@ -672,14 +557,8 @@ static void mtk_dsi_config_vdo_timing_per_frame_lp(struct mtk_dsi *dsi)
 	hstx_cklp_wc = FIELD_PREP(HSTX_CKL_WC, (hstx_cklp_wc_min + hstx_cklp_wc_max) / 2);
 	writel(hstx_cklp_wc, dsi->regs + DSI_HSTX_CKL_WC(dsi->driver_data));
 
-	if (dsi->is_cphy)
-		hs_vb_ps_wc = ps_wc - (dsi->phy_timing.lpx + dsi->phy_timing.da_hs_exit +
-			dsi->phy_timing.da_hs_prepare + dsi->phy_timing.da_hs_zero + 4)
-			* 2 * dsi->lanes;
-	else
-		hs_vb_ps_wc = ps_wc - (dsi->phy_timing.lpx + dsi->phy_timing.da_hs_exit +
-			dsi->phy_timing.da_hs_prepare + dsi->phy_timing.da_hs_zero + 2)
-			* dsi->lanes;
+	hs_vb_ps_wc = ps_wc - (dsi->phy_timing.lpx + dsi->phy_timing.da_hs_exit +
+		      dsi->phy_timing.da_hs_prepare + dsi->phy_timing.da_hs_zero + 2) * dsi->lanes;
 	horizontal_frontporch_byte |= FIELD_PREP(HFP_HS_EN, 1) |
 				      FIELD_PREP(HFP_HS_VB_PS_WC, hs_vb_ps_wc);
 
@@ -871,10 +750,7 @@ static void mtk_dsi_tx_buf_rw(struct mtk_dsi *dsi)
 				dsi->driver_data->urgent_hi_fifo_us : 12;
 	output_valid_us = dsi->driver_data->output_valid_fifo_us ?
 				dsi->driver_data->output_valid_fifo_us : 25;
-	if (dsi->is_cphy)
-		data_rate_per_buf = dsi->data_rate * 2 * dsi->lanes / 7 / buffer_unit;
-	else
-		data_rate_per_buf = dsi->data_rate * dsi->lanes / 8 / buffer_unit;
+	data_rate_per_buf = dsi->data_rate * dsi->lanes / 8 / buffer_unit;
 
 	if (dsi->driver_data->support_per_frame_lp)
 		mtk_dsi_mask(dsi, DSI_CON_CTRL(dsi->driver_data),
@@ -883,10 +759,8 @@ static void mtk_dsi_tx_buf_rw(struct mtk_dsi *dsi)
 	else
 		mtk_dsi_mask(dsi, DSI_CON_CTRL(dsi->driver_data),
 		             DSI_CM_MODE_WAIT_DATA_EVERY_LINE_EN, 0);
-	if (dsi->is_cphy)
-		tmp = 25 * data_rate_per_buf;
-	else
-		tmp = output_valid_us * data_rate_per_buf;
+
+	tmp = output_valid_us * data_rate_per_buf;
 
 	/* check output valid threshold exceed FIFO size if FIFO size is pre-defined */
 	if (buf_con)
@@ -981,12 +855,6 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
 
 	dsi->data_rate = DIV_ROUND_UP_ULL(dsi->vm.pixelclock * bit_per_pixel,
 					  dsi->lanes);
-	if (dsi->is_cphy)
-		dsi->data_rate = DIV_ROUND_UP_ULL(dsi->vm.pixelclock * bit_per_pixel * 7,
-					  dsi->lanes * 16);
-	else
-		dsi->data_rate = DIV_ROUND_UP_ULL(dsi->vm.pixelclock * bit_per_pixel,
-					  dsi->lanes);
 	if (dsi->dsc_enable) {
 		dsi->vm.hactive = DIV_ROUND_UP_ULL(dsi->vm.hactive, 3);
 		dsi->vm.pixelclock = (dsi->vm.hactive + dsi->vm.hfront_porch
@@ -1028,10 +896,7 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
 		       dsi->regs + DSI_SHADOW_DEBUG(dsi->driver_data));
 
 	mtk_dsi_reset_engine(dsi);
-	if (dsi->is_cphy)
-		mtk_dsi_cphy_timconfig(dsi);
-	else
-		mtk_dsi_phy_timconfig(dsi);
+	mtk_dsi_phy_timconfig(dsi);
 	if (dsi->driver_data->support_dsi_buffer)
 		mtk_dsi_tx_buf_rw(dsi);
 
@@ -1441,7 +1306,7 @@ static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
 		cmdq_mask = CONFIG | DATA_ID;
 		reg_val = (type << 8) | config;
 	}
-	writel(0x0, dsi->regs + reg_cmdq_off);
+
 	for (i = 0; i < msg->tx_len; i++)
 		mtk_dsi_mask(dsi, (reg_cmdq_off + cmdq_off + i) & (~0x3U),
 			     (0xffUL << (((i + cmdq_off) & 3U) * 8U)),
@@ -1462,8 +1327,6 @@ static ssize_t mtk_dsi_host_send_cmd(struct mtk_dsi *dsi,
 	mtk_dsi_irq_data_clear(dsi, flag);
 	mtk_dsi_cmdq(dsi, msg);
 	mtk_dsi_start(dsi);
-	/* unset DSI_START after trigger */
-	writel(0, dsi->regs + DSI_START);
 
 	if (!mtk_dsi_wait_for_irq_done(dsi, flag, 2000))
 		return -ETIME;
@@ -1490,20 +1353,11 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi_host *host,
 			goto restore_dsi_mode;
 	}
 
+	if (MTK_DSI_HOST_IS_READ(msg->type))
+		irq_flag |= LPRX_RD_RDY_INT_FLAG;
+
 	mtk_dsi_lane_ready(dsi);
 
-	if (MTK_DSI_HOST_IS_READ(msg->type)) {
-		struct mipi_dsi_msg set_rd_msg = {
-		.tx_buf = (u8 [1]) { msg->rx_len},
-		.tx_len = 0x1,
-		.type = MIPI_DSI_SET_MAXIMUM_RETURN_PACKET_SIZE,
-		};
-
-		if (mtk_dsi_host_send_cmd(dsi, &set_rd_msg, irq_flag) < 0) {
-			goto restore_dsi_mode;
-		}
-		irq_flag |= LPRX_RD_RDY_INT_FLAG;
-	}
 	ret = mtk_dsi_host_send_cmd(dsi, msg, irq_flag);
 	if (ret)
 		goto restore_dsi_mode;
@@ -1594,7 +1448,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
 	if (IS_ERR(dsi->phy))
 		return dev_err_probe(dev, PTR_ERR(dsi->phy), "Failed to get MIPI-DPHY\n");
 
-	dsi->is_cphy = of_property_read_bool(dev->of_node, "mediatek,is-cphy");
 	irq_num = platform_get_irq(pdev, 0);
 	if (irq_num < 0)
 		return irq_num;
