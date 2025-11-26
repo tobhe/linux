@@ -968,9 +968,6 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
 	struct device *dev = dsi->host.dev;
 	int ret;
 	u32 bit_per_pixel;
-	u32 frame_rate = 0;
-	u32 htotal = 0;
-	u32 vtotal = 0;
 
 	if (++dsi->refcount != 1)
 		return 0;
@@ -984,25 +981,25 @@ static int mtk_dsi_poweron(struct mtk_dsi *dsi)
 
 	dsi->data_rate = DIV_ROUND_UP_ULL(dsi->vm.pixelclock * bit_per_pixel,
 					  dsi->lanes);
-	if (dsi->dsc_enable) {
-		htotal = dsi->vm.hactive + dsi->vm.hfront_porch +
-				 dsi->vm.hback_porch + dsi->vm.hsync_len;
-		vtotal = dsi->vm.vactive + dsi->vm.vfront_porch +
-				 dsi->vm.vback_porch + dsi->vm.vsync_len;
-		frame_rate = DIV_ROUND_UP_ULL(dsi->vm.pixelclock, htotal * vtotal);
-		if (dsi->is_cphy)
-			frame_rate = frame_rate * 104 / 100;
-		dsi->vm.hactive = DIV_ROUND_UP_ULL(dsi->vm.hactive, 3);
-		htotal = dsi->vm.hactive + dsi->vm.hfront_porch +
-				 dsi->vm.hback_porch + dsi->vm.hsync_len;
-		dsi->vm.pixelclock = htotal * vtotal * frame_rate;
-	}
 	if (dsi->is_cphy)
 		dsi->data_rate = DIV_ROUND_UP_ULL(dsi->vm.pixelclock * bit_per_pixel * 7,
 					  dsi->lanes * 16);
 	else
 		dsi->data_rate = DIV_ROUND_UP_ULL(dsi->vm.pixelclock * bit_per_pixel,
 					  dsi->lanes);
+	if (dsi->dsc_enable) {
+		dsi->vm.hactive = DIV_ROUND_UP_ULL(dsi->vm.hactive, 3);
+		dsi->vm.pixelclock = (dsi->vm.hactive + dsi->vm.hfront_porch
+			+ dsi->vm.hback_porch
+			+ dsi->vm.hsync_len) *
+			dsi->vm.pixelclock /
+			(dsi->vm.hactive * 3
+			+ dsi->vm.hfront_porch
+			+ dsi->vm.hback_porch
+			+ dsi->vm.hsync_len);
+		dsi->data_rate = DIV_ROUND_UP_ULL(dsi->vm.pixelclock * bit_per_pixel,
+					  dsi->lanes);
+	}
 	pm_runtime_get_sync(dsi->host.dev);
 	ret = clk_set_rate(dsi->hs_clk, dsi->data_rate);
 	if (ret < 0) {
@@ -1189,7 +1186,6 @@ mtk_dsi_bridge_mode_valid(struct drm_bridge *bridge,
 {
 	struct mtk_dsi *dsi = bridge_to_dsi(bridge);
 	int bpp;
-	u32 max_linkrate_kbps;
 
 	bpp = mipi_dsi_pixel_format_to_bpp(dsi->format);
 	if (bpp < 0)
@@ -1204,11 +1200,8 @@ mtk_dsi_bridge_mode_valid(struct drm_bridge *bridge,
 	}
 	if (mode->vdisplay > 2560)
 		return MODE_BAD_VVALUE;
-	if (dsi->dsc_config && dsi->dsc_config->dsc_version_major == 1)
-		max_linkrate_kbps = dsi->driver_data->max_linkrate_kbps * 3;
-	else
-		max_linkrate_kbps = dsi->driver_data->max_linkrate_kbps;
-	if (mode->clock * bpp / dsi->lanes > max_linkrate_kbps)
+
+	if (mode->clock * bpp / dsi->lanes > dsi->driver_data->max_linkrate_kbps)
 		return MODE_CLOCK_HIGH;
 
 	return MODE_OK;
@@ -1633,9 +1626,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
 	dsi->bridge.type = DRM_MODE_CONNECTOR_DSI;
 	pm_runtime_enable(dev);
 
-	mtk_dsi_stop(dsi);
-
-	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
 	return 0;
 }
 
