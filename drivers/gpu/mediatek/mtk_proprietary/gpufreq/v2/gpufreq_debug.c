@@ -3,12 +3,12 @@
  * Copyright (C) 2021 MediaTek Inc.
  */
 
-/**
+/*
  * @file    gpufreq_debug.c
  * @brief   Debug mechanism for GPU-DVFS
  */
 
-/**
+/*
  * ===============================================
  * Include
  * ===============================================
@@ -27,7 +27,7 @@
 #include <gpufreq_history.h>
 #include <ghpm_wrapper.h>
 
-/**
+/*
  * ===============================================
  * Local Variable Definition
  * ===============================================
@@ -45,7 +45,7 @@ static unsigned int g_fixed_vstack;
 static const struct gpufreq_shared_status *g_shared_status;
 static DEFINE_MUTEX(gpufreq_debug_lock);
 
-/**
+/*
  * ===============================================
  * Function Definition
  * ===============================================
@@ -855,7 +855,7 @@ static ssize_t mfgsys_config_proc_write(struct file *file,
 		/* parsing */
 		if (sysfs_streq(input_target, "test_mode")) {
 			target = CONFIG_TEST_MODE;
-			ret = kstrtouint(input_val, 16, &val);
+			ret = kstrtouint(input_val, 16, (unsigned int *)&val);
 			if (ret)
 				val = CONFIG_VAL_INVALID;
 		} else if (sysfs_streq(input_target, "stress_test")) {
@@ -909,42 +909,42 @@ static ssize_t mfgsys_config_proc_write(struct file *file,
 				val = DFD_FORCE_DUMP;
 		} else if (sysfs_streq(input_target, "imax_gpu")) {
 			target = CONFIG_IMAX_GPU;
-			ret = kstrtouint(input_val, 10, &val);
+			ret = kstrtouint(input_val, 10, (unsigned int *)&val);
 			if (ret)
 				val = CONFIG_VAL_INVALID;
 		} else if (sysfs_streq(input_target, "imax_stack")) {
 			target = CONFIG_IMAX_STACK;
-			ret = kstrtouint(input_val, 10, &val);
+			ret = kstrtouint(input_val, 10, (unsigned int *)&val);
 			if (ret)
 				val = CONFIG_VAL_INVALID;
 		} else if (sysfs_streq(input_target, "imax_sram")) {
 			target = CONFIG_IMAX_SRAM;
-			ret = kstrtouint(input_val, 10, &val);
+			ret = kstrtouint(input_val, 10, (unsigned int *)&val);
 			if (ret)
 				val = CONFIG_VAL_INVALID;
 		} else if (sysfs_streq(input_target, "pmax_stack")) {
 			target = CONFIG_PMAX_STACK;
-			ret = kstrtouint(input_val, 10, &val);
+			ret = kstrtouint(input_val, 10, (unsigned int *)&val);
 			if (ret)
 				val = CONFIG_VAL_INVALID;
 		} else if (sysfs_streq(input_target, "dyn_gpu")) {
 			target = CONFIG_DYN_GPU;
-			ret = kstrtouint(input_val, 10, &val);
+			ret = kstrtouint(input_val, 10, (unsigned int *)&val);
 			if (ret)
 				val = CONFIG_VAL_INVALID;
 		} else if (sysfs_streq(input_target, "dyn_stack")) {
 			target = CONFIG_DYN_STACK;
-			ret = kstrtouint(input_val, 10, &val);
+			ret = kstrtouint(input_val, 10, (unsigned int *)&val);
 			if (ret)
 				val = CONFIG_VAL_INVALID;
 		} else if (sysfs_streq(input_target, "dyn_sram_gpu")) {
 			target = CONFIG_DYN_SRAM_GPU;
-			ret = kstrtouint(input_val, 10, &val);
+			ret = kstrtouint(input_val, 10, (unsigned int *)&val);
 			if (ret)
 				val = CONFIG_VAL_INVALID;
 		} else if (sysfs_streq(input_target, "dyn_sram_stack")) {
 			target = CONFIG_DYN_SRAM_STACK;
-			ret = kstrtouint(input_val, 10, &val);
+			ret = kstrtouint(input_val, 10, (unsigned int *)&val);
 			if (ret)
 				val = CONFIG_VAL_INVALID;
 		} else if (sysfs_streq(input_target, "ips")) {

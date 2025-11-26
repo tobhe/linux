@@ -14,5 +14,6 @@ ccflags-y += \
 	-I$(srctree)/drivers/gpu/mediatek/mtk_proprietary/mt-plat \
 	-I$(srctree)/drivers/gpu/mediatek/mtk_proprietary/gpueb/include \
 	-I$(srctree)/drivers/gpu/mediatek/mtk_proprietary/qos \
-	-I$(srctree)/drivers/misc/mediatek/trusted_mem/public \
 	-I$(srctree)/drivers/dma-buf/heaps
+
+#	-I$(srctree)/drivers/misc/mediatek/trusted_mem/public \

@@ -118,22 +118,15 @@ ccflags-y = \
     -DMALI_JIT_PRESSURE_LIMIT_BASE=$(MALI_JIT_PRESSURE_LIMIT_BASE) \
     -DMALI_PLATFORM_DIR=$(MALI_PLATFORM_DIR)
 
-
-ifeq ($(KBUILD_EXTMOD),)
-# in-tree
-    ccflags-y +=-DMALI_KBASE_PLATFORM_PATH=../../$(src)/platform/$(CONFIG_MALI_MTK_PLATFORM_NAME)
-else
-# out-of-tree
-    ccflags-y +=-DMALI_KBASE_PLATFORM_PATH=$(src)/platform/$(CONFIG_MALI_MTK_PLATFORM_NAME)
-endif
+ccflags-y +=-DMALI_KBASE_PLATFORM_PATH=drivers/gpu/mediatek/arm/mali/platform/$(CONFIG_MALI_MTK_PLATFORM_NAME)
 
 ccflags-y += \
     -I$(srctree)/include/linux \
     -I$(srctree)/drivers/staging/android \
     -I$(src) \
     -I$(src)/platform/$(MALI_PLATFORM_DIR) \
-    -I$(src)/../../../base \
-    -I$(src)/../../../../include
+    -Idrivers/gpu/mediatek/arm/mali/base \
+    -Idrivers/gpu/mediatek/arm/mali/include
 
 # *** MTK ***
 MTK_PLATFORM := mt8196
