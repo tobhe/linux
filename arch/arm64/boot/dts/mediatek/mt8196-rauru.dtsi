@@ -447,8 +447,8 @@
 
 &mt6373_vusb {
 	regulator-name = "pp3070_vusb";
-	regulator-min-microvolt = <3070000>;
-	regulator-max-microvolt = <3070000>;
+	regulator-min-microvolt = <3000000>;
+	regulator-max-microvolt = <3000000>;
 };
 
 /* trackpad */
