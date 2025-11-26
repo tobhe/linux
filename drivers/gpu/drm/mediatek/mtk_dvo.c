@@ -556,12 +556,6 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
 	/* let pll_rate can fix the valid range of tvdpll (1G~2GHz) */
 	factor = dvo->conf->cal_factor(mode->clock);
 	drm_display_mode_to_videomode(mode, &vm);
-	if (vm.hactive % 4 != 0) {
-		vm.pixelclock = (vm.hsync_len + vm.hback_porch +
-			vm.hfront_porch + round_up(vm.hactive, 4)) *
-			(vm.vsync_len + vm.vback_porch + vm.vfront_porch + vm.vactive) *
-			drm_mode_vrefresh(mode);
-	}
 	pll_rate = vm.pixelclock * factor;
 
 	dev_dbg(dvo->dev, "Want PLL %lu Hz, pixel clock %lu Hz\n",
