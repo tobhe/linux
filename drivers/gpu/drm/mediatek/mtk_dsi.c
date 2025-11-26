@@ -277,7 +277,7 @@ struct mtk_dsi_driver_data {
 struct mtk_dsi {
 	struct device *dev;
 	struct mipi_dsi_host host;
-	struct mtk_encoder mtk_encoder;
+	struct drm_encoder encoder;
 	struct drm_bridge bridge;
 	struct drm_bridge *next_bridge;
 	struct drm_connector *connector;
@@ -1233,7 +1233,7 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
 {
 	int ret;
 
-	ret = drm_simple_encoder_init(drm, &dsi->mtk_encoder.encoder,
+	ret = drm_simple_encoder_init(drm, &dsi->encoder,
 				      DRM_MODE_ENCODER_DSI);
 	if (ret) {
 		DRM_ERROR("Failed to encoder init to drm\n");
@@ -1243,32 +1243,32 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
 	ret = mtk_find_possible_crtcs(drm, dsi->host.dev);
 	if (ret < 0)
 		goto err_cleanup_encoder;
-	dsi->mtk_encoder.encoder.possible_crtcs = ret;
+	dsi->encoder.possible_crtcs = ret;
 
-	ret = drm_bridge_attach(&dsi->mtk_encoder.encoder, &dsi->bridge, NULL,
+	ret = drm_bridge_attach(&dsi->encoder, &dsi->bridge, NULL,
 				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
 	if (ret)
 		goto err_cleanup_encoder;
 
-	dsi->connector = drm_bridge_connector_init(drm, &dsi->mtk_encoder.encoder);
+	dsi->connector = drm_bridge_connector_init(drm, &dsi->encoder);
 	if (IS_ERR(dsi->connector)) {
 		DRM_ERROR("Unable to create bridge connector\n");
 		ret = PTR_ERR(dsi->connector);
 		goto err_cleanup_encoder;
 	}
-	drm_connector_attach_encoder(dsi->connector, &dsi->mtk_encoder.encoder);
+	drm_connector_attach_encoder(dsi->connector, &dsi->encoder);
 
 	return 0;
 
 err_cleanup_encoder:
-	drm_encoder_cleanup(&dsi->mtk_encoder.encoder);
+	drm_encoder_cleanup(&dsi->encoder);
 	return ret;
 }
 
 unsigned int mtk_dsi_encoder_index(struct device *dev)
 {
 	struct mtk_dsi *dsi = dev_get_drvdata(dev);
-	unsigned int encoder_index = drm_encoder_index(&dsi->mtk_encoder.encoder);
+	unsigned int encoder_index = drm_encoder_index(&dsi->encoder);
 
 	dev_dbg(dev, "encoder index:%d\n", encoder_index);
 	return encoder_index;
@@ -1327,7 +1327,7 @@ static void mtk_dsi_unbind(struct device *dev, struct device *master,
 {
 	struct mtk_dsi *dsi = dev_get_drvdata(dev);
 
-	drm_encoder_cleanup(&dsi->mtk_encoder.encoder);
+	drm_encoder_cleanup(&dsi->encoder);
 }
 
 static const struct component_ops mtk_dsi_component_ops = {

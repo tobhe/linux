@@ -40,8 +40,6 @@
 #define DRIVER_MAJOR 1
 #define DRIVER_MINOR 0
 
-static int mtk_atomic_check(struct drm_device *dev, struct drm_atomic_state *state);
-
 static const struct drm_mode_config_helper_funcs mtk_drm_mode_config_helpers = {
 	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
 };
@@ -61,7 +59,7 @@ mtk_drm_mode_fb_create(struct drm_device *dev,
 
 static const struct drm_mode_config_funcs mtk_drm_mode_config_funcs = {
 	.fb_create = mtk_drm_mode_fb_create,
-	.atomic_check = mtk_atomic_check,
+	.atomic_check = drm_atomic_helper_check,
 	.atomic_commit = drm_atomic_helper_commit,
 };
 
@@ -584,52 +582,6 @@ static const struct of_device_id mtk_drm_of_ids[] = {
 	{ }
 };
 MODULE_DEVICE_TABLE(of, mtk_drm_of_ids);
-
-static int mtk_atomic_check(struct drm_device *dev, struct drm_atomic_state *state)
-{
-	int ret;
-	u32 i, j;
-	struct drm_crtc *crtc;
-	struct drm_crtc_state *old_crtc_state, *new_crtc_state;
-
-	ret = drm_atomic_helper_check(dev, state);
-	if (ret)
-		return ret;
-
-	for_each_oldnew_crtc_in_state(state, crtc, old_crtc_state, new_crtc_state, i) {
-		struct drm_connector_state *connector_state;
-		struct drm_connector *connector;
-
-		if (!drm_atomic_crtc_needs_modeset(new_crtc_state))
-			continue;
-
-		for_each_new_connector_in_state(state, connector, connector_state, j) {
-			struct mtk_encoder *encoder = to_mtk_encoder(connector_state->best_encoder);
-
-			if (connector->connector_type != DRM_MODE_CONNECTOR_eDP)
-				continue;
-			if (connector_state->crtc != crtc)
-				continue;
-			if (!encoder->is_seamless_switch || !encoder->compute_config ||
-			    !encoder->update_config)
-				continue;
-
-			if (!encoder->is_seamless_switch(connector_state->best_encoder, connector,
-							 new_crtc_state))
-				continue;
-
-			ret = encoder->compute_config(connector_state->best_encoder,
-						      new_crtc_state, connector_state);
-			if (ret) {
-				dev_err(dev->dev, "compute config`err");
-				return ret;
-			}
-			mtk_crtc_check_fast_modeset(old_crtc_state, new_crtc_state);
-		}
-	}
-
-	return 0;
-}
 
 static int mtk_drm_match(struct device *dev, void *data)
 {

@@ -120,7 +120,6 @@ struct mtk_crtc_state {
 	unsigned int			pending_vrefresh;
 	unsigned int			pending_hrt_bw;
 	unsigned int			pending_channel_bw[BW_CHANNEL_NR];
-	bool				fast_modeset;
 };
 
 struct mtk_crtc_comp_info {
@@ -428,7 +427,6 @@ static struct drm_crtc_state *mtk_crtc_duplicate_state(struct drm_crtc *crtc)
 	state->pending_hrt_bw = NO_PENDING_HRT;
 	for (i = 0; i < BW_CHANNEL_NR; i++)
 		state->pending_channel_bw[i] = NO_PENDING_HRT;
-	state->fast_modeset = false;
 
 	return &state->base;
 }
@@ -1618,45 +1616,6 @@ static void mtk_crtc_atomic_begin(struct drm_crtc *crtc,
 	struct mtk_crtc_state *mtk_crtc_state = to_mtk_crtc_state(crtc_state);
 	struct mtk_crtc *mtk_crtc = to_mtk_crtc(crtc);
 	unsigned long flags;
-	struct cmdq_pkt *cmdq_handle = NULL;
-
-	if (mtk_crtc_state->fast_modeset) {
-		struct drm_encoder *encoder;
-
-		dev_dbg(crtc->dev->dev, "crtc%d go fast_modeset flow to vrefresh:%d",
-			drm_crtc_index(crtc), drm_mode_vrefresh(&crtc_state->adjusted_mode));
-		drm_for_each_encoder_mask(encoder, crtc->dev, crtc_state->encoder_mask) {
-			struct mtk_encoder *mtk_encoder = to_mtk_encoder(encoder);
-
-			if (!mtk_encoder->update_config)
-				continue;
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
-			if (mtk_crtc->cmdq_client.chan) {
-				cmdq_handle = &mtk_crtc->cmdq_handle;
-				mbox_flush(mtk_crtc->cmdq_client.chan, 2000);
-				cmdq_handle->cmd_buf_size = 0;
-				cmdq_pkt_clear_event(cmdq_handle, mtk_crtc->cmdq_event);
-				cmdq_pkt_wfe(cmdq_handle, mtk_crtc->cmdq_event, false);
-			}
-#endif
-			mtk_encoder->update_config(encoder, crtc_state, cmdq_handle);
-
-#if IS_REACHABLE(CONFIG_MTK_CMDQ)
-			if (cmdq_handle) {
-				cmdq_pkt_finalize(cmdq_handle);
-				dma_sync_single_for_device(mtk_crtc->cmdq_client.chan->mbox->dev,
-							   cmdq_handle->pa_base,
-							   cmdq_handle->cmd_buf_size,
-							   DMA_TO_DEVICE);
-				mbox_send_message(mtk_crtc->cmdq_client.chan, cmdq_handle);
-				mbox_client_txdone(mtk_crtc->cmdq_client.chan, 0);
-				wait_event_timeout(mtk_crtc->cb_blocking_queue,
-						   atomic_read(&mtk_crtc->cmdq_done),
-						   msecs_to_jiffies(50));
-			}
-#endif
-		}
-	}
 
 	if (priv->data->has_secure)
 		mtk_crtc_plane_switch_sec_state(crtc, state);
@@ -1808,23 +1767,6 @@ struct device *mtk_crtc_dma_dev_get(struct drm_crtc *crtc)
 		return NULL;
 
 	return mtk_crtc->dma_dev;
-}
-
-void mtk_crtc_check_fast_modeset(struct drm_crtc_state *old_crtc_state,
-				 struct drm_crtc_state *new_crtc_state)
-{
-	struct mtk_crtc_state *new_mtk_state;
-
-	if (!old_crtc_state || !new_crtc_state)
-		return;
-
-	new_mtk_state = to_mtk_crtc_state(new_crtc_state);
-	new_crtc_state->mode_changed = false;
-
-	if (!drm_atomic_crtc_needs_modeset(new_crtc_state))
-		new_mtk_state->fast_modeset = true;
-	else
-		new_crtc_state->mode_changed = true;
 }
 
 int mtk_crtc_create(struct drm_device *drm_dev, enum mtk_crtc_path path_sel)

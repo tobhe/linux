@@ -6,7 +6,6 @@
 #ifndef MTK_DRM_DRV_H
 #define MTK_DRM_DRV_H
 
-#include <drm/drm_encoder.h>
 #include <linux/io.h>
 #include "mtk_ddp_comp.h"
 
@@ -18,7 +17,6 @@
 #define DDP_COMPONENT_DRM_OVLSYS_ADAPTOR1 (DDP_COMPONENT_DRM_OVLSYS_ADAPTOR0 + 1)
 #define DDP_COMPONENT_DRM_OVLSYS_ADAPTOR2 (DDP_COMPONENT_DRM_OVLSYS_ADAPTOR1 + 1)
 #define DDP_COMPONENT_DRM_ID_MAX (DDP_COMPONENT_DRM_OVLSYS_ADAPTOR2 + 1)
-#define to_mtk_encoder(x) container_of(x, struct mtk_encoder, encoder)
 
 enum mtk_crtc_path {
 	CRTC_MAIN,
@@ -42,19 +40,6 @@ struct drm_device;
 struct drm_fb_helper;
 struct drm_property;
 struct regmap;
-
-struct mtk_encoder {
-	struct drm_encoder encoder;
-	bool (*is_seamless_switch)(struct drm_encoder *encoder,
-				   struct drm_connector *connector,
-				   struct drm_crtc_state *crtc_state);
-	int (*compute_config)(struct drm_encoder *encoder,
-			      struct drm_crtc_state *crtc_state,
-			      struct drm_connector_state *conn_state);
-	int (*update_config)(struct drm_encoder *encoder,
-			     struct drm_crtc_state *crtc_state,
-			     void *cmdq_pkt);
-};
 
 struct mtk_drm_route {
 	const unsigned int crtc_id;

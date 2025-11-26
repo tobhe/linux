@@ -50,8 +50,6 @@ enum DISP_ATF_CMD {
 	DISP_ATF_CMD_COUNT,
 };
 
-void mtk_crtc_check_fast_modeset(struct drm_crtc_state *old_crtc_state,
-				 struct drm_crtc_state *new_crtc_state);
 void mtk_crtc_commit(struct drm_crtc *crtc);
 int mtk_crtc_create(struct drm_device *drm_dev,
 		    enum mtk_crtc_path path_sel);

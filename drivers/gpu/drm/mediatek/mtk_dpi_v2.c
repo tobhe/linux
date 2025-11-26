@@ -73,7 +73,7 @@ enum TVDPLL_CLK {
 };
 
 struct mtk_dpi {
-	struct mtk_encoder mtk_encoder;
+	struct drm_encoder encoder;
 	struct drm_bridge bridge;
 	struct drm_bridge *next_bridge;
 	void __iomem *regs;
@@ -931,7 +931,7 @@ void mtk_dpi_stop_v2(struct device *dev)
 unsigned int mtk_dpi_encoder_index_v2(struct device *dev)
 {
 	struct mtk_dpi *dpi = dev_get_drvdata(dev);
-	unsigned int encoder_index = drm_encoder_index(&dpi->mtk_encoder.encoder);
+	unsigned int encoder_index = drm_encoder_index(&dpi->encoder);
 
 	drm_dbg_kms(dpi->bridge.dev, "[DPTX] encoder index:%d\n", encoder_index);
 	return encoder_index;
@@ -976,7 +976,7 @@ static int mtk_dpi_bind_v2(struct device *dev, struct device *master, void *data
 
 	drm_dbg_kms(dpi->bridge.dev, "[DPTX] encoder init\n");
 	dpi->mmsys_dev = priv->mmsys_dev;
-	ret = drm_simple_encoder_init(drm_dev, &dpi->mtk_encoder.encoder,
+	ret = drm_simple_encoder_init(drm_dev, &dpi->encoder,
 				      DRM_MODE_ENCODER_TMDS);
 	if (ret) {
 		dev_err(dev, "[DPTX] Failed to initialize decoder:%d\n", ret);
@@ -990,7 +990,7 @@ static int mtk_dpi_bind_v2(struct device *dev, struct device *master, void *data
 	}
 
 	snprintf(result, sizeof(result), "%s%d", dsc_enable, id);
-	prop = drm_property_create_bool(dpi->mtk_encoder.encoder.dev,
+	prop = drm_property_create_bool(dpi->encoder.dev,
 					DRM_MODE_PROP_ATOMIC, result);
 	if (!prop) {
 		dev_err(dev, "[DPTX] failed to create property dp_dsc_enable\n");
@@ -999,7 +999,7 @@ static int mtk_dpi_bind_v2(struct device *dev, struct device *master, void *data
 	dpi->prop_dsc_enable = prop;
 
 	snprintf(result, sizeof(result), "%s%d", dsc_cfg, id);
-	prop = drm_property_create(dpi->mtk_encoder.encoder.dev,
+	prop = drm_property_create(dpi->encoder.dev,
 				   DRM_MODE_PROP_BLOB | DRM_MODE_PROP_IMMUTABLE,
 				   result, sizeof(struct drm_dsc_config));
 	if (!prop) {
@@ -1011,16 +1011,16 @@ static int mtk_dpi_bind_v2(struct device *dev, struct device *master, void *data
 	ret = mtk_find_possible_crtcs(drm_dev, dpi->dev);
 	if (ret < 0)
 		goto err_cleanup;
-	dpi->mtk_encoder.encoder.possible_crtcs = ret;
+	dpi->encoder.possible_crtcs = ret;
 
-	ret = drm_bridge_attach(&dpi->mtk_encoder.encoder, &dpi->bridge, NULL, 0);
+	ret = drm_bridge_attach(&dpi->encoder, &dpi->bridge, NULL, 0);
 	if (ret)
 		goto err_cleanup;
 
 	return 0;
 
 err_cleanup:
-	drm_encoder_cleanup(&dpi->mtk_encoder.encoder);
+	drm_encoder_cleanup(&dpi->encoder);
 	return ret;
 }
 
@@ -1029,7 +1029,7 @@ static void mtk_dpi_unbind_v2(struct device *dev, struct device *master,
 {
 	struct mtk_dpi *dpi = dev_get_drvdata(dev);
 
-	drm_encoder_cleanup(&dpi->mtk_encoder.encoder);
+	drm_encoder_cleanup(&dpi->encoder);
 }
 
 static const struct component_ops mtk_dpi_component_ops = {
