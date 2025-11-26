@@ -68,7 +68,7 @@ error:
 }
 EXPORT_SYMBOL(cm_mgr_to_sspm_command_ipi);
 
-void cm_ipi_init(struct device *dev)
+int cm_ipi_init(struct device *dev)
 {
 	unsigned int ret;
 
@@ -76,7 +76,7 @@ void cm_ipi_init(struct device *dev)
 	cm_ipi_data_c.tinfo = get_scmi_tinysys_info();
 	if (!cm_ipi_data_c.tinfo) {
 		dev_err(cm_ipi_data_c.dev, "get scmi-tinysys-info fail, ret\n");
-		return;
+		return -EPROBE_DEFER;
 	}
 
 	ret = of_property_read_u32(cm_ipi_data_c.tinfo->sdev->dev.of_node, "scmi-cm",
@@ -84,11 +84,12 @@ void cm_ipi_init(struct device *dev)
 	if (ret) {
 		dev_err(cm_ipi_data_c.dev, "get scmi-cm fail, ret %d\n", ret);
 		cm_ipi_data_c.cm_ipi_enable = 0;
-		return;
+		return -EINVAL;
 	}
 	dev_dbg(cm_ipi_data_c.dev, "scmi-cm_id %d\n", cm_ipi_data_c.scmi_cm_id);
 
 	cm_ipi_data_c.cm_ipi_enable = 1;
+	return 0;
 }
 EXPORT_SYMBOL(cm_ipi_init);
 MODULE_DESCRIPTION("CM ipi Driver v0.1");

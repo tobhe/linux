@@ -1679,7 +1679,7 @@ static struct platform_driver slbc_pdrv = {
 };
 
 module_platform_driver(slbc_pdrv);
-MODULE_SOFTDEP("pre: tinysys-scmi.ko");
+MODULE_SOFTDEP("pre: tinysys-scmi");
 MODULE_DESCRIPTION("MT8196 SLBC driver");
 MODULE_VERSION("1.0");
 MODULE_IMPORT_NS(DMA_BUF);

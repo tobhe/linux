@@ -24,6 +24,6 @@ struct cm_ipi_common_data {
 };
 
 int cm_mgr_to_sspm_command_ipi(unsigned int cmd, unsigned int val);
-void cm_ipi_init(struct device *dev);
+int cm_ipi_init(struct device *dev);
 
 #endif /* __MTK_CM_MGR_IPI_H__ */

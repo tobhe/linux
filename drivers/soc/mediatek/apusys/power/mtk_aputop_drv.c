@@ -39,7 +39,19 @@ static struct platform_driver mtk_apu_top_drv = {
 		.of_match_table = of_match_mtk_apu_top,
 	},
 };
-module_platform_driver(mtk_apu_top_drv);
+
+static int __init mtk_apu_top_drv_init(void)
+{
+	return platform_driver_register(&mtk_apu_top_drv);
+}
+late_initcall_sync(mtk_apu_top_drv_init);
+
+static void __exit mtk_apu_top_drv_exit(void)
+{
+	platform_driver_unregister(&mtk_apu_top_drv);
+}
+module_exit(mtk_apu_top_drv_exit);
+//module_platform_driver(mtk_apu_top_drv);
 
 int mtk_apu_get_rpc_status(struct platform_device *pdev)
 {

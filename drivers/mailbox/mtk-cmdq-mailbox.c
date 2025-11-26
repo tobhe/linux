@@ -935,8 +935,8 @@ static struct platform_driver cmdq_drv = {
 		.of_match_table = cmdq_of_ids,
 	}
 };
-
-static int __init cmdq_drv_init(void)
+module_platform_driver(cmdq_drv);
+/*static int __init cmdq_drv_init(void)
 {
 	return platform_driver_register(&cmdq_drv);
 }
@@ -948,5 +948,5 @@ static void __exit cmdq_drv_exit(void)
 
 subsys_initcall(cmdq_drv_init);
 module_exit(cmdq_drv_exit);
-
+*/
 MODULE_LICENSE("GPL v2");

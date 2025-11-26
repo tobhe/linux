@@ -478,7 +478,9 @@ int cm_mgr_common_init(struct platform_device *pdev)
 
 #if IS_REACHABLE(CONFIG_MTK_CM_IPI)
 	dev_dbg(&pdev->dev,"CM_IPI_INIT CALL\n");
-	cm_ipi_init(cmmgr_data.dev);
+	ret = cm_ipi_init(cmmgr_data.dev);
+	if (ret)
+		return ret;
 #endif
 
 	dev_dbg(&pdev->dev,"CM KERNEL TRACEPOINT\n");

@@ -190,7 +190,7 @@ static int setup_ce_bin(struct device *dev, const char *fw_path)
 	ret = request_firmware(&fw, fw_path, dev);
 	if (ret < 0) {
 		dev_err(dev, "failed to load firmware '%s': %d\n", fw_path, ret);
-		return ret;
+		return -EPROBE_DEFER;
 	}
 
 	ret = get_reserved_mem(dev, &resv_mem_va);

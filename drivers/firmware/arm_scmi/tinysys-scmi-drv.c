@@ -159,12 +159,13 @@ static const struct scmi_device_id scmi_id_table[] = {
 MODULE_DEVICE_TABLE(scmi, scmi_id_table);
 
 static struct scmi_driver scmi_tinysys_driver = {
-	.name = "scmi-tinysys",
+	.name = "tinysys-scmi",
 	.probe = scmi_tinysys_probe,
 	.id_table = scmi_id_table,
 };
 module_scmi_driver(scmi_tinysys_driver);
 
+MODULE_ALIAS("tinysys-scmi");
 MODULE_DESCRIPTION("SCMI tinysys driver");
 MODULE_LICENSE("GPL");
 

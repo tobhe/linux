@@ -302,7 +302,7 @@ static struct platform_driver mtk_platform_cm_mgr_driver = {
 
 module_platform_driver(mtk_platform_cm_mgr_driver);
 
-MODULE_SOFTDEP("post: mtk-dvfsrc");
+MODULE_SOFTDEP("post: mtk-dvfsrc pre: tinysys-scmi");
 MODULE_DESCRIPTION("Mediatek cm_mgr driver");
 MODULE_AUTHOR("Carlos Hung <carlos.hung@mediatek.com>");
 MODULE_LICENSE("GPL");
