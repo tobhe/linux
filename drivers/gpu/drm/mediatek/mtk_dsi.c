@@ -1191,13 +1191,8 @@ mtk_dsi_bridge_mode_valid(struct drm_bridge *bridge,
 	if (bpp < 0)
 		return MODE_ERROR;
 
-	if (dsi->dsc_config && dsi->dsc_config->dsc_version_major == 1) {
-		if (mode->hdisplay > 3840)
-			return MODE_BAD_HVALUE;
-	} else {
-		if (mode->hdisplay > 4096)
-			return MODE_BAD_HVALUE;
-	}
+	if (mode->hdisplay > 3840)
+		return MODE_BAD_HVALUE;
 	if (mode->vdisplay > 2560)
 		return MODE_BAD_VVALUE;
 
