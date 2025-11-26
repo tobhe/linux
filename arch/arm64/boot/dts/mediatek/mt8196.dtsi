@@ -1715,6 +1715,7 @@
 			#clock-cells = <0>;
 			#phy-cells = <0>;
 			clock-output-names = "mipi_tx0_pll";
+			power-domains = <&hfrpsys MT8196_POWER_DOMAIN_DSI_PHY0>;
 		};
 
 		i2c0: i2c@13130000 {
@@ -1789,6 +1790,10 @@
 			reg = <0 0x13260000 0 0x1000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
+
+			edp_calibration: edp-data@1b8 {
+				reg = <0x1b8 0xc>;
+			};
 
 			lvts_e_data1: data1@334 {
 				reg = <0x334 0xc>;
@@ -4856,11 +4861,42 @@
 			mediatek,vdisp-ao = <&disp_vdisp_ao_config_clk>;
 		};
 
+#if 0
+		edp_tx: edp-tx@3ec40000 {
+			compatible = "mediatek,mt8196-edpv2-tx";
+			reg = <0 0x3ec40000 0 0x4000>,
+			      <0 0x130a0000 0 0x1500>,
+			      <0 0x1002ff00 0 0x4>, //fake
+			      <0 0x31b50074 0 0x4>;
+
+			nvmem-cells = <&edp_calibration>;
+			nvmem-cell-names = "edp_calibration_data";
+
+			power-domains = <&hfrpsys MT8196_POWER_DOMAIN_DISP_EDPTX_DORMANT>;
+			clocks = <&cksys_gp2_clk CLK_CK2_DVO_SEL>,
+				 <&cksys_clk CLK_CK_TCK_26M_MX9>,
+				 <&cksys_gp2_clk CLK_CK2_DVO_SEL>;
+			clock-names = "power",
+				      "ck_26m", "mux_dp";
+			max-linkrate-mhz = <8100>;
+			interrupts = <GIC_SPI 448 IRQ_TYPE_LEVEL_HIGH 0>;
+
+			mediatek,vdisp-ao = <&disp_vdisp_ao_config_clk>;
+
+
+			status = "disabled";
+		};
+#endif
+
 		edp_tx: edp-tx@3ec40000 {
 			compatible = "mediatek,mt8196-edp-tx";
 			reg = <0 0x3ec40000 0 0x4000>,
 			      <0 0x130a0000 0 0x1500>,
 			      <0 0x31b50074 0 0x4>;
+
+			nvmem-cells = <&edp_calibration>;
+			nvmem-cell-names = "edp_calibration_data";
+
 			power-domains = <&hfrpsys MT8196_POWER_DOMAIN_DISP_EDPTX_DORMANT>;
 			clocks = <&cksys_gp2_clk CLK_CK2_DVO_SEL>;
 			clock-names = "power";

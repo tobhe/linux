@@ -434,6 +434,8 @@
 	regulator-min-microvolt = <3300000>;
 	regulator-max-microvolt = <3300000>;
 
+	regulator-always-on;
+
 	status = "okay";
 };
 
@@ -1023,7 +1025,8 @@
 		pins-edp-hpd {
 			pinmux = <PINMUX_GPIO13__FUNC_EDP_TX_HPD>;
 			/* TODO: check this. EVB is using bias-pull-up. */
-			bias-disable;
+			//bias-disable;
+			bias-pull-up;
 		};
 	};
 

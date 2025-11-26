@@ -13,7 +13,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&en_pp1000_dpbrdg_pin>;
 		enable-active-high;
-		regulator-boot-on;
+		//regulator-boot-on;
 		gpio = <&pio 82 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&pp3300_z1>;
 	};
@@ -24,7 +24,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&en_pp1800_dpbrdg_pin>;
 		enable-active-high;
-		regulator-boot-on;
+		//regulator-boot-on;
 		gpio = <&pio 84 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&mt6363_vio18>;
 	};
@@ -35,7 +35,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&en_pp3300_dpbrdg_pin>;
 		enable-active-high;
-		regulator-boot-on;
+		//regulator-boot-on;
 		gpio = <&pio 83 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&pp3300_z1>;
 	};
@@ -60,6 +60,8 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&en_edp_pp3300_pin>;
 		vin-supply = <&pp3300_z1>;
+
+		regulator-always-on;
 	};
 };
 
@@ -556,7 +558,7 @@
 	en_edp_pp3300_pin: en-edp-pp3300-pins {
 		pins-enable {
 			pinmux = <PINMUX_GPIO172__FUNC_GPIO172>;
-			output-high;
+			output-low;
 		};
 	};
 
