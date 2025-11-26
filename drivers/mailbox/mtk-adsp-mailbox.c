@@ -178,7 +178,20 @@ static struct platform_driver mtk_adsp_mbox_driver = {
 		.of_match_table = mtk_adsp_mbox_of_match,
 	},
 };
-module_platform_driver(mtk_adsp_mbox_driver);
+//module_platform_driver(mtk_adsp_mbox_driver);
+
+static int __init mtk_adsp_mbox_drv_init(void)
+{
+	return platform_driver_register(&mtk_adsp_mbox_driver);
+}
+
+static void __exit mtk_adsp_mbox_drv_exit(void)
+{
+	platform_driver_unregister(&mtk_adsp_mbox_driver);
+}
+
+arch_initcall(mtk_adsp_mbox_drv_init);
+module_exit(mtk_adsp_mbox_drv_exit);
 
 MODULE_AUTHOR("Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>");
 MODULE_DESCRIPTION("MTK ADSP Mailbox Controller");

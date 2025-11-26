@@ -298,7 +298,23 @@ static struct platform_driver mtk_tinysys_mbox_driver = {
 	}
 };
 
-module_platform_driver(mtk_tinysys_mbox_driver);
+//module_platform_driver(mtk_tinysys_mbox_driver);
+
+
+static int __init tinysys_mbox_drv_init(void)
+{
+	return platform_driver_register(&mtk_tinysys_mbox_driver);
+}
+
+static void __exit tinysys_mbox_drv_exit(void)
+{
+	platform_driver_unregister(&mtk_tinysys_mbox_driver);
+}
+
+arch_initcall(tinysys_mbox_drv_init);
+module_exit(tinysys_mbox_drv_exit);
+
+
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("MediaTek Mailbox driver");
 
