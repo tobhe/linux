@@ -285,6 +285,7 @@ struct mtk_dp_data {
 	bool need_phy_flip_set;
 	u32 phy_4lane_ctrl_bit;
 	u32 phy_flip_ctrl_bit;
+	bool is_edp;
 };
 
 struct dp_timing_parameter {
