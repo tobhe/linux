@@ -5,6 +5,7 @@ obj-$(CONFIG_MTK_DPC) += mtk-dpc.o
 obj-$(CONFIG_MTK_DVFSRC) += mtk-dvfsrc.o
 obj-$(CONFIG_MTK_DVFSRC_START) += mtk-dvfsrc-start.o
 obj-$(CONFIG_MTK_DEVAPC) += mtk-devapc.o
+obj-y += devapc/
 obj-$(CONFIG_MTK_INFRACFG) += mtk-infracfg.o
 obj-$(CONFIG_MTK_PMIC_WRAP) += mtk-pmic-wrap.o
 obj-$(CONFIG_MTK_REGULATOR_COUPLER) += mtk-regulator-coupler.o
