@@ -1608,7 +1608,20 @@ static struct platform_driver mtk_vcp_device = {
 	},
 };
 
-module_platform_driver(mtk_vcp_device);
+static int __init mtk_vcp_rproc_drv_init(void)
+{
+	return platform_driver_register(&mtk_vcp_device);
+}
+
+static void __exit mtk_vcp_rproc_drv_exit(void)
+{
+	platform_driver_unregister(&mtk_vcp_device);
+}
+
+subsys_initcall(mtk_vcp_rproc_drv_init);
+module_exit(mtk_vcp_rproc_drv_exit);
+
+//module_platform_driver(mtk_vcp_device);
 
 MODULE_DESCRIPTION("MEDIATEK Module VCP driver");
 MODULE_AUTHOR("Mediatek");
