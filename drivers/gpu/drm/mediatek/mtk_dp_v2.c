@@ -3191,18 +3191,16 @@ void mtk_mt8189_dp_phy_set_param_v2(struct mtk_dp *mtk_dp)
 
 static void mtk_dp_phy_setting_v2(struct mtk_dp *mtk_dp)
 {
-	if (!mtk_dp->data->is_edp) {
-		/* step1: phy init */
-		if (mtk_dp->training_info.max_link_lane_count == DP_4LANE)
-			mtk_dp_phy_4lane_enable_v2(mtk_dp);
-		else
-			mtk_dp_phy_4lane_disable_v2(mtk_dp);
+	/* step1: phy init */
+	if (mtk_dp->training_info.max_link_lane_count == DP_4LANE)
+		mtk_dp_phy_4lane_enable_v2(mtk_dp);
+	else
+		mtk_dp_phy_4lane_disable_v2(mtk_dp);
 
-		if (mtk_dp->phy_flip_enable)
-			mtk_dp_phy_flip_enable_v2(mtk_dp);
-		else
-			mtk_dp_phy_flip_disable_v2(mtk_dp);
-	}
+	if (mtk_dp->phy_flip_enable)
+		mtk_dp_phy_flip_enable_v2(mtk_dp);
+	else
+		mtk_dp_phy_flip_disable_v2(mtk_dp);
 
 	if (mtk_dp->data->set_param)
 		mtk_dp->data->set_param(mtk_dp);
@@ -4010,8 +4008,7 @@ static void mtk_dp_init_variable_v2(struct mtk_dp *mtk_dp)
 	mtk_dp->training_info.tps3_support = true;
 	mtk_dp->training_info.tps4_support = true;
 	mtk_dp->training_info.phy_status = HPD_INITIAL_STATE;
-	mtk_dp->training_info.cable_plug_in = mtk_dp->data->is_edp;
-
+	mtk_dp->training_info.cable_plug_in = false;
 	for (encoder_id = 0; encoder_id < mtk_dp->data->encoder_num; encoder_id++) {
 		mtk_dp->info[encoder_id].depth = DP_COLOR_DEPTH_8BIT;
 		memset(&mtk_dp->info[encoder_id].dp_output_timing, 0,
@@ -4698,7 +4695,7 @@ static int mtk_dp_con_late_register_v2(struct drm_connector *connector)
 	mtk_con = container_of(connector, struct mtk_dp_con, connector);
 	mtk_dp = mtk_con->mtk_dp;
 
-	//if (connector->connector_type == DRM_MODE_CONNECTOR_DisplayPort)
+	if (connector->connector_type == DRM_MODE_CONNECTOR_DisplayPort)
 		mtk_dp->aux.dev = connector->kdev;
 
 	return 0;
@@ -4715,6 +4712,7 @@ static void mtk_dp_con_early_unregister_v2(struct drm_connector *connector)
 }
 
 static const struct drm_connector_funcs mtk_dp_con_funcs = {
+	.reset = drm_atomic_helper_connector_reset,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.detect = mtk_dp_con_detect_v2,
 	.destroy = mtk_dp_con_destroy_v2,
@@ -4834,7 +4832,7 @@ static struct mtk_dp_con *mtk_dp_create_connector_v2(struct mtk_dp *mtk_dp)
 	mtk_con->mtk_dp = mtk_dp;
 
 	ret = drm_connector_init(mtk_dp->drm_dev, &mtk_con->connector,
-				 &mtk_dp_con_funcs, mtk_dp->data->bridge_type); //DRM_MODE_CONNECTOR_DisplayPort);
+				 &mtk_dp_con_funcs, DRM_MODE_CONNECTOR_DisplayPort);
 	if (ret) {
 		drm_dbg_kms(mtk_dp->drm_dev,
 			    "[DPTX] create con, failed to init connector:%d\n", ret);
@@ -6101,15 +6099,6 @@ static void mtk_dp_hpd_handle_in_isr_v2(struct mtk_dp *mtk_dp)
 			mtk_dp->training_info.phy_status &= ~HPD_DISCONNECT;
 	}
 
-	if (mtk_dp->data->is_edp) {
-		mtk_dp->training_info.phy_status &= ~HPD_CONNECT;
-		mtk_dp->training_info.cable_plug_in = true;
-		mtk_dp->training_info.cable_state_change = true;
-		mtk_dp->need_debounce = true;
-
-		return;
-	}
-
 	/* ignore plug-in --> plug-in event */
 	if (mtk_dp->training_info.cable_plug_in)
 		mtk_dp->training_info.phy_status &= ~HPD_CONNECT;
@@ -6526,7 +6515,6 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
 		mtk_dp->mtk_bridge[i]->bridge.funcs = &mtk_dp_bridge_funcs;
 		mtk_dp->mtk_bridge[i]->bridge.of_node = port;
 		mtk_dp->mtk_bridge[i]->bridge.type = mtk_dp->data->bridge_type;
-		mtk_dp->mtk_bridge[i]->bridge.ops |= DRM_BRIDGE_OP_DETECT;
 		drm_bridge_add(&mtk_dp->mtk_bridge[i]->bridge);
 
 		mtk_dp->mtk_bridge[i]->mtk_dp = mtk_dp;
@@ -6606,32 +6594,6 @@ static const struct mtk_dp_data mt8196_dp_data = {
 	.phy_flip_ctrl_bit = BIT(18),
 };
 
-static const struct mtk_dp_data mt8196_edp_data = {
-	.bridge_type = DRM_MODE_CONNECTOR_eDP,
-	.smc_cmd = BIT(5),
-	.efuse_fmt = mt8196_dp_efuse_fmt,
-	.audio_supported = false,
-	.audio_m_div2_bit = 0,
-	.dsc_support = false,
-	.mst_support = false,
-	.max_hdisplay = 3840,
-	.max_vdisplay = 2160,
-	.min_hblanking = 80,
-	.min_hdisplay = 800,
-	.min_vdisplay = 600,
-	.set_param = mtk_mt8196_dp_phy_set_param_v2,
-	.phyd_dig_glb_offset = 0x1000,
-	.phyd_dig_lan_offset = {0x1100, 0x1200, 0x1300, 0x1400},
-	.max_link_rate = DP_LINK_RATE_HBR3,
-	.max_lane_count = DP_2LANE,
-	.encoder_num = 1,
-	.need_phy_lane_enable_set = true,
-	.need_phy_flip_set = false,
-	.phy_4lane_ctrl_bit = BIT(19),
-	.phy_flip_ctrl_bit = BIT(18),
-	.is_edp = true,
-};
-
 static const struct mtk_dp_data mt8189_dp_data = {
 	.bridge_type = DRM_MODE_CONNECTOR_DisplayPort,
 	.smc_cmd = BIT(5),
@@ -6662,9 +6624,6 @@ static const struct mtk_dp_data mt8189_dp_data = {
 static const struct of_device_id mtk_dp_of_match_v2[] = {
 	{ .compatible = "mediatek,mt8196-dp-tx",
 		.data = &mt8196_dp_data,
-	},
-	{ .compatible = "mediatek,mt8196-edpv2-tx",
-		.data = &mt8196_edp_data,
 	},
 	{ .compatible = "mediatek,mt8189-dp-tx",
 		.data = &mt8189_dp_data,

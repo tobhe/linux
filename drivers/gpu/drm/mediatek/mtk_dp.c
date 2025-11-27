@@ -55,6 +55,7 @@
 #define MTK_DP_EQ_TRAIN_DOWNSCALE_RETRY 20
 #define MTK_DP_VERSION 0x11
 #define MTK_DP_SDP_AUI 0x4
+#define EDP_REINIT_TIMES 4
 
 enum {
 	MTK_DP_CAL_GLB_BIAS_TRIM = 0,
@@ -68,6 +69,12 @@ enum {
 	MTK_DP_CAL_LN_TX_IMPSEL_NMOS_2,
 	MTK_DP_CAL_LN_TX_IMPSEL_NMOS_3,
 	MTK_DP_CAL_MAX,
+};
+
+enum {
+	MTK_EDP_SOC_TYPE_NONE  = 0,
+	MTK_EDP_SOC_TYPE_MT8196,
+	MTK_EDP_SOC_TYPE_MT8189,
 };
 
 struct mtk_dp_train_info {
@@ -102,10 +109,16 @@ struct mtk_dp_efuse_fmt {
 	unsigned short default_val;
 };
 
+struct mtk_edp_phy_data  {
+	struct regmap *phy_regs;
+	u32 edp_ver;
+};
+
 struct mtk_dp {
 	bool enabled;
 	bool need_debounce;
 	int irq;
+	int swing_value;
 	u8 max_lanes;
 	u8 max_linkrate;
 	u8 rx_cap[DP_RECEIVER_CAP_SIZE];
@@ -143,6 +156,7 @@ struct mtk_dp {
 	struct mutex update_plugged_status_lock;
 	/* For edp power control */
 	void __iomem *pwr_regs;
+	u32 retry_times;
 };
 
 struct mtk_dp_data {
@@ -421,6 +435,7 @@ static const struct regmap_config mtk_edp_phy_regmap_config = {
 };
 static int mtk_dp_suspend(struct device *dev);
 static int mtk_dp_resume(struct device *dev);
+static int mtk_dp_poweron(struct mtk_dp *mtk_dp);
 
 static struct mtk_dp *mtk_dp_from_bridge(struct drm_bridge *b)
 {
@@ -481,16 +496,22 @@ static void mtk_dp_bulk_16bit_write(struct mtk_dp *mtk_dp, u32 offset, u8 *buf,
 
 static void mtk_edp_pm_ctl(struct mtk_dp *mtk_dp, bool enable)
 {
-	/* DISP_EDPTX_PWR_CON */
+	/* DISP_EDPTX_PWR_CON udelay 10us to ensure that the power state is stable */
+	udelay(10);
 	if (enable) {
-		/* Subsys power-on reset */
-		writel(readl(mtk_dp->pwr_regs) | DISP_EDPTX_PWR_RST_B, mtk_dp->pwr_regs);
-		/* Enable subsys clock */
+		/* Enable subsys clock, just set bit4 to 0 */
 		writel(readl(mtk_dp->pwr_regs) & ~DISP_EDPTX_PWR_CLK_DIS, mtk_dp->pwr_regs);
+		udelay(1);
+		/* Subsys power-on reset, firstly set bit0 to 0 and then set bit0 to 1 */
+		writel(readl(mtk_dp->pwr_regs) & ~DISP_EDPTX_PWR_RST_B, mtk_dp->pwr_regs);
+		udelay(1);
+		writel(readl(mtk_dp->pwr_regs) | DISP_EDPTX_PWR_RST_B, mtk_dp->pwr_regs);
 	} else {
 		writel(readl(mtk_dp->pwr_regs) & ~DISP_EDPTX_PWR_RST_B, mtk_dp->pwr_regs);
+		udelay(1);
 		writel(readl(mtk_dp->pwr_regs) | DISP_EDPTX_PWR_CLK_DIS, mtk_dp->pwr_regs);
 	}
+	udelay(10);
 }
 
 static void mtk_dp_msa_bypass_enable(struct mtk_dp *mtk_dp, bool enable)
@@ -587,18 +608,16 @@ static int mtk_dp_set_color_format(struct mtk_dp *mtk_dp,
 				   enum dp_pixelformat color_format)
 {
 	u32 val;
-
-	/* update MISC0 */
-	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3034,
-			   color_format << DP_TEST_COLOR_FORMAT_SHIFT,
-			   DP_TEST_COLOR_FORMAT_MASK);
+	u32 misc0_color = 0;
 
 	switch (color_format) {
 	case DP_PIXELFORMAT_YUV422:
 		val = PIXEL_ENCODE_FORMAT_DP_ENC0_P0_YCBCR422;
+		misc0_color = DP_COLOR_FORMAT_YCbCr422;
 		break;
 	case DP_PIXELFORMAT_RGB:
 		val = PIXEL_ENCODE_FORMAT_DP_ENC0_P0_RGB;
+		misc0_color = DP_COLOR_FORMAT_RGB;
 		break;
 	case DP_PIXELFORMAT_YUV420:
 		val = PIXEL_ENCODE_FORMAT_DP_ENC0_P0_YCBCR420;
@@ -608,6 +627,11 @@ static int mtk_dp_set_color_format(struct mtk_dp *mtk_dp,
 			 color_format);
 		return -EINVAL;
 	}
+
+	/* update MISC0 */
+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3034,
+			   misc0_color,
+			   DP_TEST_COLOR_FORMAT_MASK);
 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_303C,
 			   val, PIXEL_ENCODE_FORMAT_DP_ENC0_P0_MASK);
@@ -1017,8 +1041,8 @@ static void mtk_dp_set_swing_pre_emphasis(struct mtk_dp *mtk_dp, int lane_num,
 	u32 lane_shift = lane_num * DP_TX1_VOLT_SWING_SHIFT;
 
 	dev_dbg(mtk_dp->dev,
-		"link training: swing_val = 0x%x, pre-emphasis = 0x%x\n",
-		swing_val, preemphasis);
+		"link training: swing_val = 0x%x, pre-emphasis = 0x%x lane_num = %d\n",
+		swing_val, preemphasis, lane_num);
 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_SWING_EMP,
 			   swing_val << (DP_TX0_VOLT_SWING_SHIFT + lane_shift),
@@ -1026,6 +1050,33 @@ static void mtk_dp_set_swing_pre_emphasis(struct mtk_dp *mtk_dp, int lane_num,
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_SWING_EMP,
 			   preemphasis << (DP_TX0_PRE_EMPH_SHIFT + lane_shift),
 			   DP_TX0_PRE_EMPH_MASK << lane_shift);
+	if (mtk_dp->data->edp_ver && mtk_dp->phy_regs) {
+		if (mtk_dp->data->edp_ver == MTK_EDP_SOC_TYPE_MT8196) {
+			regmap_update_bits(mtk_dp->phy_regs,
+				   PHYD_DIG_DRV_FORCE_LANE(lane_num),
+				   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+				   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
+				   swing_val << 1 |
+				   preemphasis << 3);
+		} else if (mtk_dp->data->edp_ver == MTK_EDP_SOC_TYPE_MT8189) {
+			regmap_update_bits(mtk_dp->phy_regs,
+				   PHYD_DIG_DRV_FORCE_LANE_8189(lane_num),
+				   EDP_TX_LN_VOLT_SWING_VAL_8189_FLDMASK |
+				   EDP_TX_LN_PRE_EMPH_VAL_8189_FLDMASK,
+				   swing_val << 1 |
+				   preemphasis << 5);
+			regmap_update_bits(mtk_dp->phy_regs,
+				   PHYD_DIG_DRV_FORCE_LANE_8189(lane_num),
+				   EDP_TX_LN_VOLT_SWING_EN_8189 |
+				   EDP_TX_LN_PRE_EMPH_EN_8189,
+				   EDP_TX_LN_VOLT_SWING_EN_8189 |
+				   EDP_TX_LN_PRE_EMPH_EN_8189);
+		}
+		if (preemphasis != 0)
+			mtk_dp_update_bits(mtk_dp, RG_DSI_DEM_EN,
+					   DSI_DE_EMPHASIS_ENABLE,
+					   DSI_DE_EMPHASIS_ENABLE);
+	}
 }
 
 static void mtk_dp_reset_swing_pre_emphasis(struct mtk_dp *mtk_dp)
@@ -1196,6 +1247,33 @@ static void mtk_dp_initialize_hpd_detect_settings(struct mtk_dp *mtk_dp)
 	}
 }
 
+static void mtk_edp_phyd_wait_aux_ldo_ready(struct mtk_dp *mtk_dp,
+					    unsigned long wait_us)
+{
+	int ret = 0;
+	u32 val = 0x0;
+	u32 mask = RGS_BG_CORE_EN_READY | RGS_AUX_LDO_EN_READY;
+
+	struct regmap* regs = mtk_dp->phy_regs ? mtk_dp->phy_regs : mtk_dp->regs;
+	ret = regmap_read_poll_timeout(regs,
+				       DP_PHY_DIG_GLB_STATUS_0,
+				       val, !!(val & mask),
+				       wait_us/100, wait_us);
+	if (ret) {
+		dev_err(mtk_dp->dev, "%s AUX not ready\n", __func__);
+		/* Reinitialize eDP power control to make eDP happy for mt8196 */
+		if(mtk_dp->retry_times == EDP_REINIT_TIMES) {
+			dev_err(mtk_dp->dev, "eDP status is somthing wrong!!!\n");
+			mtk_dp->retry_times = 0;
+			return;
+		}
+		mtk_dp->retry_times++;
+		if (mtk_dp->pwr_regs)
+			mtk_edp_pm_ctl(mtk_dp, true);
+		mtk_dp_poweron(mtk_dp);
+	}
+}
+
 static void mtk_dp_initialize_aux_settings(struct mtk_dp *mtk_dp)
 {
 	/* modify timeout threshold = 0x1595 */
@@ -1274,6 +1352,16 @@ static void mtk_dp_initialize_digital_settings(struct mtk_dp *mtk_dp)
 		mtk_dp_update_bits(mtk_dp, REG_3F80_DP_ENC_P0_3,
 				   0, PSR_PATGEN_AVT_EN_FLDMASK);
 		/* phy D enable */
+		mtk_dp_update_bits(mtk_dp, REG_3F44_DP_ENC_P0_3,
+				   PHY_PWR_STATE_OW_EN_DP_ENC_P0_3,
+				   PHY_PWR_STATE_OW_EN_DP_ENC_P0_3_MASK);
+		mtk_dp_update_bits(mtk_dp, REG_3F44_DP_ENC_P0_3,
+				   ALL_POWER_ON,
+				   PHY_PWR_STATE_OW_VALUE_DP_ENC_P0_3_MASK);
+		mtk_edp_phyd_wait_aux_ldo_ready(mtk_dp, 100000);
+		mtk_dp_update_bits(mtk_dp, REG_3F44_DP_ENC_P0_3,
+				   0, PHY_PWR_STATE_OW_EN_DP_ENC_P0_3_MASK);
+
 		mtk_dp_update_bits(mtk_dp, REG_3FF8_DP_ENC_P0_3,
 				   PHY_STATE_W_1_DP_ENC_P0_3,
 				   PHY_STATE_W_1_DP_ENC_P0_3_MASK);
@@ -1311,30 +1399,6 @@ static void mtk_dp_digital_sw_reset(struct mtk_dp *mtk_dp)
 	mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_340C,
 			   0, DP_TX_TRANSMITTER_4P_RESET_SW_DP_TRANS_P0);
 }
-
-static void mtk_edp_phyd_wait_aux_ldo_ready(struct mtk_dp *mtk_dp,
-					    unsigned long wait_us)
-{
-	int ret = 0;
-	u32 val = 0x0;
-	u32 mask = RGS_BG_CORE_EN_READY | RGS_AUX_LDO_EN_READY;
-
-	if (mtk_dp->phy_regs) {
-		ret = regmap_read_poll_timeout(mtk_dp->phy_regs,
-					       DP_PHY_DIG_GLB_STATUS_0,
-					       val, !!(val & mask),
-					       wait_us/100, wait_us);
-	} else {
-		ret = regmap_read_poll_timeout(mtk_dp->regs,
-					       DP_PHY_DIG_GLB_STATUS_0,
-					       val, !!(val & mask),
-					       wait_us/100, wait_us);
-	}
-
-	if (ret)
-		dev_err(mtk_dp->dev, "%s AUX not ready\n", __func__);
-}
-
 
 static void mtk_dp_set_lanes(struct mtk_dp *mtk_dp, int lanes)
 {
@@ -1618,6 +1682,17 @@ static void mtk_dp_power_enable(struct mtk_dp *mtk_dp)
 static void mtk_dp_power_disable(struct mtk_dp *mtk_dp)
 {
 	mtk_dp_write(mtk_dp, MTK_DP_TOP_PWR_STATE, 0);
+	if (mtk_dp->data->edp_ver) {
+		mtk_dp_update_bits(mtk_dp, REG_3F44_DP_ENC_P0_3,
+				   PHY_PWR_STATE_OW_EN_DP_ENC_P0_3,
+				   PHY_PWR_STATE_OW_EN_DP_ENC_P0_3_MASK);
+		mtk_dp_update_bits(mtk_dp, REG_3F44_DP_ENC_P0_3,
+				   ALL_POWER_OFF,
+				   PHY_PWR_STATE_OW_VALUE_DP_ENC_P0_3_MASK);
+		mtk_dp_update_bits(mtk_dp, REG_3F44_DP_ENC_P0_3,
+				   0, PHY_PWR_STATE_OW_EN_DP_ENC_P0_3_MASK);
+	}
+
 
 	mtk_dp_update_bits(mtk_dp, MTK_DP_0034,
 			   DA_CKM_CKTX0_EN_FORCE_EN, DA_CKM_CKTX0_EN_FORCE_EN);
@@ -1632,7 +1707,10 @@ static void mtk_dp_initialize_priv_data(struct mtk_dp *mtk_dp)
 {
 	bool plugged_in = (mtk_dp->bridge.type == DRM_MODE_CONNECTOR_eDP);
 
-	mtk_dp->train_info.link_rate = DP_LINK_BW_5_4;
+	if (mtk_dp->data->edp_ver)
+		mtk_dp->train_info.link_rate = DP_LINK_BW_8_1;
+	else
+		mtk_dp->train_info.link_rate = DP_LINK_BW_5_4;
 	mtk_dp->train_info.lane_count = mtk_dp->max_lanes;
 	mtk_dp->train_info.cable_plugged_in = plugged_in;
 	mtk_dp->train_info.sink_ssc = false;
@@ -1754,8 +1832,12 @@ static void mtk_dp_train_update_swing_pre(struct mtk_dp *mtk_dp, int lanes,
 		int index = lane / 2;
 		int shift = lane % 2 ? DP_ADJUST_VOLTAGE_SWING_LANE1_SHIFT : 0;
 
-		swing = (dpcd_adjust_req[index] >> shift) &
-			DP_ADJUST_VOLTAGE_SWING_LANE0_MASK;
+		if (mtk_dp->swing_value != 0){
+			swing = mtk_dp->swing_value;
+		} else {
+		        swing = (dpcd_adjust_req[index] >> shift) &
+                        DP_ADJUST_VOLTAGE_SWING_LANE0_MASK;
+		}
 		preemphasis = ((dpcd_adjust_req[index] >> shift) &
 			       DP_ADJUST_PRE_EMPHASIS_LANE0_MASK) >>
 			      DP_ADJUST_PRE_EMPHASIS_LANE0_SHIFT;
@@ -2312,6 +2394,7 @@ static int mtk_dp_dt_parse(struct mtk_dp *mtk_dp,
 	struct device_node *endpoint;
 	struct device *dev = &pdev->dev;
 	int ret;
+	int level;
 	struct resource *regs;
 	void __iomem *base;
 	void __iomem *phy_base;
@@ -2360,6 +2443,11 @@ static int mtk_dp_dt_parse(struct mtk_dp *mtk_dp,
 
 	mtk_dp->max_linkrate = drm_dp_link_rate_to_bw_code(linkrate * 100);
 
+	if (of_get_property(dev->of_node, "swing-level", &level)) {
+		of_property_read_u32(dev->of_node,
+				     "swing-level", &mtk_dp->swing_value);
+	}
+
 	return 0;
 }
 
@@ -2381,7 +2469,6 @@ static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge *bridge)
 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
 	enum drm_connector_status ret = connector_status_disconnected;
 	bool enabled = mtk_dp->enabled;
-	u8 sink_count = 0;
 
 	if (!mtk_dp->train_info.cable_plugged_in)
 		return ret;
@@ -2396,8 +2483,8 @@ static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge *bridge)
 	 * function, we just need to check the HPD connection to check
 	 * whether we connect to a sink device.
 	 */
-	drm_dp_dpcd_readb(&mtk_dp->aux, DP_SINK_COUNT, &sink_count);
-	if (DP_GET_SINK_COUNT(sink_count))
+
+	if (drm_dp_read_sink_count(&mtk_dp->aux) > 0)
 		ret = connector_status_connected;
 
 	if (!enabled)
@@ -2676,6 +2763,19 @@ static void mtk_dp_bridge_atomic_disable(struct drm_bridge *bridge,
 			   DP_PWR_STATE_BANDGAP_TPLL,
 			   DP_PWR_STATE_MASK);
 
+	if (mtk_dp->data->edp_ver) {
+		mtk_dp_update_bits(mtk_dp, REG_3F44_DP_ENC_P0_3,
+				   PHY_PWR_STATE_OW_EN_DP_ENC_P0_3,
+				   PHY_PWR_STATE_OW_EN_DP_ENC_P0_3_MASK);
+		mtk_dp_update_bits(mtk_dp, REG_3F44_DP_ENC_P0_3,
+				   BIAS_POWER_ON,
+				   PHY_PWR_STATE_OW_VALUE_DP_ENC_P0_3_MASK);
+
+		mtk_edp_phyd_wait_aux_ldo_ready(mtk_dp, 100000);
+
+		mtk_dp_update_bits(mtk_dp, REG_3F44_DP_ENC_P0_3,
+				   0, PHY_PWR_STATE_OW_EN_DP_ENC_P0_3_MASK);
+	}
 	/* Ensure the sink is muted */
 	msleep(20);
 }
@@ -2687,12 +2787,19 @@ mtk_dp_bridge_mode_valid(struct drm_bridge *bridge,
 {
 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
 	u32 bpp = info->color_formats & DRM_COLOR_FORMAT_YCBCR422 ? 16 : 24;
-	u32 rate = min_t(u32, drm_dp_max_link_rate(mtk_dp->rx_cap) *
-			      drm_dp_max_lane_count(mtk_dp->rx_cap),
-			 drm_dp_bw_code_to_link_rate(mtk_dp->max_linkrate) *
-			 mtk_dp->max_lanes);
+	u32 lane_count_min = mtk_dp->train_info.lane_count;
+	u32 rate = drm_dp_bw_code_to_link_rate(mtk_dp->train_info.link_rate) *
+		   lane_count_min;
 
-	if (rate < mode->clock * bpp / 8)
+	/*
+	 *FEC overhead is approximately 2.4% from DP 1.4a spec 2.2.1.4.2.
+	 *The down-spread amplitude shall either be disabled (0.0%) or up
+	 *to 0.5% from 1.4a 3.5.2.6. Add up to approximately 3% total overhead.
+	 *
+	 *Because rate is already divided by 10,
+	 *mode->clock does not need to be multiplied by 10
+	 */
+	if ((rate * 97 / 100) < (mode->clock * bpp / 8))
 		return MODE_CLOCK_HIGH;
 
 	return MODE_OK;
@@ -2733,10 +2840,9 @@ static u32 *mtk_dp_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 	struct drm_display_mode *mode = &crtc_state->adjusted_mode;
 	struct drm_display_info *display_info =
 		&conn_state->connector->display_info;
-	u32 rate = min_t(u32, drm_dp_max_link_rate(mtk_dp->rx_cap) *
-			      drm_dp_max_lane_count(mtk_dp->rx_cap),
-			 drm_dp_bw_code_to_link_rate(mtk_dp->max_linkrate) *
-			 mtk_dp->max_lanes);
+	u32 lane_count_min = mtk_dp->train_info.lane_count;
+	u32 rate = drm_dp_bw_code_to_link_rate(mtk_dp->train_info.link_rate) *
+		   lane_count_min;
 
 	*num_input_fmts = 0;
 
@@ -2745,8 +2851,8 @@ static u32 *mtk_dp_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 	 * datarate of YUV422 and sink device supports YUV422, we output YUV422
 	 * format. Use this condition, we can support more resolution.
 	 */
-	if ((rate < (mode->clock * 24 / 8)) &&
-	    (rate > (mode->clock * 16 / 8)) &&
+	if (((rate * 97 / 100) < (mode->clock * 24 / 8)) &&
+	    ((rate * 97 / 100) > (mode->clock * 16 / 8)) &&
 	    (display_info->color_formats & DRM_COLOR_FORMAT_YCBCR422)) {
 		input_fmts = kcalloc(1, sizeof(*input_fmts), GFP_KERNEL);
 		if (!input_fmts)
@@ -2924,7 +3030,7 @@ static int mtk_dp_register_phy(struct mtk_dp *mtk_dp)
 					"mediatek-edp-phy",
 					PLATFORM_DEVID_AUTO,
 					&mtk_dp->phy_regs,
-					sizeof(struct regmap *));
+					sizeof(struct mtk_edp_phy_data));
 	else
 		mtk_dp->phy_dev = platform_device_register_data(dev,
 					"mediatek-dp-phy",
@@ -3028,14 +3134,10 @@ static int mtk_dp_probe(struct platform_device *pdev)
 	mtk_dp->aux.wait_hpd_asserted = mtk_dp_wait_hpd_asserted;
 	drm_dp_aux_init(&mtk_dp->aux);
 
-	mtk_dp->power_clk = devm_clk_get_optional(dev, NULL);
-	if (IS_ERR(mtk_dp->power_clk)) {
-		dev_info(dev, "Failed to get optional clock power_clk\n");
-		mtk_dp->power_clk = NULL;
-	}
-
-	if (mtk_dp->power_clk)
-		clk_prepare_enable(mtk_dp->power_clk);
+	mtk_dp->power_clk = devm_clk_get_optional_enabled(dev, NULL);
+	if (IS_ERR(mtk_dp->power_clk))
+		return dev_err_probe(dev, PTR_ERR(mtk_dp->power_clk),
+				     "Failed to get or enable optional clock power_clk\n");
 
 	pm_runtime_enable(dev);
 	pm_runtime_get_sync(dev);
@@ -3148,14 +3250,14 @@ static int mtk_dp_suspend(struct device *dev)
 
 	if (mtk_dp->power_clk)
 		clk_disable_unprepare(mtk_dp->power_clk);
-	/* TODO: clean up it after shutting down eDP power correctly. */
-	pm_runtime_put_sync(dev);
-	pm_runtime_put_sync(dev);
+
 	if (mtk_dp->pwr_regs)
 		mtk_edp_pm_ctl(mtk_dp, false);
 
-	dev_err(mtk_dp->dev, "%s usage_count %d\n", __func__,
-		 atomic_read(&dev->power.usage_count));
+	pm_runtime_force_suspend(dev);
+
+	dev_dbg(mtk_dp->dev, "%s usage_count %d\n", __func__,
+		atomic_read(&dev->power.usage_count));
 
 	return 0;
 }
@@ -3163,26 +3265,35 @@ static int mtk_dp_suspend(struct device *dev)
 static int mtk_dp_resume(struct device *dev)
 {
 	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
+	int ret;
 
-	dev_err(mtk_dp->dev, "%s usage_count %d\n", __func__,
-		 atomic_read(&dev->power.usage_count));
+	dev_dbg(mtk_dp->dev, "%s usage_count %d\n", __func__,
+		atomic_read(&dev->power.usage_count));
+	pm_runtime_force_resume(dev);
 
-	/* TODO: clean up it after shutting down eDP power correctly. */
-	pm_runtime_get_sync(dev);
-	pm_runtime_get_sync(dev);
+	if (mtk_dp->power_clk) {
+		ret = clk_prepare_enable(mtk_dp->power_clk);
+		if (ret < 0) {
+			dev_err(dev, "Failed to enable eDP power_clk: %d\n", ret);
+			return ret;
+		}
+	}
 	if (mtk_dp->pwr_regs)
 		mtk_edp_pm_ctl(mtk_dp, true);
 
-	if (mtk_dp->power_clk)
-		clk_prepare_enable(mtk_dp->power_clk);
-
+	ret = phy_init(mtk_dp->phy);
+	if (ret) {
+		dev_err(mtk_dp->dev, "Failed to initialize phy: %d\n", ret);
+		return ret;
+	}
+	mtk_dp->retry_times = 0;
 	mtk_dp_init_port(mtk_dp);
 	if (mtk_dp->bridge.type != DRM_MODE_CONNECTOR_eDP)
 		mtk_dp_hwirq_enable(mtk_dp, true);
 	mtk_dp_power_enable(mtk_dp);
 
-	dev_err(mtk_dp->dev, "%s usage_count %d\n", __func__,
-		 atomic_read(&dev->power.usage_count));
+	dev_dbg(mtk_dp->dev, "%s usage_count %d\n", __func__,
+		atomic_read(&dev->power.usage_count));
 
 	return 0;
 }
@@ -3221,7 +3332,16 @@ static const struct mtk_dp_data mt8196_edp_data = {
 	.efuse_fmt = mt8195_edp_efuse_fmt,
 	.audio_supported = false,
 	.audio_m_div2_bit = MT8195_AUDIO_M_CODE_MULT_DIV_SEL_DP_ENC0_P0_DIV_2,
-	.edp_ver = 1,
+	.edp_ver = MTK_EDP_SOC_TYPE_MT8196,
+};
+
+static const struct mtk_dp_data mt8189_edp_data = {
+	.bridge_type = DRM_MODE_CONNECTOR_eDP,
+	.smc_cmd = MTK_DP_SIP_ATF_EDP_VIDEO_UNMUTE,
+	.efuse_fmt = mt8195_edp_efuse_fmt,
+	.audio_supported = false,
+	.audio_m_div2_bit = MT8195_AUDIO_M_CODE_MULT_DIV_SEL_DP_ENC0_P0_DIV_2,
+	.edp_ver = MTK_EDP_SOC_TYPE_MT8189,
 };
 
 static const struct of_device_id mtk_dp_of_match[] = {
@@ -3232,6 +3352,10 @@ static const struct of_device_id mtk_dp_of_match[] = {
 	{
 		.compatible = "mediatek,mt8188-dp-tx",
 		.data = &mt8188_dp_data,
+	},
+	{
+		.compatible = "mediatek,mt8189-edp-tx",
+		.data = &mt8189_edp_data,
 	},
 	{
 		.compatible = "mediatek,mt8195-edp-tx",
