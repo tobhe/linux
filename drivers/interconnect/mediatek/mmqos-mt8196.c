@@ -1106,4 +1106,5 @@ module_exit(mtk_mmqos_mt8196_exit);
 */
 module_platform_driver(mtk_mmqos_mt8196_driver);
 
+MODULE_SOFTDEP("pre: mtk-smi");
 MODULE_LICENSE("GPL");
