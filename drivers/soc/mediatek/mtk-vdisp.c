@@ -154,25 +154,21 @@ static int vdisp_vcp_init_thread(void *data)
 	struct device_link *dev_link;
 	int retry = 0;
 
-	while (request_module("mtk-vcp") != 0) {
+	priv->vcp_device = NULL;
+	while (priv->vcp_device == NULL) {
 		if (++retry > RETRY_COUNT_MAX) {
-			dev_err(priv->dev, "Failed to load mtk-vcp module\n");
+			dev_err(priv->dev, "failed to load mtk-vcp module");
 			return -ENODEV;
 		}
+
+		if (of_property_read_u32(priv->dev->of_node, "mediatek,vcp", &priv->vcp_phandle))
+			continue;
+
+		priv->vcp_device = mtk_vcp_get_by_phandle(priv->vcp_phandle);
+
 		ssleep(1);
 	}
-	dev_dbg(priv->dev, "mtk-vcp module loaded, retry count=%d\n", retry);
 
-	if (of_property_read_u32(priv->dev->of_node, "mediatek,vcp", &priv->vcp_phandle)) {
-		dev_err(priv->dev, "can't get mtk-vcp phandle\n");
-		return -ENODEV;
-	}
-
-	priv->vcp_device = mtk_vcp_get_by_phandle(priv->vcp_phandle);
-	while (!priv->vcp_device) {
-		dev_err(priv->dev, "get mtk-vcp device failed\n");
-		return -ENODEV;
-	}
 	dev_dbg(priv->dev, "get mtk-vcp device success!\n");
 
 	/* vcp needs to be put into suspend state later than vdisp */
@@ -194,7 +190,7 @@ static int vdisp_vcp_init_thread(void *data)
 	}
 
 	priv->vcp_ready = true;
-	dev_dbg(priv->dev, "vcp and mmup are ready!\n");
+	dev_info(priv->dev, "@@@@@@@@@@@@@@@@ vdisp: vcp and mmup are ready! @@@@@@@@@@@@@@@@\n");
 	priv->vcp_device->data->vcp_register_feature(priv->vcp_device, VDISP_FEATURE_ID);
 #endif
 	return 0;

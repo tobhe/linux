@@ -189,6 +189,8 @@ static int vmm_vcp_notifier(struct notifier_block *nb, unsigned long vcp_event, 
 	return ret;
 }
 
+
+
 static int mtk_vmm_vcp_init_thread(void *arg)
 {
 	struct mtk_vmm_drv *vmm_drv = arg;
@@ -196,23 +198,19 @@ static int mtk_vmm_vcp_init_thread(void *arg)
 	struct device_link *dev_link;
 	int retry = 0, retry_cnt = 10000;
 
-	while (request_module("mtk-vcp")) {
+	vmm_drv->vcp_device = NULL;
+	while (vmm_drv->vcp_device == NULL) {
 		if (++retry > retry_cnt) {
 			mtk_vmm_err(vmm_drv->dev, "failed to load mtk-vcp module");
 			return -ENODEV;
 		}
+
+		if (of_property_read_u32(dev->of_node, "mediatek,vcp", &vmm_drv->vcp_phandle))
+			continue;
+
+		vmm_drv->vcp_device = mtk_vcp_get_by_phandle(vmm_drv->vcp_phandle);
+
 		ssleep(1);
-	}
-
-	if (of_property_read_u32(dev->of_node, "mediatek,vcp", &vmm_drv->vcp_phandle)) {
-		mtk_vmm_err(vmm_drv->dev, "can't get vcp handle.\n");
-		return -ENODEV;
-	}
-
-	vmm_drv->vcp_device = mtk_vcp_get_by_phandle(vmm_drv->vcp_phandle);
-	while (!vmm_drv->vcp_device) {
-		mtk_vmm_err(vmm_drv->dev, "get vcp device failed\n");
-		return -ENODEV;
 	}
 
 	dev_link = device_link_add(vmm_drv->dev, vmm_drv->vcp_device->dev, 0);

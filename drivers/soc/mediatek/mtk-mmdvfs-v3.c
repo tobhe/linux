@@ -1555,8 +1555,10 @@ static int mmdvfs_mmup_notifier_callback(struct notifier_block *nb, unsigned lon
 	static bool sram_init;
 	int target_id;
 
-	if (IS_ERR_OR_NULL(mmdvfs_dev))
+	if (IS_ERR_OR_NULL(mmdvfs_dev)) {
+		pr_err("@@@@@@@@@ mmdvfs_dev is NULL!!!!\n");
 		return -EINVAL;
+	}
 
 	vcp_device = mmdvfs_dev->vcp_device;
 	mmdvfs_mux = mmdvfs_dev->mmdvfs_mux;
@@ -1629,7 +1631,6 @@ static int mmdvfs_mmup_notifier_callback(struct notifier_block *nb, unsigned lon
 	return NOTIFY_DONE;
 }
 
-
 static int mmdvfs_vcp_init_thread(void *data)
 {
 	struct mtk_mmdvfs_dev *mmdvfs_dev = data;
@@ -1637,30 +1638,25 @@ static int mmdvfs_vcp_init_thread(void *data)
 	struct mtk_vcp_device  *vcp_device = NULL;
 	struct platform_device *vcp_pdev = NULL;
 	struct device_node *np;
+	phandle vcp_phandle;
 	int i, retry = 0;
 
-	while (request_module("mtk-vcp")) {
+	mmdvfs_dev->vcp_device = NULL;
+	while (mmdvfs_dev->vcp_device == NULL) {
 		if (++retry > MMDVFS_REQUEST_VCP_MAX_COUNT) {
 			mtk_mmdvfs_err(pdev, "failed to load mtk-vcp module");
 			return -ENODEV;
 		}
+
+		if (of_property_read_u32(pdev->dev.of_node, "mediatek,vcp", &vcp_phandle))
+			continue;
+
+		mmdvfs_dev->vcp_device = mtk_vcp_get_by_phandle(vcp_phandle);
+
 		ssleep(1);
 	}
-
-	np = of_parse_phandle(pdev->dev.of_node, "mediatek,vcp", 0);
-	if (np) {
-		vcp_pdev = of_find_device_by_node(np);
-		of_node_put(np);
-		if (vcp_pdev)
-			vcp_device = platform_get_drvdata(vcp_pdev);
-	}
-
-	if (!vcp_device) {
-		mtk_mmdvfs_err(pdev, "get vcp device failed\n");
-		return -ENODEV;
-	}
-
-	mmdvfs_dev->vcp_device = vcp_device;
+	vcp_device = mmdvfs_dev->vcp_device;
+	pr_err("mmdvfs: VCP device found!\n");
 
 	retry = 0;
 	while (!vcp_device->data->vcp_is_ready(MMDVFS_MMUP_FEATURE_ID) ||
@@ -1669,8 +1665,12 @@ static int mmdvfs_vcp_init_thread(void *data)
 			mtk_mmdvfs_err(pdev, "vcp and mmup is not ready yet");
 			return -ETIMEDOUT;
 		}
+		pr_err("mmdvfs: waiting for vcp_is_ready...\n");
 		ssleep(1);
 	}
+	pr_err("mmdvfs: VCP is ready!\n");
+
+
 #if IS_ENABLED(CONFIG_MTK_MMDEBUG)
 	retry = 0;
 	while (!mmdebug_is_init_done()) {
@@ -1678,8 +1678,10 @@ static int mmdvfs_vcp_init_thread(void *data)
 			mtk_mmdvfs_err(pdev, "mmdebug is not ready yet");
 			return -ETIMEDOUT;
 		}
+		pr_err("mmdvfs: waiting for mmdebug...\n");
 		ssleep(1);
 	}
+	pr_err("mmdvfs: mmdebug init is done!\n");
 #endif
 	retry = 0;
 	while (mtk_mmdvfs_enable_vcp(true, VCP_PWR_USR_MMDVFS_INIT)) {
@@ -1687,14 +1689,18 @@ static int mmdvfs_vcp_init_thread(void *data)
 			mtk_mmdvfs_err(pdev, "vcp is not powered on yet");
 			return -ETIMEDOUT;
 		}
+		pr_err("mmdvfs: waiting for mtk_mmdvfs_enable_vcp...\n");
 		ssleep(1);
 	}
+	pr_err("mmdvfs: VCP enabled!\n");
 
 	mmdvfs_dev->mmdvfs_mmup_iova = vcp_device->data->vcp_get_mem_iova(MMDVFS_MMUP_MEM_ID);
 	mmdvfs_dev->mmdvfs_mmup_va = (void *)vcp_device->data->vcp_get_mem_virt(MMDVFS_MMUP_MEM_ID);
+	pr_err("mmdvfs: MMUP memory done!\n");
 
 	mmdvfs_dev->mmdvfs_vcp_iova = vcp_device->data->vcp_get_mem_iova(MMDVFS_VCP_MEM_ID);
 	mmdvfs_dev->mmdvfs_vcp_va = (void *)vcp_device->data->vcp_get_mem_virt(MMDVFS_VCP_MEM_ID);
+	pr_err("mmdvfs: VCP memory done!\n");
 
 	writel_relaxed(mmdvfs_dev->mmdvfs_free_run ? 1 : 0, MEM_FREERUN);
 	for (i = 0; i < PWR_MMDVFS_NUM; i++) {
@@ -1715,11 +1721,13 @@ static int mmdvfs_vcp_init_thread(void *data)
 		writel_relaxed(MMDVFS_MAX_OPP, MEM_USR_OPP(i, false));
 		writel_relaxed(MMDVFS_MAX_OPP, MEM_USR_OPP(i, true));
 	}
+	pr_err("mmdvfs: Votes write OK!\n");
 
 	if (mmdvfs_dev->mmdvfs_lp_mode)
 		writel_relaxed(1, MEM_MMDVFS_LP_MODE);
 
-	mtk_mmdvfs_debug(pdev, LOG_DBG, "mmup: iova:%pa va:%#lx vcp: iova:%pa va:%#lx init_done:%d",
+//	mtk_mmdvfs_debug(pdev, LOG_DBG, "mmup: iova:%pa va:%#lx vcp: iova:%pa va:%#lx init_done:%d",
+	mtk_mmdvfs_err(pdev, "mmup: iova:%pa va:%#lx vcp: iova:%pa va:%#lx init_done:%d",
 			 &mmdvfs_dev->mmdvfs_mmup_iova, (unsigned long)mmdvfs_dev->mmdvfs_mmup_va,
 			 &mmdvfs_dev->mmdvfs_vcp_iova, (unsigned long)mmdvfs_dev->mmdvfs_vcp_va,
 			 mmdvfs_dev->mmdvfs_init_done);
@@ -1737,10 +1745,12 @@ static int mmdvfs_vcp_init_thread(void *data)
 		mtk_mmdvfs_v3_set_vmm_ceil_step(mmdvfs_dev->vmm_ceil_step);
 
 	vcp_device->data->vcp_register_feature(vcp_device, MMDVFS_HFRP_FEATURE_ID);
+	pr_err("mmdvfs: Registered MMUP HFRP feature\n");
 
 	mmdvfs_dev->mmdvfs_mmup_notifier.notifier_call = mmdvfs_mmup_notifier_callback;
 	vcp_device->data->vcp_register_notify(MMDVFS_HFRP_FEATURE_ID,
 					      &mmdvfs_dev->mmdvfs_mmup_notifier);
+	pr_err("mmdvfs: Registered MMUP HFRP notification\n");
 
 	if (mmdvfs_dev->force_vol != 0xff)
 		mmdvfs_force_voltage_by_vcp(mmdvfs_dev->force_vol >> 4 & 0xf,
@@ -2143,7 +2153,7 @@ static int mmdvfs_mux_probe(struct platform_device *pdev)
 	if (IS_ERR(kthr_vcp))
 		mtk_mmdvfs_err(pdev, "create kthread mmdvfs_vcp_init_thread failed");
 
-	return ret;
+	return 0;
 }
 
 static const struct of_device_id of_match_mmdvfs_mux[] = {

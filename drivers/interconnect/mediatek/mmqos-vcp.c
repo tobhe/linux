@@ -31,7 +31,7 @@ void *mmqos_get_vcp_base(phys_addr_t *pa)
 	mmqos = mtk_mmqos_get_drv_data();
 	if (IS_ERR_OR_NULL(mmqos)) {
 		mmqos_err(mmqos->dev, "not ready");
-		*pa = (u64)NULL;
+		//*pa = (u64)NULL;
 	}
 
 	if (pa)
@@ -221,24 +221,20 @@ int mmqos_vcp_init_thread(void *data)
 	}
 
 	mmqos_state = mmqos->mmqos_state;
-	while (request_module("mtk-vcp")) {
+
+	mmqos->vcp_device = NULL;
+	while (mmqos->vcp_device == NULL) {
 		if (++retry > MAX_RETRY_COUNT_WAIT_VCP) {
 			mmqos_err(mmqos->dev, "failed to load mtk-vcp module");
 			return -ENODEV;
 		}
 
+		if (of_property_read_u32(pdev->dev.of_node, "mediatek,vcp", &vcp_phandle))
+			continue;
+
+		mmqos->vcp_device = mtk_vcp_get_by_phandle(vcp_phandle);
+
 		ssleep(1);
-	}
-
-	if (of_property_read_u32(pdev->dev.of_node, "mediatek,vcp", &vcp_phandle)) {
-		mmqos_err(mmqos->dev, "can't get vcp handle.\n");
-		return -ENODEV;
-	}
-
-	mmqos->vcp_device = mtk_vcp_get_by_phandle(vcp_phandle);
-	if (!mmqos->vcp_device) {
-		mmqos_err(mmqos->dev, "get vcp device failed\n");
-		return -ENODEV;
 	}
 
 	retry = 0;
