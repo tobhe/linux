@@ -96,10 +96,16 @@ static int pdma_get_chipid(void)
 	chip_id = (struct tag_chipid *)of_get_property(node, "atag,chipid", NULL);
 	if (!chip_id) {
 		pr_notice("could not found atag,chipid in chosen\n");
-		return -ENODEV;
+
+		g_sw_ver = 0;
+		return 0;
+
+//		return -ENODEV;
 	}
 
 	g_sw_ver = chip_id->sw_ver;
+
+	pr_err("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@      G_SW_VER=0x%x\n", g_sw_ver);
 
 	return 0;
 }
