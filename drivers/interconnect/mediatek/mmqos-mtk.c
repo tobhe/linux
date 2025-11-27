@@ -79,7 +79,7 @@
 
 static u32 freq_mode = BY_REGULATOR;
 static u32 mmqos_state;
-u32 log_level;
+u32 log_level = U32_MAX;
 
 enum mmqos_rw_type {
 	path_no_type = 0,
@@ -641,7 +641,7 @@ static void set_comm_icc_bw(struct common_node *comm_node, struct mtk_mmqos *mmq
 	u32 comm_id, i, j;
 	u32 max_bw = 0;
 
-	set_total_bw_to_emi(comm_node, mmqos);
+	//set_total_bw_to_emi(comm_node, mmqos);
 
 	comm_id = MASK_8(comm_node->base->icc_node->id);
 
@@ -676,7 +676,7 @@ static void set_comm_icc_bw(struct common_node *comm_node, struct mtk_mmqos *mmq
 			comm_node->smi_clk = smi_clk;
 		}
 	} else if (freq_mode == BY_VMMRC) {
-		set_freq_by_vmmrc(comm_id, mmqos);
+		//set_freq_by_vmmrc(comm_id, mmqos);
 	}
 }
 
@@ -898,6 +898,8 @@ static int mtk_mmqos_set(struct icc_node *src, struct icc_node *dst)
 	struct common_node *comm_node;
 	struct larb_node *larb_node;
 	u32 value = 1, t_bw, t_bw1;
+
+	return 0;
 
 	switch (NODE_TYPE(dst->id)) {
 	case MTK_MMQOS_NODE_COMMON:
@@ -1143,32 +1145,64 @@ static bool mtk_mmqos_path_is_write(struct icc_node *node)
 	struct larb_port_node *larb_port_node = NULL;
 	struct larb_node *larb_node = NULL;
 
+	return false;
+
 	switch (NODE_TYPE(node->id)) {
 	case MTK_MMQOS_NODE_LARB_PORT:
 		larb_port_node = (struct larb_port_node *)node->data;
 
+		if (larb_port_node == NULL) {
+			pr_err("LARB PORT is NULL. Faking is_write=false\n");
+			return false;
+		}
+
 		if (larb_port_node->is_write) {
-			mmqos_dbg(larb_node->larb_dev, LOG_V2_DBG,
-				  "[port] node_id:0x%x is_write:%d",
-				  node->id, larb_port_node->is_write);
+			if (larb_node->larb_dev == NULL) {
+				pr_err("is_write==true, LARB_DEV for PORT IS NULL!!!!\n");
+			} else {
+				mmqos_dbg(larb_node->larb_dev, LOG_V2_DBG,
+					  "[port] node_id:0x%x is_write:%d",
+					  node->id, larb_port_node->is_write);
+			}
+
 			return true;
 		}
 
-		mmqos_dbg(larb_node->larb_dev, LOG_V2_DBG, "[port] node_id:0x%x is_write:%d",
-			  node->id, larb_port_node->is_write);
+		if (larb_node->larb_dev == NULL) {
+			pr_err("is_write==false, LARB_DEV for LARB IS NULL!!!!\n");
+			return false;
+		} else {
+			mmqos_dbg(larb_node->larb_dev, LOG_V2_DBG, "[port] node_id:0x%x is_write:%d",
+				  node->id, larb_port_node->is_write);
+		}
 		break;
 	case MTK_MMQOS_NODE_LARB:
 		larb_node = (struct larb_node *)node->data;
 
+		if (larb_node == NULL) {
+			pr_err("LARB is NULL. Faking is_write=false\n");
+			return false;
+		}
+
 		if (larb_node->is_write) {
-			mmqos_dbg(larb_node->larb_dev, LOG_V2_DBG,
-				  "[larb] node_id:0x%x is_write:%d",
-				  node->id, larb_node->is_write);
+			if (larb_node->larb_dev == NULL) {
+				pr_err("is_write==true, LARB_DEV for LARB IS NULL!!!!\n");
+			} else {
+				mmqos_dbg(larb_node->larb_dev, LOG_V2_DBG,
+					  "[larb] node_id:0x%x is_write:%d",
+					  node->id, larb_node->is_write);
+			}
+
 			return true;
 		}
 
-		mmqos_dbg(larb_node->larb_dev, LOG_V2_DBG, "[larb] node_id:0x%x is_write:%d",
-			  node->id, larb_node->is_write);
+		if (larb_node->larb_dev == NULL) {
+			pr_err("is_write==false, LARB_DEV for LARB IS NULL!!!!\n");
+			return false;
+		} else {
+			mmqos_dbg(larb_node->larb_dev, LOG_V2_DBG, "[larb] node_id:0x%x is_write:%d",
+				  node->id, larb_node->is_write);
+		}
 		break;
 	default:
 		break;
@@ -1535,6 +1569,7 @@ int mtk_mmqos_probe(struct platform_device *pdev)
 			continue;
 
 		larb_pdev = of_find_device_by_node(np);
+
 		dev_root = bus_get_dev_root(pdev->dev.bus);
 		if (!larb_pdev && dev_root) {
 			larb_pdev = of_platform_device_create(np, NULL, dev_root);

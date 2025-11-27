@@ -1090,7 +1090,20 @@ static struct platform_driver mtk_mmqos_mt8196_driver = {
 		.of_match_table = mtk_mmqos_mt8196_of_ids,
 	},
 };
+/*
+static int __init mtk_mmqos_mt8196_init(void)
+{
+	return platform_driver_register(&mtk_mmqos_mt8196_driver);
+}
 
+static void __exit mtk_mmqos_mt8196_exit(void)
+{
+	platform_driver_unregister(&mtk_mmqos_mt8196_driver);
+}
+
+subsys_initcall(mtk_mmqos_mt8196_init);
+module_exit(mtk_mmqos_mt8196_exit);
+*/
 module_platform_driver(mtk_mmqos_mt8196_driver);
 
 MODULE_LICENSE("GPL");

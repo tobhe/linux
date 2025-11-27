@@ -215,12 +215,17 @@ static int aggregate_requests_v2(struct icc_path *path, u32 avg_bw, u32 peak_bw)
 	u32 v2_cal_r_avg, v2_cal_r_peak, v2_cal_w_avg, v2_cal_w_peak, v2_cal_mix, normalize_peak;
 	struct icc_provider *p = NULL;
 	struct icc_node *node;
-	bool is_write;
+	bool is_write = false;
 	size_t i;
 
 	for (i = 0; i < path->num_nodes; i++) {
 		node = path->reqs[i].node;
 		p = node->provider;
+
+		if (IS_ERR_OR_NULL(node)) {
+			pr_err("Skipping node %ld as it %s\n", i, IS_ERR(node) ? "IS_ERR" : "is NULL");
+			continue;
+		}
 
 		if (i == 0)
 			is_write = p->path_is_write(node);
@@ -255,6 +260,10 @@ static int aggregate_requests_v2(struct icc_path *path, u32 avg_bw, u32 peak_bw)
 			v2_cal_mix = node->v2_avg_bw;
 
 		node->v2_mix_bw = v2_cal_mix;
+
+		pr_notice("[mmqos][aggr] node:%s v2_avg_r=%u v2_peak_w=%u v2_avg_w=%u v2_peak_w=%u v2_mix_bw=%u normalize_peak=%u\n",
+			  node->name, v2_cal_r_avg, v2_cal_r_peak, v2_cal_w_avg, v2_cal_w_peak, v2_cal_mix, normalize_peak);
+
 	}
 
 	path->old_avg_bw = avg_bw;
@@ -540,14 +549,24 @@ int mtk_icc_set_bw(struct icc_path *path, u32 avg_bw, u32 peak_bw)
 	aggregate_requests_v2(path, avg_bw, peak_bw);
 
 	for (i = 0; i < path->num_nodes; i++) {
+		bool is_write;
 		node = path->reqs[i].node;
+
 		/* update the consumer request for this path */
 		path->reqs[i].avg_bw = avg_bw;
 		path->reqs[i].peak_bw = peak_bw;
 
-		if (log_level & 1 << log_v2_dbg)
+		//if (log_level & 1 << log_v2_dbg)
 			pr_notice("[mmqos][set] node:%s num:%d avg_bw:%d peak_bw:%d\n",
 				  node->name, (int)path->num_nodes, avg_bw, peak_bw);
+/*
+		if (i == 1) {
+			is_write = node->provider->path_is_write(node);
+
+			pr_notice("[mmqos][set] node:%s num:%d avg_bw:%d peak_bw:%d is_write:%u\n",
+				  node->name, (int)path->num_nodes, avg_bw, peak_bw, is_write);
+		}
+*/
 		node->avg_bw = node->v2_avg_bw;
 		node->peak_bw = node->v2_peak_bw;
 		trace_mtk_icc_set_bw(path, node, i, avg_bw, peak_bw);

@@ -9,11 +9,8 @@
 extern u32 log_level;
 
 #define mmqos_dbg(dev, level, fmt, args...)                                      \
-	do {                                                                     \
-		if (log_level & 1 << (level))                                    \
 			dev_err(dev, "[mmqos dbg]level=%d %s(),%d: " fmt "\n",   \
-				(level), __func__, __LINE__, ##args);            \
-	} while (0)
+				(level), __func__, __LINE__, ##args)       
 
 #define mmqos_err(dev, fmt, args...) \
 	dev_err(dev, "[mmqos err]%s %d: " fmt "\n", __func__, __LINE__, ##args)
