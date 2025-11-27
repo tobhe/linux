@@ -110,23 +110,18 @@ static int mmdebug_vcp_init_thread(void *data)
 	int retry = 0, ret = 0;
 	phandle  vcp_phandle;
 
-	while (request_module("mtk-vcp")) {
+	mmdebug->vcp_device = NULL;
+	while (mmdebug->vcp_device == NULL) {
 		if (++retry > REQUEST_MAX_RETRY_COUNT) {
 			MMDEBUG_ERR(&pdev->dev, "failed to load mtk-vcp module");
 			return -ENODEV;
 		}
+
+		if (of_property_read_u32(pdev->dev.of_node, "mediatek,vcp", &vcp_phandle))
+			continue;
+
+		mmdebug->vcp_device = mtk_vcp_get_by_phandle(vcp_phandle);
 		ssleep(1);
-	}
-
-	if (of_property_read_u32(pdev->dev.of_node, "mediatek,vcp", &vcp_phandle)) {
-		MMDEBUG_ERR(&pdev->dev, "can't get vcp handle.\n");
-		return -ENODEV;
-	}
-
-	mmdebug->vcp_device = mtk_vcp_get_by_phandle(vcp_phandle);
-	if (!mmdebug->vcp_device) {
-		MMDEBUG_ERR(&pdev->dev, "get vcp device failed\n");
-		return -ENODEV;
 	}
 
 	retry = 0;
@@ -138,7 +133,7 @@ static int mmdebug_vcp_init_thread(void *data)
 		ssleep(1);
 	}
 
-	MMDEBUG_DBG(&pdev->dev, "vcp and mmup are ready!\n");
+	dev_err(&pdev->dev, "MMDEBUG: vcp and mmup are ready!\n");
 	mmdebug->vcp_device->data->vcp_register_feature(mmdebug->vcp_device, MMDEBUG_FEATURE_ID);
 
 	ret = mmdebug->vcp_device->ipi_ops->ipi_register(mmdebug->vcp_device->ipi_dev,
