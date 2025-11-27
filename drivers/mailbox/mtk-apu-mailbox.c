@@ -197,6 +197,18 @@ static struct platform_driver mtk_apu_mailbox_driver = {
 		.of_match_table = mtk_apu_mailbox_of_match,
 	},
 };
-module_platform_driver(mtk_apu_mailbox_driver);
+//module_platform_driver(mtk_apu_mailbox_driver);
+static int __init mtk_apu_mbox_drv_init(void)
+{
+	return platform_driver_register(&mtk_apu_mailbox_driver);
+}
+
+static void __exit mtk_apu_mbox_drv_exit(void)
+{
+	platform_driver_unregister(&mtk_apu_mailbox_driver);
+}
+
+arch_initcall(mtk_apu_mbox_drv_init);
+module_exit(mtk_apu_mbox_drv_exit);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("MediaTek APU Mailbox Driver");
