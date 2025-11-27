@@ -24,12 +24,16 @@
  */
 struct mtk_gem_obj {
 	struct drm_gem_object	base;
-	void			*cookie;
-	void			*kvaddr;
 	dma_addr_t		dma_addr;
+	struct sg_table		*sg;
+
+	void			*cookie;
+
+	bool map_noncoherent;
+
+	void			*kvaddr;
 	size_t			size;
 	unsigned long		dma_attrs;
-	struct sg_table		*sg;
 	struct page		**pages;
 	bool			secure;
 };

@@ -52,6 +52,7 @@
 #define MTK_DP_TBC_BUF_READ_START_ADDR 0x8
 #define MTK_DP_TRAIN_VOLTAGE_LEVEL_RETRY 5
 #define MTK_DP_TRAIN_DOWNSCALE_RETRY 10
+#define MTK_DP_EQ_TRAIN_DOWNSCALE_RETRY 20
 #define MTK_DP_VERSION 0x11
 #define MTK_DP_SDP_AUI 0x4
 
@@ -1543,7 +1544,7 @@ static void mtk_dp_video_mute(struct mtk_dp *mtk_dp, bool enable)
 		arm_smccc_smc(MTK_DP_SIP_CONTROL_AARCH32,
 			      mtk_dp->data->smc_cmd, enable, 0, 0, 0, 0, 0, &res);
 	}
-	dev_dbg(mtk_dp->dev, "smc cmd: 0x%x, p1: %s, ret: 0x%lx-0x%lx\n",
+	dev_err(mtk_dp->dev, "smc cmd: 0x%x, p1: %s, ret: 0x%lx-0x%lx\n",
 		mtk_dp->data->smc_cmd, enable ? "enable" : "disable", res.a0, res.a1);
 }
 
@@ -1854,7 +1855,7 @@ static int mtk_dp_train_cr(struct mtk_dp *mtk_dp, u8 target_lane_count)
 		drm_dp_dpcd_read_link_status(&mtk_dp->aux, link_status);
 		if (drm_dp_clock_recovery_ok(link_status,
 					     target_lane_count)) {
-			dev_dbg(mtk_dp->dev, "Link train CR pass\n");
+			dev_err(mtk_dp->dev, "Link train CR pass\n");
 			return 0;
 		}
 
@@ -1874,7 +1875,7 @@ static int mtk_dp_train_cr(struct mtk_dp *mtk_dp, u8 target_lane_count)
 			 */
 			if (voltage_retries > MTK_DP_TRAIN_VOLTAGE_LEVEL_RETRY ||
 			    (prev_lane_adjust & DP_ADJUST_VOLTAGE_SWING_LANE0_MASK) == 3) {
-				dev_dbg(mtk_dp->dev, "Link train CR fail\n");
+
 				break;
 			}
 		} else {
@@ -1886,6 +1887,8 @@ static int mtk_dp_train_cr(struct mtk_dp *mtk_dp, u8 target_lane_count)
 		}
 		prev_lane_adjust = link_status[4];
 	} while (train_retries < MTK_DP_TRAIN_DOWNSCALE_RETRY);
+
+	dev_err(mtk_dp->dev, "Link train CR fail\n");
 
 	/* Failed to train CR, and disable pattern. */
 	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_TRAINING_PATTERN_SET,
@@ -1921,7 +1924,7 @@ static int mtk_dp_train_eq(struct mtk_dp *mtk_dp, u8 target_lane_count)
 		/* check link status from sink device */
 		drm_dp_dpcd_read_link_status(&mtk_dp->aux, link_status);
 		if (drm_dp_channel_eq_ok(link_status, target_lane_count)) {
-			dev_dbg(mtk_dp->dev, "Link train EQ pass\n");
+			dev_err(mtk_dp->dev, "Link train EQ pass\n");
 
 			/* Training done, and disable pattern. */
 			drm_dp_dpcd_writeb(&mtk_dp->aux, DP_TRAINING_PATTERN_SET,
@@ -1929,8 +1932,9 @@ static int mtk_dp_train_eq(struct mtk_dp *mtk_dp, u8 target_lane_count)
 			mtk_dp_train_set_pattern(mtk_dp, 0);
 			return 0;
 		}
-		dev_dbg(mtk_dp->dev, "Link train EQ fail\n");
-	} while (train_retries < MTK_DP_TRAIN_DOWNSCALE_RETRY);
+	} while (train_retries < MTK_DP_EQ_TRAIN_DOWNSCALE_RETRY);
+
+	dev_err(mtk_dp->dev, "Link train EQ fail\n");
 
 	/* Failed to train EQ, and disable pattern. */
 	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_TRAINING_PATTERN_SET,
@@ -2210,7 +2214,7 @@ static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
 	}
 
 	if (status & MTK_DP_THREAD_HPD_EVENT)
-		dev_dbg(mtk_dp->dev, "Receive IRQ from sink devices\n");
+		dev_err(mtk_dp->dev, "Receive IRQ from sink devices\n");
 
 	return IRQ_HANDLED;
 }
@@ -2604,6 +2608,8 @@ static void mtk_dp_bridge_atomic_enable(struct drm_bridge *bridge,
 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
 	int ret;
 
+pr_err("%s {\n", __func__);
+
 	mtk_dp->conn = drm_atomic_get_new_connector_for_encoder(old_state->base.state,
 								bridge->encoder);
 	if (!mtk_dp->conn) {
@@ -2640,6 +2646,8 @@ static void mtk_dp_bridge_atomic_enable(struct drm_bridge *bridge,
 
 	mtk_dp->enabled = true;
 	mtk_dp_update_plugged_status(mtk_dp);
+
+pr_err("%s }\n", __func__);
 
 	return;
 power_off_aux:
@@ -2770,7 +2778,7 @@ static int mtk_dp_bridge_atomic_check(struct drm_bridge *bridge,
 
 	input_bus_format = bridge_state->input_bus_cfg.format;
 
-	dev_dbg(mtk_dp->dev, "input format 0x%04x, output format 0x%04x\n",
+	dev_err(mtk_dp->dev, "input format 0x%04x, output format 0x%04x\n",
 		bridge_state->input_bus_cfg.format,
 		 bridge_state->output_bus_cfg.format);
 
@@ -3061,11 +3069,13 @@ static int mtk_dp_probe(struct platform_device *pdev)
 		 * properly close the eDP port to avoid stalls and then
 		 * reinitialize, reset and power on the AUX block.
 		 */
+/*
 		if (mtk_dp->data->edp_ver) {
 			mtk_dp_poweron(mtk_dp);
-		} else {
-			mtk_dp_set_idle_pattern(mtk_dp, true);
-			mtk_dp_initialize_aux_settings(mtk_dp);
+		} else */{
+			//mtk_dp_set_idle_pattern(mtk_dp, true);
+			//mtk_dp_initialize_aux_settings(mtk_dp);
+			mtk_dp_init_port(mtk_dp);
 			mtk_dp_power_enable(mtk_dp);
 		}
 		/* Disable HW interrupts: we don't need any for eDP */
@@ -3104,7 +3114,7 @@ static int mtk_dp_probe(struct platform_device *pdev)
 			return dev_err_probe(dev, ret, "Failed to add bridge\n");
 	}
 
-	dev_dbg(dev, "%s power.usage_count %d\n",
+	dev_err(dev, "%s power.usage_count %d\n",
 		__func__, atomic_read(&dev->power.usage_count));
 
 	return 0;
@@ -3129,7 +3139,7 @@ static int mtk_dp_suspend(struct device *dev)
 {
 	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
 
-	dev_dbg(mtk_dp->dev, "%s usage_count %d\n",
+	dev_err(mtk_dp->dev, "%s usage_count %d\n",
 		__func__, atomic_read(&dev->power.usage_count));
 
 	mtk_dp_power_disable(mtk_dp);
@@ -3144,7 +3154,7 @@ static int mtk_dp_suspend(struct device *dev)
 	if (mtk_dp->pwr_regs)
 		mtk_edp_pm_ctl(mtk_dp, false);
 
-	dev_dbg(mtk_dp->dev, "%s usage_count %d\n", __func__,
+	dev_err(mtk_dp->dev, "%s usage_count %d\n", __func__,
 		 atomic_read(&dev->power.usage_count));
 
 	return 0;
@@ -3154,7 +3164,7 @@ static int mtk_dp_resume(struct device *dev)
 {
 	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
 
-	dev_dbg(mtk_dp->dev, "%s usage_count %d\n", __func__,
+	dev_err(mtk_dp->dev, "%s usage_count %d\n", __func__,
 		 atomic_read(&dev->power.usage_count));
 
 	/* TODO: clean up it after shutting down eDP power correctly. */
@@ -3171,7 +3181,7 @@ static int mtk_dp_resume(struct device *dev)
 		mtk_dp_hwirq_enable(mtk_dp, true);
 	mtk_dp_power_enable(mtk_dp);
 
-	dev_dbg(mtk_dp->dev, "%s usage_count %d\n", __func__,
+	dev_err(mtk_dp->dev, "%s usage_count %d\n", __func__,
 		 atomic_read(&dev->power.usage_count));
 
 	return 0;
@@ -3249,6 +3259,21 @@ static struct platform_driver mtk_dp_driver = {
 	},
 };
 
+/*
+static int __init mtk_dp_init(void)
+{
+	return platform_driver_register(&mtk_dp_driver);
+}
+
+static void __exit mtk_dp_exit(void)
+{
+	platform_driver_unregister(&mtk_dp_driver);
+}
+
+late_initcall_sync(mtk_dp_init);
+module_exit(mtk_dp_exit);
+
+*/
 module_platform_driver(mtk_dp_driver);
 
 MODULE_AUTHOR("Jitao Shi <jitao.shi@mediatek.com>");

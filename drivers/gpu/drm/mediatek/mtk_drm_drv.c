@@ -404,7 +404,6 @@ static const struct mtk_mmsys_driver_data mt8188_vdosys0_driver_data = {
 	.max_width = 8191,
 	.min_width = 1,
 	.min_height = 1,
-	.mmsys_dev_num = 1,
 	.has_secure = true,
 	.sec_mbox_index = 1,
 	.secure_heap = "restricted_mtk_cma",
@@ -1766,7 +1765,8 @@ static void __exit mtk_drm_exit(void)
 				    ARRAY_SIZE(mtk_drm_drivers));
 }
 
-module_init(mtk_drm_init);
+late_initcall_sync(mtk_drm_init);
+//module_init(mtk_drm_init);
 module_exit(mtk_drm_exit);
 
 MODULE_AUTHOR("YT SHEN <yt.shen@mediatek.com>");

@@ -660,12 +660,12 @@ static void mtk_crtc_post_update_hrt_state(struct mtk_crtc *mtk_crtc)
 static void mtk_crtc_update_srt_state(struct drm_crtc *crtc)
 {
 	struct mtk_crtc *mtk_crtc = to_mtk_crtc(crtc);
-	struct mtk_crtc_state *state;
+//	struct mtk_crtc_state *state;
 	unsigned int total_srt = 0;
 	unsigned int vdisplay, vtotal, vrefresh;
 	int i, j;
 
-	state = to_mtk_crtc_state(mtk_crtc->base.state);
+//	state = to_mtk_crtc_state(mtk_crtc->base.state);
 
 	vdisplay = crtc->state->adjusted_mode.vdisplay;
 	vtotal = crtc->state->adjusted_mode.vtotal;

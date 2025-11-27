@@ -307,9 +307,9 @@ static void mtk_dvo_sodi_setting(struct mtk_dvo *dvo, struct drm_display_mode *m
 	u64 ultra_high = 0, ultra_low = 0, urgent_high = 0, urgent_low = 0;
 
 	mmsys_clk = mode->clock / 1000;
-	dev_dbg(dvo->dev, "mode->clock = %d\n", mode->clock);
+	dev_err(dvo->dev, "mode->clock = %d\n", mode->clock);
 	if (!mmsys_clk) {
-		dev_dbg(dvo->dev, "mmclk is zero, use default value\n");
+		dev_err(dvo->dev, "mmclk is zero, use default value\n");
 		mmsys_clk = 273;
 	}
 
@@ -533,7 +533,7 @@ static void mtk_dvo_config_yuv422_disable_v2(struct mtk_dvo *dvo)
 static void mtk_dvo_config_color_format(struct mtk_dvo *dvo,
 					enum mtk_dvo_out_color_format format)
 {
-	dev_dbg(dvo->dev, "[DPTX] format:%d", format);
+	dev_err(dvo->dev, "[DPTX] format:%d", format);
 
 	if (format == MTK_DVO_COLOR_FORMAT_YCBCR_422) {
 		mtk_dvo_config_yuv422_enable_v2(dvo);
@@ -558,7 +558,7 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
 	drm_display_mode_to_videomode(mode, &vm);
 	pll_rate = vm.pixelclock * factor;
 
-	dev_dbg(dvo->dev, "Want PLL %lu Hz, pixel clock %lu Hz\n",
+	dev_err(dvo->dev, "Want PLL %lu Hz, pixel clock %lu Hz\n",
 			   pll_rate, vm.pixelclock);
 
 	clk_set_rate(dvo->tvd_clk, pll_rate);
@@ -575,7 +575,7 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
 
 	vm.pixelclock = clk_get_rate(dvo->pixel_clk);
 
-	dev_dbg(dvo->dev, "Got  PLL %lu Hz, pixel clock %lu Hz\n",
+	dev_err(dvo->dev, "Got  PLL %lu Hz, pixel clock %lu Hz\n",
 			   pll_rate, vm.pixelclock);
 	/*
 	 * Depending on the IP version, we may output a different amount of
@@ -700,7 +700,7 @@ static int mtk_dvo_bridge_atomic_check(struct drm_bridge *bridge,
 		if (dvo->conf->num_output_fmts)
 			out_bus_format = dvo->conf->output_fmts[0];
 
-	dev_dbg(dvo->dev, "input format 0x%04x, output format 0x%04x\n",
+	dev_err(dvo->dev, "input format 0x%04x, output format 0x%04x\n",
 		bridge_state->input_bus_cfg.format,
 		bridge_state->output_bus_cfg.format);
 
@@ -810,7 +810,7 @@ unsigned int mtk_dvo_encoder_index(struct device *dev)
 	struct mtk_dvo *dvo = dev_get_drvdata(dev);
 	unsigned int encoder_index = drm_encoder_index(&dvo->encoder);
 
-	dev_dbg(dev, "encoder index:%d\n", encoder_index);
+	dev_err(dev, "encoder index:%d\n", encoder_index);
 	return encoder_index;
 }
 
@@ -998,7 +998,7 @@ static int mtk_dvo_probe(struct platform_device *pdev)
 		if (!dvo->next_bridge)
 			return dev_err_probe(dev, -EPROBE_DEFER, "Failed to find next bridge!\n");
 	}
-	dev_dbg(dev, "Found bridge node: %pOF\n", dvo->next_bridge->of_node);
+	dev_err(dev, "Found bridge node: %pOF\n", dvo->next_bridge->of_node);
 
 	dvo->bridge.funcs = &mtk_dvo_bridge_funcs;
 	dvo->bridge.of_node = dev->of_node;

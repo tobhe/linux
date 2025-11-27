@@ -866,11 +866,17 @@ static int mtk_disp_ovlsys_adaptor_probe(struct platform_device *pdev)
 
 	component_master_add_with_match(dev, &mtk_disp_ovlsys_adaptor_master_ops, match);
 
+	/*ret = devm_pm_runtime_enable(dev);
+	if (ret)
+		return ret;
+*/
+
 	pm_runtime_enable(dev);
 
 	ret = component_add(dev, &mtk_disp_ovlsys_adaptor_comp_ops);
 	if (ret != 0) {
 		pm_runtime_disable(dev);
+		component_master_del(&pdev->dev, &mtk_disp_ovlsys_adaptor_master_ops);
 		dev_err(dev, "Failed to add component: %d\n", ret);
 	}
 
