@@ -236,10 +236,25 @@ EXPORT_SYMBOL_NS_GPL(mtk_smi_larb_bw_set, MTK_SMI);
  */
 int mtk_smi_common_bw_set(struct device *larbdev, const u8 larbid, bool hard_limit, const u32 grant_val)
 {
-	struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
-	struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
+	struct mtk_smi_larb *larb; // = dev_get_drvdata(larbdev);
+	struct mtk_smi *common; // = dev_get_drvdata(larb->smi_common_dev);
 	u32 orig_val, write_val;
-	u32 *common_bwl = common->common_bwl;
+	u32 *common_bwl; // = common->common_bwl;
+
+	larb = dev_get_drvdata(larbdev);
+	if (!larb) {
+		pr_err("%s: For dev %s -- struct mtk_smi_larb *larb is NULL! Returning failure.\n", __func__, dev_name(larbdev));
+		WARN(1, "X");
+		return -EINVAL;
+	}
+
+	common = dev_get_drvdata(larb->smi_common_dev);
+	if (!common) {
+		pr_err("%s: struct mtk_smi *common is NULL! Returning failure.\n", __func__);
+		return -EINVAL;
+	}
+
+	common_bwl = common->common_bwl;
 
 	if (larbid >= SMI_COMMON_LARB_NR_MAX || !common_bwl)
 		return -EINVAL;
@@ -874,25 +889,27 @@ static int mtk_smi_device_link_common(struct device *dev, struct device **com_de
 
 	smi_com_pdev = of_find_device_by_node(smi_com_node);
 	of_node_put(smi_com_node);
-	if (smi_com_pdev) {
-		/* smi common is the supplier, Make sure it is ready before */
-		if (!platform_get_drvdata(smi_com_pdev)) {
-			put_device(&smi_com_pdev->dev);
-			return -EPROBE_DEFER;
-		}
-		smi_com_dev = &smi_com_pdev->dev;
-		link = device_link_add(dev, smi_com_dev,
-				       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
-		if (!link) {
-			dev_err(dev, "Unable to link smi-common dev\n");
-			put_device(&smi_com_pdev->dev);
-			return -ENODEV;
-		}
-		*com_dev = smi_com_dev;
-	} else {
+	if (!smi_com_pdev) {
 		dev_err(dev, "Failed to get the smi_common device\n");
 		return -EINVAL;
 	}
+
+	/* smi common is the supplier, Make sure it is ready before */
+	if (!platform_get_drvdata(smi_com_pdev)) {
+		put_device(&smi_com_pdev->dev);
+		return -EPROBE_DEFER;
+	}
+
+	smi_com_dev = &smi_com_pdev->dev;
+	link = device_link_add(dev, smi_com_dev, DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+	if (!link) {
+		dev_err(dev, "Unable to link smi-common dev\n");
+		put_device(&smi_com_pdev->dev);
+		return -ENODEV;
+	}
+
+	*com_dev = smi_com_dev;
+
 	return 0;
 }
 
@@ -996,6 +1013,7 @@ err_pm_disable:
 	if (!larb->smi.skip_rpm)
 		pm_runtime_disable(dev);
 	device_link_remove(dev, larb->smi_common_dev);
+	put_device(larb->smi_common_dev);
 	return ret;
 }
 
@@ -1007,6 +1025,7 @@ static int mtk_smi_larb_remove(struct platform_device *pdev)
 	pm_runtime_disable(&pdev->dev);
 	if (!MTK_SMI_CAPS(larb->larb_gen->flags_general, MTK_SMI_FLAG_CONNECT_SMMUV3))
 		component_del(&pdev->dev, &mtk_smi_larb_component_ops);
+	put_device(larb->smi_common_dev);
 	return 0;
 }
 
@@ -1312,6 +1331,7 @@ static int mtk_smi_common_remove(struct platform_device *pdev)
 	if (common->plat->type == MTK_SMI_GEN2_SUB_COMM)
 		device_link_remove(&pdev->dev, common->smi_common_dev);
 	pm_runtime_disable(&pdev->dev);
+	put_device(common->smi_common_dev);
 	return 0;
 }
 
