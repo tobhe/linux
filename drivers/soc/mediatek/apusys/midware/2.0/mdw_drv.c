@@ -325,7 +325,7 @@ void mdw_exit(void)
 	destroy_dbg_root();
 }
 
-module_init(mdw_init);
+subsys_initcall(mdw_init);
 module_exit(mdw_exit);
 MODULE_DESCRIPTION("APU Middleware Driver");
 MODULE_LICENSE("GPL");

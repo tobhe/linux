@@ -69,8 +69,10 @@ static struct regmap *get_mbox_regmap(struct device *dev)
 	}
 
 	regmap = dev_get_regmap(&mbox_pdev->dev, NULL);
-	if (!regmap)
-		regmap = ERR_PTR(-EINVAL);
+	if (!regmap) {
+		regmap = ERR_PTR(-EPROBE_DEFER);
+		goto out_put_node;
+	}
 
 	link = device_link_add(dev, &mbox_pdev->dev, DL_FLAG_PM_RUNTIME);
 	if (!link)

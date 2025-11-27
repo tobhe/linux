@@ -177,7 +177,7 @@ void mvpu_exit(void)
 MODULE_IMPORT_NS(DMA_BUF);
 MODULE_IMPORT_NS(MTK_APU_MDW);
 
-module_init(mvpu_init);
+late_initcall(mvpu_init);
 module_exit(mvpu_exit);
 MODULE_DESCRIPTION("APU MVPU Driver");
 MODULE_LICENSE("GPL");

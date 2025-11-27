@@ -44,7 +44,7 @@ static int __init mtk_apu_top_drv_init(void)
 {
 	return platform_driver_register(&mtk_apu_top_drv);
 }
-late_initcall_sync(mtk_apu_top_drv_init);
+subsys_initcall(mtk_apu_top_drv_init);
 
 static void __exit mtk_apu_top_drv_exit(void)
 {
