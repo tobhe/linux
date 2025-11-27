@@ -559,14 +559,7 @@ int mtk_icc_set_bw(struct icc_path *path, u32 avg_bw, u32 peak_bw)
 		//if (log_level & 1 << log_v2_dbg)
 			pr_notice("[mmqos][set] node:%s num:%d avg_bw:%d peak_bw:%d\n",
 				  node->name, (int)path->num_nodes, avg_bw, peak_bw);
-/*
-		if (i == 1) {
-			is_write = node->provider->path_is_write(node);
 
-			pr_notice("[mmqos][set] node:%s num:%d avg_bw:%d peak_bw:%d is_write:%u\n",
-				  node->name, (int)path->num_nodes, avg_bw, peak_bw, is_write);
-		}
-*/
 		node->avg_bw = node->v2_avg_bw;
 		node->peak_bw = node->v2_peak_bw;
 		trace_mtk_icc_set_bw(path, node, i, avg_bw, peak_bw);
