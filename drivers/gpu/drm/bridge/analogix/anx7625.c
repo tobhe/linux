@@ -3212,7 +3212,6 @@ static int anx7625_i2c_probe(struct i2c_client *client)
 
 		ret = devm_request_threaded_irq(dev, platform->pdata.intp_irq,
 						NULL, anx7625_intr_hpd_isr,
-						IRQF_TRIGGER_FALLING |
 						IRQF_ONESHOT,
 						"anx7625-intp", platform);
 		if (ret) {
