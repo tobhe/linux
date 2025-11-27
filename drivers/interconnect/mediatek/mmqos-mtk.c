@@ -103,6 +103,9 @@ enum hrt_ostdl_policy {
 	HRT_OSTDL_2,
 };
 
+
+struct device *get_larb_dev(int larb_id);
+
 static void mmqos_update_comm_bw(struct device *dev, u32 comm_port, u32 freq,
 				 u64 mix_bw, u64 bw_peak, bool qos_bound, bool max_bwl)
 {
@@ -899,8 +902,6 @@ static int mtk_mmqos_set(struct icc_node *src, struct icc_node *dst)
 	struct larb_node *larb_node;
 	u32 value = 1, t_bw, t_bw1;
 
-	return 0;
-
 	switch (NODE_TYPE(dst->id)) {
 	case MTK_MMQOS_NODE_COMMON:
 		comm_node = (struct common_node *)dst->data;
@@ -965,7 +966,7 @@ static int mtk_mmqos_set(struct icc_node *src, struct icc_node *dst)
 		port_id = MASK_8(dst->id);
 
 		if (mmqos_state & BWL_ENABLE)
-			mmqos_update_comm_bw(comm_port_node->larb_dev,
+			mmqos_update_comm_bw(get_larb_dev(port_id), //comm_port_node->larb_dev,
 					     port_id, comm_port_node->common->freq,
 					     ICC_TO_MBPS(comm_port_node->latest_mix_bw),
 					     ICC_TO_MBPS(comm_port_node->latest_peak_bw),
