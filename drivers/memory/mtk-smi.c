@@ -244,7 +244,7 @@ int mtk_smi_common_bw_set(struct device *larbdev, const u8 larbid, bool hard_lim
 	larb = dev_get_drvdata(larbdev);
 	if (!larb) {
 		pr_err("%s: For dev %s -- struct mtk_smi_larb *larb is NULL! Returning failure.\n", __func__, dev_name(larbdev));
-		WARN(1, "X");
+//		WARN(1, "X");
 		return -EINVAL;
 	}
 
@@ -1409,3 +1409,4 @@ module_exit(mtk_smi_exit);
 
 MODULE_DESCRIPTION("MediaTek SMI driver");
 MODULE_LICENSE("GPL v2");
+MODULE_ALIAS("mtk-smi");
