@@ -124,6 +124,7 @@ static int vdisp_is_enabled(struct regulator_dev *rdev)
 	ret = regmap_read(priv->hwccf_regmap, HW_CCF_BACKUP1_ENABLE, &val);
 	if (ret < 0) {
 		dev_err(priv->dev, "%s: vdisp read buck status failed, ret=%d\n", __func__, ret);
+		mutex_unlock(&priv->ctrl_lock);
 		return ret;
 	}
 	dev_dbg(priv->dev, "%s: %lu\n", __func__, val & BIT(HW_CCF_AP_VOTER_BIT));
