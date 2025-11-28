@@ -16,6 +16,7 @@
 / {
 	chosen: chosen {
 		stdout-path = "serial0:115200n8";
+		bootargs = "arm64.nomte cpuidle.governor=teo irqchip.gicv3_pseudo_nmi=1";
 	};
 
 	backlight: backlight {
