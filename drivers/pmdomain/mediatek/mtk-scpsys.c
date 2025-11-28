@@ -655,7 +655,6 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
 	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_KEEP_DEFAULT_OFF) && !scpd->boot_status)
 		return 0;
 
-
 	ret = scpsys_regulator_enable(scpd);
 	if (ret < 0)
 		return ret;
@@ -663,11 +662,6 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
 	ret = scpsys_clk_enable(scpd->clk, MAX_CLKS);
 	if (ret)
 		goto err_clk;
-
-
-	if (scpsys_domain_is_on(scpd))
-		return 0;
-
 
 	/* subsys power on */
 	val = readl(ctl_addr);
@@ -789,11 +783,6 @@ err_clk:
 	dev_err(scp->dev, "Failed to power on domain %s\n", genpd->name);
 
 	return ret;
-}
-
-static int dummy_power_off(struct generic_pm_domain *genpd)
-{
-	return 0;
 }
 
 static int scpsys_power_off(struct generic_pm_domain *genpd)
@@ -1236,9 +1225,9 @@ struct scp *init_scp(struct platform_device *pdev, const struct scp_soc_data *so
 		genpd->name = data->name;
 		if (MTK_SCPD_CAPS(scpd, MTK_SCPD_HWV_OPS)) {
 			genpd->power_on = scpsys_hwv_power_on;
-			genpd->power_off = dummy_power_off; //scpsys_hwv_power_off;
+			genpd->power_off = scpsys_hwv_power_off;
 		} else {
-			genpd->power_off = dummy_power_off; //scpsys_power_off;
+			genpd->power_off = scpsys_power_off;
 			genpd->power_on = scpsys_power_on;
 		}
 		if (MTK_SCPD_CAPS(scpd, MTK_SCPD_ACTIVE_WAKEUP))
