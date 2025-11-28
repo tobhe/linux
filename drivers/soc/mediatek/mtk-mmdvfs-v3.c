@@ -325,9 +325,9 @@ static inline int rate_to_opp(struct mtk_mmdvfs_clk *clk, int rate)
 static int mtk_mmdvfs_set_rate(struct clk_hw *hw, unsigned long rate, unsigned long parent_rate)
 {
 	struct mtk_mmdvfs_dev *mmdvfs_dev = mtk_mmdvfs_get_drv_data();
-	struct mtk_vcp_device  *vcp_device = mmdvfs_dev->vcp_device;
 	struct mtk_mmdvfs_clk *clk = container_of(hw, typeof(*clk), clk_hw);
 	u8 opp, pwr_opp = MMDVFS_MAX_OPP, user_opp = MMDVFS_MAX_OPP;
+	struct mtk_vcp_device  *vcp_device;
 	u32 img_clk = rate / 1000000UL;
 	int i, ret = 0, retry = 0;
 
@@ -373,6 +373,8 @@ static int mtk_mmdvfs_set_rate(struct clk_hw *hw, unsigned long rate, unsigned l
 		return 0;
 
 	mmdvfs_dev->mmdvfs_pwr_opp[clk->pwr_id] = pwr_opp;
+
+	vcp_device = mmdvfs_dev->vcp_device;
 
 	while (!vcp_device->data->vcp_is_ready(MMDVFS_HFRP_FEATURE_ID) ||
 	       !mmdvfs_dev->mmdvfs_vcp_cb_ready) {
@@ -1293,7 +1295,7 @@ static int mtk_mmdvfs_v3_set_vote_step_ipi(const u16 pwr_idx, const s16 opp)
 	struct mtk_mmdvfs_dev *mmdvfs_dev = mtk_mmdvfs_get_drv_data();
 	struct mtk_mmdvfs_clk *mtk_mmdvfs_clks = mmdvfs_dev->mtk_mmdvfs_clks;
 	int i, *last, ret = 0;
-	u32 freq;
+	u32 freq = 0;
 
 	if (pwr_idx > PWR_MMDVFS_NUM || opp >= MMDVFS_MAX_OPP) {
 		mtk_mmdvfs_err(mmdvfs_dev->pdev, "failed:%d pwr_idx:%u opp:%d",
@@ -1322,7 +1324,7 @@ static int mtk_mmdvfs_v3_set_vote_step_ipi(const u16 pwr_idx, const s16 opp)
 	    opp >= 0 && opp < mmdvfs_dev->dpsw_thr && pwr_idx == PWR_MMDVFS_VMM)
 		mtk_mmdvfs_enable_vmm(true);
 
-	for (i = mmdvfs_dev->mmdvfs_clk_num - 1; i >= 0; i--)
+	for (i = mmdvfs_dev->mmdvfs_clk_num - 1; i >= 0; i--) {
 		if (pwr_idx == mmdvfs_dev->mtk_mmdvfs_clks[i].pwr_id) {
 			if (opp >= mtk_mmdvfs_clks[i].freq_num) {
 				mtk_mmdvfs_err(mmdvfs_dev->pdev, "i:%d inval opp:%d freq_num:%u",
@@ -1335,6 +1337,7 @@ static int mtk_mmdvfs_v3_set_vote_step_ipi(const u16 pwr_idx, const s16 opp)
 			ret = clk_set_rate(mmdvfs_dev->mmdvfs_pwr_clk[pwr_idx], freq);
 			break;
 		}
+	}
 
 	if (mmdvfs_dev->dpsw_thr > 0 && *last >= 0 && *last < mmdvfs_dev->dpsw_thr &&
 	    (opp < 0 || opp >= mmdvfs_dev->dpsw_thr) && pwr_idx == PWR_MMDVFS_VMM)

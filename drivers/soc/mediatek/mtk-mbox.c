@@ -57,15 +57,16 @@ int mtk_mbox_write_hd(struct mtk_mbox_device *mbdev, unsigned int mbox,
 	unsigned int slot_ofs, size;
 	struct mtk_mbox_info *minfo;
 	struct mtk_ipi_msg *ipimsg;
-	struct device *dev = mbdev->dev;
+	struct device *dev;
 	void __iomem *base;
 	uint32_t len;
 	unsigned long flags;
 
 	if (!mbdev) {
-		dev_err(dev, "[MBOX]write header fail, dev null");
+		pr_err("[MBOX]write header fail, dev null");
 		return MBOX_PLT_ERR;
 	}
+	dev = mbdev->dev;
 
 	if (mbox >= mbdev->count || !msg) {
 		dev_err(dev, "[MBOX]write header config err");
@@ -116,14 +117,15 @@ int mtk_mbox_read_hd(struct mtk_mbox_device *mbdev, unsigned int mbox,
 	unsigned int slot_ofs, size;
 	struct mtk_mbox_info *minfo;
 	struct mtk_ipi_msg_hd *ipihd;
-	struct device *dev = mbdev->dev;
+	struct device *dev;
 	void __iomem *base;
 	unsigned long flags;
 
 	if (!mbdev) {
-		dev_err(dev, "[MBOX]read header fail, dev null");
+		pr_err("[MBOX]read header fail, dev null");
 		return MBOX_PLT_ERR;
 	}
+	dev = mbdev->dev;
 
 	if (mbox >= mbdev->count || !dest) {
 		dev_err(dev, "[MBOX]read header config err");
@@ -164,14 +166,15 @@ int mtk_mbox_write(struct mtk_mbox_device *mbdev, unsigned int mbox,
 {
 	unsigned int slot_ofs, size;
 	struct mtk_mbox_info *minfo;
-	struct device *dev = mbdev->dev;
+	struct device *dev;
 	void __iomem *base;
 	unsigned long flags;
 
 	if (!mbdev) {
-		dev_err(dev, "[MBOX]write fail, dev or ptr null");
+		pr_err("[MBOX]write fail, dev or ptr null");
 		return MBOX_PLT_ERR;
 	}
+	dev = mbdev->dev;
 
 	if (mbox >= mbdev->count || !data)
 		return MBOX_PARA_ERR;
@@ -205,12 +208,18 @@ int mtk_mbox_read(struct mtk_mbox_device *mbdev, unsigned int mbox,
 {
 	unsigned int slot_ofs, size;
 	struct mtk_mbox_info *minfo;
-	struct device *dev = mbdev->dev;
+	struct device *dev;
 	void __iomem *base;
 	unsigned long flags;
 
-	if (!mbdev || !data) {
-		dev_err(dev, "[MBOX]read fail,dev or ptr null");
+	if (!mbdev) {
+		pr_err("[MBOX]read fail, dev null\n");
+		return MBOX_PLT_ERR;
+	}
+	dev = mbdev->dev;
+
+	if (!data) {
+		dev_err(dev, "[MBOX]read fail, data ptr null\n");
 		return MBOX_PLT_ERR;
 	}
 
