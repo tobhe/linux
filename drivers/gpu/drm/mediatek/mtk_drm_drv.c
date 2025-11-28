@@ -40,6 +40,14 @@
 #define DRIVER_MAJOR 1
 #define DRIVER_MINOR 0
 
+#if IS_ENABLED(CONFIG_MALI_MTK) || IS_ENABLED(CONFIG_MALI)
+static bool remove_driver_render = false;
+#else /* CONFIG_DRM_PANTHOR and anything else */
+static bool remove_driver_render = true;
+#endif
+MODULE_PARM_DESC(remove_driver_render, "Removes DRIVER_RENDER from drm_driver features (panthor/upstream)");
+module_param(remove_driver_render, bool, 0600);
+
 static const struct drm_mode_config_helper_funcs mtk_drm_mode_config_helpers = {
 	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
 };
@@ -861,9 +869,29 @@ static struct drm_gem_object *mtk_gem_prime_import(struct drm_device *dev,
 	return drm_gem_prime_import_dev(dev, dma_buf, private->dma_dev);
 }
 
-static const struct drm_driver mtk_drm_driver = {
+static const struct drm_driver mtk_drm_driver_mali = {
 	.driver_features = DRIVER_MODESET | DRIVER_GEM | DRIVER_ATOMIC |
 			   DRIVER_RENDER,
+
+	.dumb_create = mtk_gem_dumb_create,
+
+	.gem_prime_import = mtk_gem_prime_import,
+	.gem_prime_import_sg_table = mtk_gem_prime_import_sg_table,
+
+	.ioctls = mtk_ioctls,
+	.num_ioctls = ARRAY_SIZE(mtk_ioctls),
+
+	.fops = &mtk_drm_fops,
+
+	.name = DRIVER_NAME,
+	.desc = DRIVER_DESC,
+	.date = DRIVER_DATE,
+	.major = DRIVER_MAJOR,
+	.minor = DRIVER_MINOR,
+};
+
+static const struct drm_driver mtk_drm_driver_panthor = {
+	.driver_features = DRIVER_MODESET | DRIVER_GEM | DRIVER_ATOMIC,
 
 	.dumb_create = mtk_gem_dumb_create,
 
@@ -938,7 +966,10 @@ static int mtk_drm_bind(struct device *dev)
 	if (!mtk_drm_get_all_drm_priv(dev))
 		return 0;
 
-	drm = drm_dev_alloc(&mtk_drm_driver, dev);
+	if (remove_driver_render)
+		drm = drm_dev_alloc(&mtk_drm_driver_panthor, dev);
+	else
+		drm = drm_dev_alloc(&mtk_drm_driver_mali, dev);
 	if (IS_ERR(drm)) {
 		ret = PTR_ERR(drm);
 		goto err_put_dev;
