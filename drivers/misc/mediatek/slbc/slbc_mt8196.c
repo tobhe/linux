@@ -1110,13 +1110,12 @@ static int _slbc_roi_update(enum slc_ach_uid uid, int gid, struct slbc_gid_data 
 
 	mutex_lock(&slbc_req_lock);
 	ret = _slbc_ach_scmi(IPI_SLBC_ROI_UPDATE_FROM_AP, uid, gid, data);
+	mutex_unlock(&slbc_req_lock);
 	if (ret) {
 		pr_err("#@# %s(%d) [LVL_ERR] ach scmi vld fail, uid:%d, gid:%d\n",
 			__func__, __LINE__, uid, gid);
 		return ret;
 	}
-
-	mutex_unlock(&slbc_req_lock);
 
 	return ret;
 }
@@ -1211,12 +1210,12 @@ static int _slbc_read_invalidate(enum slc_ach_uid uid, int gid, int enable)
 	data.bw = enable;
 	mutex_lock(&slbc_req_lock);
 	ret = _slbc_ach_scmi(IPI_SLBC_GID_READ_INVALID_FROM_AP, uid, gid, &data);
+	mutex_unlock(&slbc_req_lock);
 	if (ret) {
 		pr_err("#@# %s(%d) [LVL_ERR] ach read invld fail, uid:%d, gid:%d\n",
 			__func__, __LINE__, uid, gid);
 		return ret;
 	}
-	mutex_unlock(&slbc_req_lock);
 
 	return ret;
 }
