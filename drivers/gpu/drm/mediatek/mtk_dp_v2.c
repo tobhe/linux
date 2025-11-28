@@ -5314,10 +5314,15 @@ static void mtk_dp_phy_param(struct mtk_dp *mtk_dp, enum dp_link_rate link_rate)
 
 	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] Set phy by link rate\n");
 
-	if ((link_rate == DP_LINK_RATE_RBR) || (link_rate == DP_LINK_RATE_HBR)) {
-		phy_settings_param = mtk_dp->phy_settings;
-	} else if (link_rate == DP_LINK_RATE_HBR2) {
+	switch (link_rate) {
+	case DP_LINK_RATE_HBR2:
 		phy_settings_param = mtk_dp->phy_settings_hbr2;
+		break;
+	case DP_LINK_RATE_RBR:
+	case DP_LINK_RATE_HBR:
+	default:
+		phy_settings_param = mtk_dp->phy_settings;
+		break;
 	}
 
 	for (i = 0; i < 4; i++) {
@@ -6236,6 +6241,12 @@ static int mtk_dp_dt_parse_pdata_v2(struct mtk_dp *mtk_dp,
 	of_node_put(vdisp_ao_node);
 	if (WARN_ON(!vdisp_ao_pdev)) {
 		dev_err(dev, "[DPTX] vdisp-ao find pdev failed\n");
+
+		iounmap(mtk_dp->mac_power_regs);
+		iounmap(mtk_dp->phy_mux_regs);
+		iounmap(mtk_dp->phyd_regs);
+		iounmap(mtk_dp->regs);
+
 		return -ENODEV;
 	}
 	mtk_dp->vdisp_ao_dev =  &vdisp_ao_pdev->dev;
@@ -6264,9 +6275,10 @@ static int mtk_dp_suspend_v2(struct device *dev)
 {
 	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
 
+	/* That can never happen... */
 	if (!mtk_dp) {
-		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] suspend, dp not initial\n");
-		return 0;
+		pr_err("[DPTX] suspend, dp not initialized!!\n");
+		return -EINVAL;
 	}
 
 	if (mtk_dp->disp_state == DP_DISP_STATE_SUSPENDING ||
@@ -6303,9 +6315,10 @@ static int mtk_dp_resume_v2(struct device *dev)
 	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
 	int ret = 0;
 
+	/* That can never happen... */
 	if (!mtk_dp) {
-		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] resume, dp not initial\n");
-		return 0;
+		pr_err("[DPTX] resume, dp not initialized!!!\n");
+		return -EINVAL;
 	}
 
 	if (mtk_dp->disp_state == DP_DISP_STATE_RESUME) {

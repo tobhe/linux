@@ -954,10 +954,11 @@ void mtk_dpi_get_dsc_info_v2(struct device *dev, struct dsc_info *dsc_info)
 {
 	struct mtk_dpi *dpi = dev_get_drvdata(dev);
 
-	if (dsc_info) {
-		dsc_info->compression_enable = dpi->dsc_enable;
-		memcpy(&dsc_info->dsc_config, &dpi->dsc_config, sizeof(struct drm_dsc_config));
-	}
+	if (!dsc_info)
+		return;
+
+	dsc_info->compression_enable = dpi->dsc_enable;
+	memcpy(&dsc_info->dsc_config, &dpi->dsc_config, sizeof(struct drm_dsc_config));
 
 	drm_dbg_kms(dpi->bridge.dev,
 		    "[DPTX] get dsc info, compression_enable:%d\n", dsc_info->compression_enable);
@@ -985,8 +986,8 @@ static int mtk_dpi_bind_v2(struct device *dev, struct device *master, void *data
 
 	id = of_alias_get_id(dev->of_node, "dp-intf");
 	if (id < 0) {
-		dev_err(dev, "[DPTX] Failed to get id: %d\n", ret);
-		return ret;
+		dev_err(dev, "[DPTX] Failed to get id: %d\n", id);
+		return id;
 	}
 
 	snprintf(result, sizeof(result), "%s%d", dsc_enable, id);
@@ -994,7 +995,7 @@ static int mtk_dpi_bind_v2(struct device *dev, struct device *master, void *data
 					DRM_MODE_PROP_ATOMIC, result);
 	if (!prop) {
 		dev_err(dev, "[DPTX] failed to create property dp_dsc_enable\n");
-		return ret;
+		return -EINVAL;
 	}
 	dpi->prop_dsc_enable = prop;
 
@@ -1004,7 +1005,7 @@ static int mtk_dpi_bind_v2(struct device *dev, struct device *master, void *data
 				   result, sizeof(struct drm_dsc_config));
 	if (!prop) {
 		dev_err(dev, "[DPTX] failed to create property dp_dsc_cfg\n");
-		return ret;
+		return -EINVAL;
 	}
 	dpi->prop_dsc_cfg = prop;
 

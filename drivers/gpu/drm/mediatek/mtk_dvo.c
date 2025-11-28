@@ -490,17 +490,21 @@ static int mtk_dvo_power_on(struct mtk_dvo *dvo)
 	ret = clk_prepare_enable(dvo->tvd_clk);
 	if (ret) {
 		dev_err(dvo->dev, "Failed to enable tvd_clk clock: %d\n", ret);
-		goto err_refcount;
+		goto err_tvd;
 	}
 
 	ret = clk_prepare_enable(dvo->engine_clk);
 	if (ret) {
 		dev_err(dvo->dev, "Failed to enable engine clock: %d\n", ret);
-		goto err_refcount;
+		goto err_engine;
 	}
 
 	return 0;
 
+err_engine:
+	clk_disable_unprepare(dvo->tvd_clk);
+err_tvd:
+	clk_disable_unprepare(dvo->hf_fdvo_clk);
 err_refcount:
 	dvo->refcount--;
 	return ret;

@@ -3283,6 +3283,9 @@ static int mtk_dp_resume(struct device *dev)
 
 	ret = phy_init(mtk_dp->phy);
 	if (ret) {
+		if (mtk_dp->power_clk)
+			clk_disable_unprepare(mtk_dp->power_clk);
+
 		dev_err(mtk_dp->dev, "Failed to initialize phy: %d\n", ret);
 		return ret;
 	}
