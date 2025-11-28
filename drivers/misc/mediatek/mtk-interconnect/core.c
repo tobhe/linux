@@ -212,20 +212,27 @@ static int aggregate_requests(struct icc_node *node)
 
 static int aggregate_requests_v2(struct icc_path *path, u32 avg_bw, u32 peak_bw)
 {
-	u32 v2_cal_r_avg, v2_cal_r_peak, v2_cal_w_avg, v2_cal_w_peak, v2_cal_mix, normalize_peak;
-	struct icc_provider *p = NULL;
+	u32 v2_cal_r_avg = 0, v2_cal_r_peak = 0;
+	u32 v2_cal_w_avg = 0, v2_cal_w_peak = 0;
+	struct icc_provider *p;
 	struct icc_node *node;
 	bool is_write = false;
 	size_t i;
 
 	for (i = 0; i < path->num_nodes; i++) {
-		node = path->reqs[i].node;
-		p = node->provider;
+		u32 normalize_peak, v2_cal_mix;
 
+		node = path->reqs[i].node;
 		if (IS_ERR_OR_NULL(node)) {
 			pr_err("Skipping node %ld as it %s\n", i, IS_ERR(node) ? "IS_ERR" : "is NULL");
 			continue;
 		}
+
+		if (node->provider == NULL) {
+			pr_err("Skipping node %ld: provider is NULL!!\n", i);
+			continue;
+		}
+		p = node->provider;
 
 		if (i == 0)
 			is_write = p->path_is_write(node);
@@ -549,7 +556,6 @@ int mtk_icc_set_bw(struct icc_path *path, u32 avg_bw, u32 peak_bw)
 	aggregate_requests_v2(path, avg_bw, peak_bw);
 
 	for (i = 0; i < path->num_nodes; i++) {
-		bool is_write;
 		node = path->reqs[i].node;
 
 		/* update the consumer request for this path */
