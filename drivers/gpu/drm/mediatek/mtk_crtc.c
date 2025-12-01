@@ -322,9 +322,6 @@ static void mtk_crtc_plane_switch_sec_state(struct drm_crtc *crtc,
 		    !new_plane_state || !new_plane_state->crtc)
 			continue;
 
-		if(plane->type == DRM_PLANE_TYPE_CURSOR)
-			cursor_update = true;
-
 		if (new_plane_state->fb && mtk_plane_fb_is_secure(new_plane_state->fb))
 			sec_on = true;
 
@@ -1676,17 +1673,14 @@ static int mtk_crtc_init(struct drm_device *drm, struct mtk_crtc *mtk_crtc,
 			 unsigned int pipe)
 {
 	struct drm_plane *primary = NULL;
-	struct drm_plane *cursor = NULL;
 	int i, ret;
 
 	for (i = 0; i < mtk_crtc->layer_nr; i++) {
 		if (mtk_crtc->planes[i].type == DRM_PLANE_TYPE_PRIMARY)
 			primary = &mtk_crtc->planes[i];
-		else if (mtk_crtc->planes[i].type == DRM_PLANE_TYPE_CURSOR)
-			cursor = &mtk_crtc->planes[i];
 	}
 
-	ret = drm_crtc_init_with_planes(drm, &mtk_crtc->base, primary, cursor,
+	ret = drm_crtc_init_with_planes(drm, &mtk_crtc->base, primary, NULL,
 					&mtk_crtc_funcs, NULL);
 	if (ret)
 		goto err_cleanup_crtc;
@@ -1723,11 +1717,8 @@ enum drm_plane_type mtk_crtc_plane_type(unsigned int plane_idx,
 {
 	if (plane_idx == 0)
 		return DRM_PLANE_TYPE_PRIMARY;
-	else if (plane_idx == (num_planes - 1))
-		return DRM_PLANE_TYPE_CURSOR;
 	else
 		return DRM_PLANE_TYPE_OVERLAY;
-
 }
 
 static int mtk_crtc_init_comp_planes(struct drm_device *drm_dev,
