@@ -2883,11 +2883,11 @@ static int mtk_dp_bridge_atomic_check(struct drm_bridge *bridge,
 	unsigned int input_bus_format;
 
 	input_bus_format = bridge_state->input_bus_cfg.format;
-
+/*
 	dev_err(mtk_dp->dev, "input format 0x%04x, output format 0x%04x\n",
 		bridge_state->input_bus_cfg.format,
 		 bridge_state->output_bus_cfg.format);
-
+*/
 	if (input_bus_format == MEDIA_BUS_FMT_YUYV8_1X16)
 		mtk_dp->info.format = DP_PIXELFORMAT_YUV422;
 	else

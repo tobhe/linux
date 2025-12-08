@@ -703,11 +703,11 @@ static int mtk_dvo_bridge_atomic_check(struct drm_bridge *bridge,
 	if (out_bus_format == MEDIA_BUS_FMT_FIXED)
 		if (dvo->conf->num_output_fmts)
 			out_bus_format = dvo->conf->output_fmts[0];
-
+/*
 	dev_err(dvo->dev, "input format 0x%04x, output format 0x%04x\n",
 		bridge_state->input_bus_cfg.format,
 		bridge_state->output_bus_cfg.format);
-
+*/
 	dvo->output_fmt = out_bus_format;
 	dvo->bit_num = MTK_DVO_OUT_BIT_NUM_8BITS;
 	dvo->channel_swap = MTK_DVO_OUT_CHANNEL_SWAP_RGB;
