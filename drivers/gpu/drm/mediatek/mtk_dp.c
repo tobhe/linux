@@ -2893,7 +2893,7 @@ static int mtk_dp_bridge_atomic_check(struct drm_bridge *bridge,
 	else
 		mtk_dp->info.format = DP_PIXELFORMAT_RGB;
 
-	if (!crtc) {
+	if (unlikely(!crtc)) {
 		drm_err(mtk_dp->drm_dev,
 			"Can't enable bridge as connector state doesn't have a crtc\n");
 		return -EINVAL;

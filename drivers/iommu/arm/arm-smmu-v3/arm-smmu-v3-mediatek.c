@@ -12,6 +12,7 @@
 #include <linux/of_platform.h>
 
 #include "arm-smmu-v3.h"
+#include <linux/mtk-smmu-v3.h>
 
 #include <linux/soc/mediatek/mtk_sip_svc.h>
 #include <linux/arm-smccc.h>
@@ -131,6 +132,8 @@
 #define SMMU_DIS_CPU_TBU_PARTID		BIT(4)
 #define SMMU_REQUIRE_PARENT		BIT(5)
 
+#define MTK_SMMU_TCU_PREFETCH_2		BIT(6)
+
 #define MTK_SMMU_HAS_FLAG(pdata, _x)	\
 			  ((((pdata)->flags) & (_x)) == (_x))
 
@@ -168,7 +171,7 @@ static const struct mtk_smmu_v3_plat mt8196_data_mm = {
 	.wp_offset		= WP_OFFSET_MT8196,
 	.tbu_cnt		= 3,
 	.smmu_type		= MTK_SMMU_MM,
-	.flags			= SMMU_AXSLC_EN,
+	.flags			= SMMU_AXSLC_EN | MTK_SMMU_TCU_PREFETCH_2,
 };
 
 static const struct mtk_smmu_v3_plat mt8196_data_soc = {
@@ -182,7 +185,7 @@ static const struct mtk_smmu_v3_plat mt8196_data_apu = {
 	.wp_offset		= WP_OFFSET_MT8196,
 	.tbu_cnt		= 3,
 	.smmu_type		= MTK_SMMU_APU,
-	.flags			= SMMU_AXSLC_EN | SMMU_REQUIRE_PARENT,
+	.flags			= SMMU_AXSLC_EN | SMMU_REQUIRE_PARENT | MTK_SMMU_TCU_PREFETCH_2,
 };
 
 struct mtk_smmu_v3_of_device_data {
@@ -200,6 +203,33 @@ static const struct mtk_smmu_v3_of_device_data mtk_smmu_v3_of_ids[] = {
 static inline struct mtk_smmu_v3 *to_mtk_smmu_v3(struct arm_smmu_device *smmu)
 {
 	return container_of(smmu, struct mtk_smmu_v3, smmu);
+}
+
+unsigned int mtk_smmu_v3_get_type(struct device *dev)
+{
+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+	struct arm_smmu_device *smmu_dev = master->smmu;
+	struct mtk_smmu_v3 *mtk_smmu = to_mtk_smmu_v3(smmu_dev);
+
+	return mtk_smmu->plat_data->smmu_type;
+}
+
+u64 mtk_smmu_v3_get_smmu_tab_id(struct device *dev)
+{
+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+	struct arm_smmu_domain *smmu_domain;
+	u64 smmu_id;
+
+	if (!domain)
+		return 0;
+
+	smmu_domain = container_of(domain, struct arm_smmu_domain, domain);
+	if (!smmu_domain)
+		return 0;
+
+	smmu_id = mtk_smmu_v3_get_type(dev);
+
+	return (smmu_id << 32) | smmu_domain->s1_cfg.cd.asid;
 }
 
 static const struct mtk_smmu_v3_plat *mtk_smmu_v3_get_plat_data(const struct device_node *np)
@@ -566,5 +596,11 @@ struct arm_smmu_device *arm_smmu_v3_impl_mtk_init(struct arm_smmu_device *smmu)
 	mtk_smmu_pm_get(dev, mtk_smmu_v3->plat_data->smmu_type);
 	smmu_init_wpcfg(smmu);
 	mtk_smmu_pm_put(dev, mtk_smmu_v3->plat_data->smmu_type);
+
+	if (MTK_SMMU_HAS_FLAG(mtk_smmu_v3->plat_data, MTK_SMMU_TCU_PREFETCH_2)) {
+		mtk_smmu_v3->smmu.features |= ARM_SMMU_FEAT_TCU_PF;
+		smmu->features |= ARM_SMMU_FEAT_TCU_PF;
+	}
+
 	return &mtk_smmu_v3->smmu;
 }

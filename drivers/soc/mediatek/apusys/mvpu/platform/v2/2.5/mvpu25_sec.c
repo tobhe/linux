@@ -569,7 +569,11 @@ int mvpu25_update_hash_pool(void *session,
 		hash_pool[session_id]->hash_oldest = 0;
 #endif
 
+#ifdef CONFIG_DMABUF_HEAPS_MTK_SYSTEM
+	hash_pool[session_id]->dma_heap[hash_id] = dma_heap_find("mtk_mm");
+#else
 	hash_pool[session_id]->dma_heap[hash_id] = dma_heap_find("system");
+#endif
 
 	if (!hash_pool[session_id]->dma_heap[hash_id]) {
 		pr_info("[MVPU][Sec] heap find fail\n");

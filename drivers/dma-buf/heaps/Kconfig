@@ -1,6 +1,6 @@
 config DMABUF_HEAPS_SYSTEM
 	bool "DMA-BUF System Heap"
-	depends on DMABUF_HEAPS
+	depends on DMABUF_HEAPS && DMABUF_HEAPS_MTK_SYSTEM=n
 	help
 	  Choose this option to enable the system dmabuf heap. The system heap
 	  is backed by pages from the buddy allocator. If in doubt, say Y.
@@ -28,3 +28,11 @@ config DMABUF_HEAPS_RESTRICTED_MTK
 	help
 	  Enable restricted dma-buf heaps for MediaTek platform. This heap is backed by
 	  TEE client interfaces. If in doubt, say N.
+
+config DMABUF_HEAPS_MTK_SYSTEM
+	bool "MediaTek DMA-BUF System Heap"
+	depends on DMABUF_HEAPS && NUMA=n
+	default y
+	help
+	  Choose this option to enable the MediaTek system dmabuf heap. The system heap
+	  is backed by pages from the buddy allocator. If in doubt, say Y.

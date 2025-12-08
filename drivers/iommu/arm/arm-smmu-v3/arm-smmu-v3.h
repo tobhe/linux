@@ -426,6 +426,12 @@
 #define MSI_IOVA_BASE			0x8000000
 #define MSI_IOVA_LENGTH			0x100000
 
+/* MTK impl arm_smmu_device->features */
+#define ARM_SMMU_FEAT_IMPL(id)			(31 - (id))
+#define ARM_SMMU_FEAT_MPAM			(1 << ARM_SMMU_FEAT_IMPL(0))
+#define ARM_SMMU_FEAT_TCU_PF			(1 << ARM_SMMU_FEAT_IMPL(1))
+#define ARM_SMMU_FEAT_DIS_EVTQ			(1 << ARM_SMMU_FEAT_IMPL(2))
+
 enum pri_resp {
 	PRI_RESP_DENY = 0,
 	PRI_RESP_FAIL = 1,
