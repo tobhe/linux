@@ -1231,6 +1231,11 @@
 		mediatek,vcp = <&vcp>;
 	};
 
+	mtkheap-slc {
+		compatible = "mediatek,dmaheap-mtk-slc";
+		heap-name = "mtk_slc";
+	};
+
 	soc {
 		compatible = "simple-bus";
 		#address-cells = <2>;
@@ -1277,6 +1282,12 @@
 			qos-mode = <1>;
 			qos-sysram-support;
 			qos-value = <0>;
+		};
+
+		gpu_slc: gpu-slc@13f820 {
+			compatible = "mediatek,gpu_slc";
+			slc-sysram-support = <1>;
+			reg = <0 0x13f820 0 0x20>;
 		};
 
 		cpu_mcucfg: mcusys-ao-cfg@c000000 {
