@@ -1,0 +1,17 @@
+linux-cix (6.6.89-9.9) questing; urgency=medium
+
+  * Rebase onto CIX 2025Q3
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 15 Jan 2026 10:33:50 +0100
+
+linux-cix (6.6.10-9.9) questing; urgency=medium
+
+  * Enable panthor GPU driver
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 15 Jan 2026 01:18:42 +0100
+
+linux-cix (6.6.10-8.8) questing; urgency=medium
+
+  * Initial CIX vendor kernel
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 09 Dec 2025 13:36:01 +0100

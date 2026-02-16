@@ -1,0 +1,6 @@
+arch="arm64"
+supported="CIX"
+target="Geared toward arm64 CIX."
+desc="=HUMAN= SMP"
+bootloader="grub-efi-arm64 [arm64]"
+provides="kvm-api-4"
