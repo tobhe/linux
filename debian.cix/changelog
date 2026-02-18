@@ -1,3 +1,21 @@
+linux-cix (6.6.89-14.14) questing; urgency=medium
+
+  * Install vmlinuz.efi
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 17 Feb 2026 15:46:14 +0100
+
+linux-cix (6.6.89-11.11) questing; urgency=medium
+
+  * Fix firmware path
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 17 Feb 2026 15:25:05 +0100
+
+linux-cix (6.6.89-10.10) questing; urgency=medium
+
+  * Rebase onto CIX 2025Q4
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Mon, 16 Feb 2026 11:08:59 +0100
+
 linux-cix (6.6.89-9.9) questing; urgency=medium
 
   * Rebase onto CIX 2025Q3
