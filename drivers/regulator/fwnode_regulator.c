@@ -93,9 +93,6 @@ static int fwnode_get_regulation_constraints(struct device *dev,
 
 	n_phandles = fwnode_count_reference_with_args(np, "regulator-coupled-with",
 						NULL);
-	if (IS_ERR(n_phandles))
-		n_phandles = 0;
-
 	n_phandles = max(n_phandles, 0);
 
 	fwnode_property_read_string(np, "regulator-name", &constraints->name);
