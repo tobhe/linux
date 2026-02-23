@@ -2090,9 +2090,9 @@ CONFIG_CPUSETS                                  policy<{'arm64': 'y'}>
 CONFIG_CPU_BIG_ENDIAN                           policy<{'arm64': 'n'}>
 CONFIG_CPU_FREQ                                 policy<{'arm64': 'y'}>
 CONFIG_CPU_FREQ_DEFAULT_GOV_CONSERVATIVE        policy<{'arm64': 'n'}>
-CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND            policy<{'arm64': 'y'}>
+CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND            policy<{'arm64': 'n'}>
 CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE           policy<{'arm64': 'n'}>
-CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL           policy<{'arm64': 'n'}>
+CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL           policy<{'arm64': 'y'}>
 CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE           policy<{'arm64': 'n'}>
 CONFIG_CPU_FREQ_GOV_ATTR_SET                    policy<{'arm64': 'y'}>
 CONFIG_CPU_FREQ_GOV_COMMON                      policy<{'arm64': 'y'}>
@@ -2629,7 +2629,7 @@ CONFIG_DRM_CHIPONE_ICN6211                      policy<{'arm64': 'm'}>
 CONFIG_DRM_CHRONTEL_CH7033                      policy<{'arm64': 'm'}>
 CONFIG_DRM_CIRRUS_QEMU                          policy<{'arm64': 'm'}>
 CONFIG_DRM_CIX                                  policy<{'arm64': 'y'}>
-CONFIG_DRM_CIX_COMPONENT_BIND_BYPASSED          policy<{'arm64': 'y'}>
+CONFIG_DRM_CIX_COMPONENT_BIND_BYPASSED          policy<{'arm64': 'n'}>
 CONFIG_DRM_CIX_EDP_PANEL                        policy<{'arm64': 'm'}>
 CONFIG_DRM_CIX_VIRTUAL                          policy<{'arm64': 'y'}>
 CONFIG_DRM_CROS_EC_ANX7688                      policy<{'arm64': 'm'}>
@@ -2816,7 +2816,7 @@ CONFIG_DRM_TOSHIBA_TC358768                     policy<{'arm64': 'm'}>
 CONFIG_DRM_TOSHIBA_TC358775                     policy<{'arm64': 'm'}>
 CONFIG_DRM_TRILIN_CADENCE_PHY                   policy<{'arm64': 'n'}>
 CONFIG_DRM_TRILIN_DPSUB                         policy<{'arm64': 'm'}>
-CONFIG_DRM_TRILIN_DP_CIX                        policy<{'arm64': 'n'}>
+CONFIG_DRM_TRILIN_DP_CIX                        policy<{'arm64': 'm'}>
 CONFIG_DRM_TTM                                  policy<{'arm64': 'm'}>
 CONFIG_DRM_TTM_HELPER                           policy<{'arm64': 'm'}>
 CONFIG_DRM_UDL                                  policy<{'arm64': 'm'}>

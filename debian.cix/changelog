@@ -1,3 +1,9 @@
+linux-cix (6.6.89-16.16) questing; urgency=medium
+
+  * Update config, add trilin-dp
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 19 Feb 2026 21:06:35 +0100
+
 linux-cix (6.6.89-14.14) questing; urgency=medium
 
   * Install vmlinuz.efi
