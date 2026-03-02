@@ -1,3 +1,9 @@
+linux-cix (6.6.89-17.17) questing; urgency=medium
+
+  * Config tweaks
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Sun, 01 Mar 2026 00:35:09 +0100
+
 linux-cix (6.6.89-16.16) questing; urgency=medium
 
   * Update config, add trilin-dp
