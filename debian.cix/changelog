@@ -1,3 +1,21 @@
+linux-cix (6.6.89-20.20) resolute; urgency=medium
+
+  * Switch FB_EFI -> SYSFB_SIMPLEFB
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 03 Mar 2026 12:31:37 +0100
+
+linux-cix (6.6.89-19.19) resolute; urgency=medium
+
+  * Enable CONFIG_USB_CDNSP_GADGET
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 03 Mar 2026 03:48:07 +0100
+
+linux-cix (6.6.89-18.18) resolute; urgency=medium
+
+  * Enable onboard_usb_hub
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 03 Mar 2026 02:54:06 +0100
+
 linux-cix (6.6.89-17.17) questing; urgency=medium
 
   * Config tweaks
