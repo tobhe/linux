@@ -68,6 +68,8 @@ static int linlondp_bind(struct device *dev)
 		goto free_mdrv;
 	}
 
+	drm_aperture_remove_framebuffers(dev);
+
 	if (!pm_runtime_enabled(dev))
 		linlondp_dev_resume(mdrv->mdev);
 
