@@ -17,6 +17,7 @@
 #include <drm/drm_probe_helper.h>
 #include <drm/drm_vblank.h>
 #include <drm/drm_self_refresh_helper.h>
+#include <drm/drm_aperture.h>
 
 #include "linlondp_dev.h"
 #include "linlondp_framebuffer.h"
@@ -343,6 +344,12 @@ struct linlondp_kms_dev *linlondp_kms_attach(struct linlondp_dev *mdev)
 	drm = &kms->base;
 
 	drm->dev_private = mdev;
+
+	err = drm_aperture_remove_framebuffers(&linlondp_kms_driver);
+	if (err) {
+		DRM_ERROR("Remove firmware framebuffers failed\n");
+		return ERR_PTR(err);
+	}
 
 	linlondp_kms_mode_config_init(kms, mdev);
 
