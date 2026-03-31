@@ -427,6 +427,20 @@ static int lenovo_input_mapping_tp10_ultrabook_kbd(struct hid_device *hdev,
 	return 0;
 }
 
+static int lenovo_input_mapping_thinkpad_t14s(struct hid_device *hdev,
+		struct hid_input *hi, struct hid_field *field,
+		struct hid_usage *usage, unsigned long **bit, int *max)
+{
+	/*
+	 * The ThinkPad T14s Gen 6 keyboard sends a spurious F23 on Fn press.
+	 * Ignore it, the keyboard does not have a F23 key.
+	 */
+	if (usage->hid == 0x00070072)
+		return -1;
+
+	return 0;
+}
+
 static int lenovo_input_mapping_x1_tab_kbd(struct hid_device *hdev,
 		struct hid_input *hi, struct hid_field *field,
 		struct hid_usage *usage, unsigned long **bit, int *max)
@@ -508,6 +522,8 @@ static int lenovo_input_mapping(struct hid_device *hdev,
 	case USB_DEVICE_ID_LENOVO_X1_TAB2:
 	case USB_DEVICE_ID_LENOVO_X1_TAB3:
 		return lenovo_input_mapping_x1_tab_kbd(hdev, hi, field, usage, bit, max);
+	case I2C_DEVICE_ID_LENOVO_THINKPAD_T14S_KEYBOARD:
+		return lenovo_input_mapping_thinkpad_t14s(hdev, hi, field, usage, bit, max);
 	default:
 		return 0;
 	}
@@ -1553,6 +1569,8 @@ static const struct hid_device_id lenovo_devices[] = {
 		     USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_X12_TAB2) },
 	{ HID_DEVICE(BUS_I2C, HID_GROUP_GENERIC,
 		     USB_VENDOR_ID_ITE, I2C_DEVICE_ID_ITE_LENOVO_YOGA_SLIM_7X_KEYBOARD) },
+	{ HID_DEVICE(BUS_I2C, HID_GROUP_GENERIC,
+		     USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_LENOVO_THINKPAD_T14S_KEYBOARD) },
 	{ }
 };
 
