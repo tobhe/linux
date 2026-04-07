@@ -1,0 +1,71 @@
+linux-cix (6.6.89-27.27) resolute; urgency=medium
+
+  * Fix framebuffer handover
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Sun, 15 Mar 2026 17:09:53 +0100
+
+linux-cix (6.6.89-20.20) resolute; urgency=medium
+
+  * Switch FB_EFI -> SYSFB_SIMPLEFB
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 03 Mar 2026 12:31:37 +0100
+
+linux-cix (6.6.89-19.19) resolute; urgency=medium
+
+  * Enable CONFIG_USB_CDNSP_GADGET
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 03 Mar 2026 03:48:07 +0100
+
+linux-cix (6.6.89-18.18) resolute; urgency=medium
+
+  * Enable onboard_usb_hub
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 03 Mar 2026 02:54:06 +0100
+
+linux-cix (6.6.89-17.17) questing; urgency=medium
+
+  * Config tweaks
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Sun, 01 Mar 2026 00:35:09 +0100
+
+linux-cix (6.6.89-16.16) questing; urgency=medium
+
+  * Update config, add trilin-dp
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 19 Feb 2026 21:06:35 +0100
+
+linux-cix (6.6.89-14.14) questing; urgency=medium
+
+  * Install vmlinuz.efi
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 17 Feb 2026 15:46:14 +0100
+
+linux-cix (6.6.89-11.11) questing; urgency=medium
+
+  * Fix firmware path
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 17 Feb 2026 15:25:05 +0100
+
+linux-cix (6.6.89-10.10) questing; urgency=medium
+
+  * Rebase onto CIX 2025Q4
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Mon, 16 Feb 2026 11:08:59 +0100
+
+linux-cix (6.6.89-9.9) questing; urgency=medium
+
+  * Rebase onto CIX 2025Q3
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 15 Jan 2026 10:33:50 +0100
+
+linux-cix (6.6.10-9.9) questing; urgency=medium
+
+  * Enable panthor GPU driver
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Thu, 15 Jan 2026 01:18:42 +0100
+
+linux-cix (6.6.10-8.8) questing; urgency=medium
+
+  * Initial CIX vendor kernel
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 09 Dec 2025 13:36:01 +0100
