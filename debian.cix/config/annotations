@@ -16,7 +16,7 @@ CONFIG_ARCH_MMAP_RND_COMPAT_BITS                policy<{'arm64': '16'}>
 CONFIG_ARCH_MMAP_RND_COMPAT_BITS                note<'TODO: update note'>
 
 CONFIG_ARCH_ROCKCHIP                            policy<{'arm64': 'y'}>
-CONFIG_ARCH_ROCKCHIP                            note<TODO: update note>
+CONFIG_ARCH_ROCKCHIP                            note<'TODO: update note'>
 
 CONFIG_ARM64_ERRATUM_843419                     policy<{'arm64': 'y'}>
 CONFIG_ARM64_ERRATUM_843419                     note<'LP: #1647793'>
@@ -46,34 +46,34 @@ CONFIG_BINFMT_SCRIPT                            policy<{'arm64': 'y'}>
 CONFIG_BINFMT_SCRIPT                            note<'required if init is a shell script such as in initramfs-tools'>
 
 CONFIG_BLK_DEV_DM                               policy<{'arm64': 'm'}>
-CONFIG_BLK_DEV_DM                               note<TODO: update note>
+CONFIG_BLK_DEV_DM                               note<'TODO: update note'>
 
 CONFIG_BLK_DEV_NVME                             policy<{'arm64': 'm'}>
-CONFIG_BLK_DEV_NVME                             note<TODO: update note>
+CONFIG_BLK_DEV_NVME                             note<'TODO: update note'>
 
 CONFIG_BLK_DEV_RAM                              policy<{'arm64': 'm'}>
-CONFIG_BLK_DEV_RAM                              note<TODO: update note>
+CONFIG_BLK_DEV_RAM                              note<'TODO: update note'>
 
 CONFIG_BLK_DEV_RAM_SIZE                         policy<{'arm64': '16384'}>
-CONFIG_BLK_DEV_RAM_SIZE                         note<TODO: update note>
+CONFIG_BLK_DEV_RAM_SIZE                         note<'TODO: update note'>
 
 CONFIG_BLK_DEV_SD                               policy<{'arm64': 'm'}>
-CONFIG_BLK_DEV_SD                               note<TODO: update note>
+CONFIG_BLK_DEV_SD                               note<'TODO: update note'>
 
 CONFIG_BLK_DEV_SR                               policy<{'arm64': 'm'}>
-CONFIG_BLK_DEV_SR                               note<TODO: update note>
+CONFIG_BLK_DEV_SR                               note<'TODO: update note'>
 
 CONFIG_BLK_DEV_THROTTLING                       policy<{'arm64': 'y'}>
 CONFIG_BLK_DEV_THROTTLING                       note<'TODO: update note'>
 
 CONFIG_CHR_DEV_SG                               policy<{'arm64': 'm'}>
-CONFIG_CHR_DEV_SG                               note<TODO: update note>
+CONFIG_CHR_DEV_SG                               note<'TODO: update note'>
 
 CONFIG_CMA                                      policy<{'arm64': 'y'}>
 CONFIG_CMA                                      note<'LP: #1803206'>
 
 CONFIG_CMA_SIZE_MBYTES                          policy<{'arm64': '64'}>
-CONFIG_CMA_SIZE_MBYTES                          note<TODO: update note>
+CONFIG_CMA_SIZE_MBYTES                          note<'TODO: update note'>
 
 CONFIG_COMPAT_BRK                               policy<{'arm64': 'n'}>
 CONFIG_COMPAT_BRK                               note<'disables brk ASLR'>
@@ -82,13 +82,13 @@ CONFIG_CONSOLE_LOGLEVEL_QUIET                   policy<{'arm64': '3'}>
 CONFIG_CONSOLE_LOGLEVEL_QUIET                   note<'TODO: update note'>
 
 CONFIG_CPUFREQ_DT                               policy<{'arm64': 'm'}>
-CONFIG_CPUFREQ_DT                               note<TODO: update note>
+CONFIG_CPUFREQ_DT                               note<'TODO: update note'>
 
 CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE         policy<{'arm64': 'n'}>
 CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE         note<'for bootspeed'>
 
 CONFIG_CPU_FREQ_GOV_CONSERVATIVE                policy<{'arm64': 'm'}>
-CONFIG_CPU_FREQ_GOV_CONSERVATIVE                note<TODO: update note>
+CONFIG_CPU_FREQ_GOV_CONSERVATIVE                note<'TODO: update note'>
 
 CONFIG_CPU_FREQ_GOV_ONDEMAND                    policy<{'arm64': 'y'}>
 CONFIG_CPU_FREQ_GOV_ONDEMAND                    note<'TODO: update note'>
@@ -97,10 +97,10 @@ CONFIG_CPU_FREQ_GOV_PERFORMANCE                 policy<{'arm64': 'y'}>
 CONFIG_CPU_FREQ_GOV_PERFORMANCE                 note<'not autoloadable'>
 
 CONFIG_CPU_FREQ_GOV_POWERSAVE                   policy<{'arm64': 'm'}>
-CONFIG_CPU_FREQ_GOV_POWERSAVE                   note<TODO: update note>
+CONFIG_CPU_FREQ_GOV_POWERSAVE                   note<'TODO: update note'>
 
 CONFIG_CPU_FREQ_GOV_USERSPACE                   policy<{'arm64': 'm'}>
-CONFIG_CPU_FREQ_GOV_USERSPACE                   note<TODO: update note>
+CONFIG_CPU_FREQ_GOV_USERSPACE                   note<'TODO: update note'>
 
 CONFIG_CPU_FREQ_STAT                            policy<{'arm64': 'y'}>
 CONFIG_CPU_FREQ_STAT                            note<'dependancy of boot essential'>
@@ -139,19 +139,19 @@ CONFIG_DMA_CMA                                  policy<{'arm64': 'y'}>
 CONFIG_DMA_CMA                                  note<'LP: #1803206'>
 
 CONFIG_DRM                                      policy<{'arm64': 'm'}>
-CONFIG_DRM                                      note<TODO: update note>
+CONFIG_DRM                                      note<'TODO: update note'>
 
 CONFIG_DRM_HISI_HIBMC                           policy<{'arm64': 'm'}>
-CONFIG_DRM_HISI_HIBMC                           note<TODO: update note>
+CONFIG_DRM_HISI_HIBMC                           note<'TODO: update note'>
 
 CONFIG_DRM_MGAG200                              policy<{'arm64': 'm'}>
 CONFIG_DRM_MGAG200                              note<'TODO: update note'>
 
 CONFIG_DRM_SIMPLEDRM                            policy<{'arm64': 'm'}>
-CONFIG_DRM_SIMPLEDRM                            note<TODO: update note>
+CONFIG_DRM_SIMPLEDRM                            note<'TODO: update note'>
 
 CONFIG_ECRYPT_FS                                policy<{'arm64': 'm'}>
-CONFIG_ECRYPT_FS                                note<TODO: update note>
+CONFIG_ECRYPT_FS                                note<'TODO: update note'>
 
 CONFIG_EVM                                      policy<{'arm64': 'y'}>
 CONFIG_EVM                                      note<'TODO: update note'>
@@ -172,7 +172,7 @@ CONFIG_GPIO_CDEV_V1                             policy<{'arm64': 'y'}>
 CONFIG_GPIO_CDEV_V1                             note<'LP: #1953613'>
 
 CONFIG_HIBERNATION                              policy<{'arm64': 'y'}>
-CONFIG_HIBERNATION                              note<TODO: update note>
+CONFIG_HIBERNATION                              note<'TODO: update note'>
 
 CONFIG_HOTPLUG_PCI_PCIE                         policy<{'arm64': 'y'}>
 CONFIG_HOTPLUG_PCI_PCIE                         note<'TODO: update note'>
@@ -190,7 +190,7 @@ CONFIG_HZ_250                                   policy<{'arm64': 'n'}>
 CONFIG_HZ_250                                   note<'TODO: update note'>
 
 CONFIG_I2C_CHARDEV                              policy<{'arm64': 'm'}>
-CONFIG_I2C_CHARDEV                              note<TODO: update note>
+CONFIG_I2C_CHARDEV                              note<'TODO: update note'>
 
 CONFIG_IDLE_PAGE_TRACKING                       policy<{'arm64': 'y'}>
 CONFIG_IDLE_PAGE_TRACKING                       note<'TODO: update note'>
@@ -199,7 +199,7 @@ CONFIG_IMA                                      policy<{'arm64': 'y'}>
 CONFIG_IMA                                      note<'TODO: update note'>
 
 CONFIG_INPUT_UINPUT                             policy<{'arm64': 'm'}>
-CONFIG_INPUT_UINPUT                             note<TODO: update note>
+CONFIG_INPUT_UINPUT                             note<'TODO: update note'>
 
 CONFIG_IOMMU_DEBUGFS                            policy<{'arm64': 'n'}>
 CONFIG_IOMMU_DEBUGFS                            note<'LP: #1861057'>
@@ -271,7 +271,7 @@ CONFIG_NET_9P                                   policy<{'arm64': 'm'}>
 CONFIG_NET_9P                                   note<'TODO: update note'>
 
 CONFIG_NET_DROP_MONITOR                         policy<{'arm64': 'm'}>
-CONFIG_NET_DROP_MONITOR                         note<TODO: update note>
+CONFIG_NET_DROP_MONITOR                         note<'TODO: update note'>
 
 CONFIG_NET_SWITCHDEV                            policy<{'arm64': 'y'}>
 CONFIG_NET_SWITCHDEV                            note<'updated to y for s390x starting with focal'>
@@ -286,10 +286,10 @@ CONFIG_NOP_USB_XCEIV                            policy<{'arm64': 'm'}>
 CONFIG_NOP_USB_XCEIV                            note<'TODO: update note'>
 
 CONFIG_NO_HZ_FULL                               policy<{'arm64': 'y'}>
-CONFIG_NO_HZ_FULL                               note<TODO: update note>
+CONFIG_NO_HZ_FULL                               note<'TODO: update note'>
 
 CONFIG_NO_HZ_IDLE                               policy<{'arm64': 'n'}>
-CONFIG_NO_HZ_IDLE                               note<TODO: update note>
+CONFIG_NO_HZ_IDLE                               note<'TODO: update note'>
 
 CONFIG_NR_CPUS                                  policy<{'arm64': '512'}>
 CONFIG_NR_CPUS                                  note<'TODO: update note'>
@@ -337,13 +337,13 @@ CONFIG_REGULATOR_FIXED_VOLTAGE                  policy<{'arm64': 'm'}>
 CONFIG_REGULATOR_FIXED_VOLTAGE                  note<'TODO: update note'>
 
 CONFIG_RT_GROUP_SCHED                           policy<{'arm64': 'y'}>
-CONFIG_RT_GROUP_SCHED                           note<TODO: update note>
+CONFIG_RT_GROUP_SCHED                           note<'TODO: update note'>
 
 CONFIG_SATA_AHCI_PLATFORM                       policy<{'arm64': 'm'}>
 CONFIG_SATA_AHCI_PLATFORM                       note<'TODO: update note'>
 
 CONFIG_SCSI_VIRTIO                              policy<{'arm64': 'm'}>
-CONFIG_SCSI_VIRTIO                              note<TODO: update note>
+CONFIG_SCSI_VIRTIO                              note<'TODO: update note'>
 
 CONFIG_SECURITY_SAFESETID                       policy<{'arm64': 'y'}>
 CONFIG_SECURITY_SAFESETID                       note<'TODO: update note'>
@@ -358,19 +358,19 @@ CONFIG_SERIAL_DEV_CTRL_TTYPORT                  policy<{'arm64': 'y'}>
 CONFIG_SERIAL_DEV_CTRL_TTYPORT                  note<'LP: #1739939'>
 
 CONFIG_SND                                      policy<{'arm64': 'm'}>
-CONFIG_SND                                      note<TODO: update note>
+CONFIG_SND                                      note<'TODO: update note'>
 
 CONFIG_SND_SOC                                  policy<{'arm64': 'm'}>
-CONFIG_SND_SOC                                  note<TODO: update note>
+CONFIG_SND_SOC                                  note<'TODO: update note'>
 
 CONFIG_SOUND                                    policy<{'arm64': 'm'}>
-CONFIG_SOUND                                    note<TODO: update note>
+CONFIG_SOUND                                    note<'TODO: update note'>
 
 CONFIG_SOUNDWIRE                                policy<{'arm64': 'm'}>
 CONFIG_SOUNDWIRE                                note<'LP: #1855685'>
 
 CONFIG_SQUASHFS                                 policy<{'arm64': 'm'}>
-CONFIG_SQUASHFS                                 note<TODO: update note>
+CONFIG_SQUASHFS                                 note<'TODO: update note'>
 
 CONFIG_SQUASHFS_4K_DEVBLK_SIZE                  policy<{'arm64': 'n'}>
 CONFIG_SQUASHFS_4K_DEVBLK_SIZE                  note<'non-default block size'>
@@ -400,7 +400,7 @@ CONFIG_UBSAN                                    policy<{'arm64': 'y'}>
 CONFIG_UBSAN                                    note<'TODO: update note'>
 
 CONFIG_USB_EHCI_HCD                             policy<{'arm64': 'm'}>
-CONFIG_USB_EHCI_HCD                             note<TODO: update note>
+CONFIG_USB_EHCI_HCD                             note<'TODO: update note'>
 
 CONFIG_USB_EHCI_HCD_PLATFORM                    policy<{'arm64': 'm'}>
 CONFIG_USB_EHCI_HCD_PLATFORM                    note<'TODO: update note'>
@@ -412,7 +412,7 @@ CONFIG_USB_MUSB_HDRC                            policy<{'arm64': 'm'}>
 CONFIG_USB_MUSB_HDRC                            note<'TODO: update note'>
 
 CONFIG_USB_OTG                                  policy<{'arm64': 'n'}>
-CONFIG_USB_OTG                                  note<TODO: update note>
+CONFIG_USB_OTG                                  note<'TODO: update note'>
 
 CONFIG_USB_SERIAL_DEBUG                         policy<{'arm64': 'm'}>
 CONFIG_USB_SERIAL_DEBUG                         note<'TODO: update note'>
@@ -427,7 +427,7 @@ CONFIG_USB_XHCI_HCD                             policy<{'arm64': 'y'}>
 CONFIG_USB_XHCI_HCD                             note<'ensures USB 2.0/1.1 probe ordering'>
 
 CONFIG_VFAT_FS                                  policy<{'arm64': 'm'}>
-CONFIG_VFAT_FS                                  note<TODO: update note>
+CONFIG_VFAT_FS                                  note<'TODO: update note'>
 
 CONFIG_VFIO                                     policy<{'arm64': 'm'}>
 CONFIG_VFIO                                     note<'TODO: update note'>
@@ -436,13 +436,13 @@ CONFIG_VFIO_PCI                                 policy<{'arm64': 'm'}>
 CONFIG_VFIO_PCI                                 note<'TODO: update note'>
 
 CONFIG_VIRTIO_BLK                               policy<{'arm64': 'm'}>
-CONFIG_VIRTIO_BLK                               note<TODO: update note>
+CONFIG_VIRTIO_BLK                               note<'TODO: update note'>
 
 CONFIG_VIRTIO_MMIO                              policy<{'arm64': 'm'}>
-CONFIG_VIRTIO_MMIO                              note<TODO: update note>
+CONFIG_VIRTIO_MMIO                              note<'TODO: update note'>
 
 CONFIG_VIRTIO_NET                               policy<{'arm64': 'm'}>
-CONFIG_VIRTIO_NET                               note<TODO: update note>
+CONFIG_VIRTIO_NET                               note<'TODO: update note'>
 
 CONFIG_WWAN                                     policy<{'arm64': 'm'}>
 CONFIG_WWAN                                     note<'TODO: update note'>
@@ -451,10 +451,10 @@ CONFIG_X509_CERTIFICATE_PARSER                  policy<{'arm64': 'y'}>
 CONFIG_X509_CERTIFICATE_PARSER                  note<'module signing'>
 
 CONFIG_XEN_BLKDEV_FRONTEND                      policy<{'arm64': 'm'}>
-CONFIG_XEN_BLKDEV_FRONTEND                      note<TODO: update note>
+CONFIG_XEN_BLKDEV_FRONTEND                      note<'TODO: update note'>
 
 CONFIG_XEN_NETDEV_FRONTEND                      policy<{'arm64': 'm'}>
-CONFIG_XEN_NETDEV_FRONTEND                      note<TODO: update note>
+CONFIG_XEN_NETDEV_FRONTEND                      note<'TODO: update note'>
 
 CONFIG_XZ_DEC                                   policy<{'arm64': 'y'}>
 CONFIG_XZ_DEC                                   note<'boot essential -- initramfs decompressor'>
@@ -2075,7 +2075,7 @@ CONFIG_CHELSIO_T4_FCOE                          policy<{'arm64': 'y'}>
 CONFIG_CHELSIO_TLS_DEVICE                       policy<{'arm64': 'm'}>
 CONFIG_CHROMEOS_ACPI                            policy<{'arm64': 'm'}>
 CONFIG_CHROMEOS_OF_HW_PROBER                    policy<{'arm64': 'm'}>
-CONFIG_CHROMEOS_PRIVACY_SCREEN                  policy<{'arm64': 'm'}>
+CONFIG_CHROMEOS_PRIVACY_SCREEN                  policy<{'arm64': 'n'}>
 CONFIG_CHROMEOS_TBMC                            policy<{'arm64': 'm'}>
 CONFIG_CHROME_PLATFORMS                         policy<{'arm64': 'y'}>
 CONFIG_CHR_DEV_SCH                              policy<{'arm64': 'm'}>
@@ -3398,7 +3398,6 @@ CONFIG_DRM_MSM_KMS_FBDEV                        policy<{'arm64': 'y'}>
 CONFIG_DRM_MSM_MDP4                             policy<{'arm64': 'y'}>
 CONFIG_DRM_MSM_MDP5                             policy<{'arm64': 'y'}>
 CONFIG_DRM_MSM_MDSS                             policy<{'arm64': 'y'}>
-CONFIG_DRM_MSM_VALIDATE_XML                     policy<{'arm64': 'n'}>
 CONFIG_DRM_MXS                                  policy<{'arm64': 'y'}>
 CONFIG_DRM_MXSFB                                policy<{'arm64': 'm'}>
 CONFIG_DRM_NOUVEAU                              policy<{'arm64': 'm'}>
@@ -10068,10 +10067,14 @@ CONFIG_RT_MUTEXES                               policy<{'arm64': 'y'}>
 CONFIG_RUNTIME_TESTING_MENU                     policy<{'arm64': 'y'}>
 CONFIG_RUST                                     policy<{'arm64': 'y'}>
 CONFIG_RUSTC_HAS_COERCE_POINTEE                 policy<{'arm64': 'y'}>
+CONFIG_RUSTC_HAS_FILE_AS_C_STR                  policy<{'arm64': 'y'}>
+CONFIG_RUSTC_HAS_FILE_WITH_NUL                  policy<{'arm64': 'y'}>
 CONFIG_RUSTC_HAS_SLICE_AS_FLATTENED             policy<{'arm64': 'y'}>
-CONFIG_RUSTC_LLVM_VERSION                       policy<{'arm64': '190107'}>
+CONFIG_RUSTC_HAS_SPAN_FILE                      policy<{'arm64': 'y'}>
+CONFIG_RUSTC_HAS_UNNECESSARY_TRANSMUTES         policy<{'arm64': 'y'}>
+CONFIG_RUSTC_LLVM_VERSION                       policy<{'arm64': '210108'}>
 CONFIG_RUSTC_SUPPORTS_ARM64                     policy<{'arm64': 'y'}>
-CONFIG_RUSTC_VERSION                            policy<{'arm64': '108501'}>
+CONFIG_RUSTC_VERSION                            policy<{'arm64': '109301'}>
 CONFIG_RUSTC_VERSION_TEXT                       policy<{'arm64': '"rustc 1.85.1 (4eb161250 2025-03-15) (built from a source tarball)"'}>
 CONFIG_RUST_BITMAP_HARDENED                     policy<{'arm64': 'n'}>
 CONFIG_RUST_BUILD_ASSERT_ALLOW                  policy<{'arm64': 'n'}>

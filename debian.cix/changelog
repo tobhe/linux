@@ -1,3 +1,9 @@
+linux-cix (7.0.0-15.15) resolute; urgency=medium
+
+  * Initial CIX variant
+
+ -- Tobias Heider <tobias.heider@canonical.com>  Tue, 07 Apr 2026 18:18:30 +0200
+
 linux (7.0.0-12.12) resolute; urgency=medium
 
   * resolute/linux: 7.0.0-12.12 -proposed tracker (LP: #2146778)
