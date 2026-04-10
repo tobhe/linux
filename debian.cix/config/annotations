@@ -8492,9 +8492,9 @@ CONFIG_PHY_CADENCE_SALVO                        policy<{'arm64': 'm'}>
 CONFIG_PHY_CADENCE_SIERRA                       policy<{'arm64': 'm'}>
 CONFIG_PHY_CADENCE_TORRENT                      policy<{'arm64': 'm'}>
 CONFIG_PHY_CAN_TRANSCEIVER                      policy<{'arm64': 'm'}>
-CONFIG_PHY_CIX_PCIE                             policy<{'arm64': 'n'}>
-CONFIG_PHY_CIX_USB2                             policy<{'arm64': 'n'}>
-CONFIG_PHY_CIX_USB3                             policy<{'arm64': 'n'}>
+CONFIG_PHY_CIX_PCIE                             policy<{'arm64': 'y'}>
+CONFIG_PHY_CIX_USB2                             policy<{'arm64': 'y'}>
+CONFIG_PHY_CIX_USB3                             policy<{'arm64': 'y'}>
 CONFIG_PHY_CIX_USBDP                            policy<{'arm64': 'y'}>
 CONFIG_PHY_COMMON_PROPS                         policy<{'arm64': 'y'}>
 CONFIG_PHY_CPCAP_USB                            policy<{'arm64': 'm'}>
