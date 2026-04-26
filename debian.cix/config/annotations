@@ -13370,6 +13370,10 @@ CONFIG_VIDEO_ISL7998X                           policy<{'arm64': 'm'}>
 CONFIG_VIDEO_IVTV                               policy<{'arm64': 'm'}>
 CONFIG_VIDEO_IVTV_ALSA                          policy<{'arm64': 'm'}>
 CONFIG_VIDEO_KS0127                             policy<{'arm64': 'm'}>
+CONFIG_VIDEO_LINLON                             policy<{'arm64': 'm'}>
+CONFIG_VIDEO_LINLON_ANDROID_KERNEL              policy<{'arm64': 'n'}>
+CONFIG_VIDEO_LINLON_FTRACE                      policy<{'arm64': 'n'}>
+CONFIG_VIDEO_LINLON_PRINT_FILE                  policy<{'arm64': 'y'}>
 CONFIG_VIDEO_LM3560                             policy<{'arm64': 'm'}>
 CONFIG_VIDEO_LM3646                             policy<{'arm64': 'm'}>
 CONFIG_VIDEO_LT6911UXE                          policy<{'arm64': 'm'}>
