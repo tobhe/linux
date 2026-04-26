@@ -1,0 +1,94 @@
+# The confidential and proprietary information contained in this file may
+# only be used by a person authorised under and to the extent permitted
+# by a subsisting licensing agreement from Cix Technology Group Co., Ltd.
+#
+#            (C) Copyright 2026 Cix Technology Group Co., Ltd.
+#                ALL RIGHTS RESERVED
+#
+# This entire notice must be reproduced on all copies of this file
+# and copies of this file may only be made by a person if such person is
+# permitted to do so under the terms of a subsisting license agreement
+# from Cix Technology Group Co., Ltd.
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+load(
+    "@kleaf//build/kernel/kleaf:kernel.bzl",
+    "ddk_headers",
+    "ddk_module",
+)
+
+package(
+    default_visibility = [
+        "//:__subpackages__",
+        "@kleaf//common:__pkg__",
+    ],
+)
+
+ddk_headers(
+    name = "vpu_kernel_headers",
+    hdrs = glob(["**/*.h"]),
+    includes = [
+        ".",
+        "if",
+        "if/v4l2",
+        "dev",
+        "external",
+    ],
+)
+
+ddk_module(
+    name = "amvx",
+    local_defines = [
+        "MVX_LOG_PRINT_FILE_ENABLE",
+        "MVX_ANDROID_KERNEL",
+    ],
+    srcs = [
+        "mvx_driver.c",
+        "mvx_seq.c",
+        "mvx_log.c",
+        "mvx_log_group.c",
+        "mvx_pm_runtime.c",
+    ] + glob([
+        "if/*.c",
+    ]) + glob([
+        "if/v4l2/*.c",
+    ]) + glob([
+        "dev/*.c",
+    ], exclude = ["dev/mvx_dsm.c"]),
+    out = "amvx.ko",
+    hdrs = [
+        ":vpu_kernel_headers",
+        "@kleaf//common:all_headers",
+    ],
+    includes = [
+        ".",
+        "if",
+        "dev",
+        "if/v4l2",
+        "external",
+    ],
+    conditional_srcs = {
+        "CONFIG_PLAT_DSM_SYSEVENT": {
+            True: [
+                "dev/mvx_dsm.c",
+            ],
+        },
+    },
+    kernel_build = "//common:sky1",
+)

@@ -2,4 +2,5 @@
 
 comment "ARM media platform drivers"
 
+source "drivers/media/platform/arm/linlon/Kconfig"
 source "drivers/media/platform/arm/mali-c55/Kconfig"

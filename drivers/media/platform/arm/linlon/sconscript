@@ -1,0 +1,47 @@
+import os
+
+Import('env')
+
+# Get source path to current directory.
+path = env.Dir('.').srcnode().path
+
+prints = ""
+
+targets = [os.path.join('#', path, 'amvx.ko')]
+
+extra_ccflags=""
+if 'EXTRA_CCFLAGS' in os.environ:
+    extra_ccflags = os.environ['EXTRA_CCFLAGS']
+
+flag = ""
+if os.environ.get('CLANG_BIN'):
+    clang = os.environ['CLANG_BIN']
+    cross_compile = os.environ['CROSS_COMPILE']
+    flag = (
+        f"CC={clang}/clang "
+        f"CXX={clang}/clang++ "
+        f"LD={clang}/ld.lld "
+        f"AR={clang}/llvm-ar "
+        f"NM={clang}/llvm-nm "
+        f"STRIP={clang}/llvm-strip "
+        f"OBJCOPY={clang}/llvm-objcopy "
+        f"OBJDUMP={clang}/llvm-objdump "
+        f"READELF={clang}/llvm-readelf "
+        f"CROSS_COMPILE={cross_compile} "
+        f"LLVM=1 "
+        f"LLVM_IAS=1 "
+        f"LOCALVERSION=-generic"
+    )
+
+amvx = env.Command(targets, [],
+                   'make %s -C %s mono_v4l2 KDIR=%s EXTRA_CCFLAGS="%s" %s' %
+                   (flag, path, env['KDIR'], extra_ccflags, prints))
+
+# Flag to always build.
+env.AlwaysBuild(amvx)
+
+# Install kernel module in bin directory.
+env.Install(env['BIN_DIR'], [amvx])
+
+# Install user space header files
+env.Install(env['INCLUDE_DIR'], ['linux/mvx-v4l2-controls.h', 'external/fw_v2/mve_protocol_def.h', 'mvx_log_ram.h'])
