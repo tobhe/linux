@@ -1142,6 +1142,14 @@ CONFIG_ARMADA_AP_CPU_CLK                        policy<{'arm64': 'y'}>
 CONFIG_ARMADA_AP_CP_HELPER                      policy<{'arm64': 'y'}>
 CONFIG_ARMADA_CP110_SYSCON                      policy<{'arm64': 'y'}>
 CONFIG_ARMADA_THERMAL                           policy<{'arm64': 'm'}>
+CONFIG_ARMCHINA_NPU                             policy<{'arm64': 'm'}>
+CONFIG_ARMCHINA_NPU_ARCH_V1                     policy<{'arm64': 'n'}>
+CONFIG_ARMCHINA_NPU_ARCH_V2                     policy<{'arm64': 'n'}>
+CONFIG_ARMCHINA_NPU_ARCH_V3                     policy<{'arm64': 'y'}>
+CONFIG_ARMCHINA_NPU_ARCH_V3_1                   policy<{'arm64': 'n'}>
+CONFIG_ARMCHINA_NPU_SOC_DEFAULT                 policy<{'arm64': 'n'}>
+CONFIG_ARMCHINA_NPU_SOC_R329                    policy<{'arm64': 'n'}>
+CONFIG_ARMCHINA_NPU_SOC_SKY1                    policy<{'arm64': 'y'}>
 CONFIG_ARM_AIROHA_SOC_CPUFREQ                   policy<{'arm64': 'm'}>
 CONFIG_ARM_ALLWINNER_SUN50I_CPUFREQ_NVMEM       policy<{'arm64': 'm'}>
 CONFIG_ARM_AMBA                                 policy<{'arm64': 'y'}>
