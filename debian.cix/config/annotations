@@ -9096,6 +9096,7 @@ CONFIG_PWM_RENESAS_RZG2L_GPT                    policy<{'arm64': 'm'}>
 CONFIG_PWM_RENESAS_RZ_MTU3                      policy<{'arm64': 'm'}>
 CONFIG_PWM_RENESAS_TPU                          policy<{'arm64': 'm'}>
 CONFIG_PWM_SAMSUNG                              policy<{'arm64': 'n'}>
+CONFIG_PWM_SKY1                                 policy<{'arm64': 'm'}>
 CONFIG_PWM_SL28CPLD                             policy<{'arm64': 'm'}>
 CONFIG_PWM_SOPHGO_SG2042                        policy<{'arm64': 'm'}>
 CONFIG_PWM_SPRD                                 policy<{'arm64': 'm'}>
