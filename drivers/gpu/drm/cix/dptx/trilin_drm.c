@@ -343,7 +343,7 @@ static int trilin_dp_connector_get_modes(struct drm_connector *connector)
 			ret = drm_add_modes_noedid(connector, 1920,
 						   1080);
 			drm_set_preferred_mode(connector, 1920, 1080);
-			DP_INFO("edid is null and read downstream: count=%d",
+			DP_DEBUG("edid is null and read downstream: count=%d",
 				ret);
 		}
 		return ret;
