@@ -75,7 +75,7 @@ int mvx_v4l2_open(struct file *file)
 
     /* Set default port formats. */
     fmt.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
-    fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUV420_AFBC_8;
+    fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_NV12M;
     fmt.fmt.pix.width = 64;
     fmt.fmt.pix.height = 64;
     (void)mvx_v4l2_vidioc_s_fmt_vid_out(file, NULL, &fmt);
