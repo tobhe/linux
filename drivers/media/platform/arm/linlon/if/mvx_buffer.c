@@ -509,7 +509,7 @@ int mvx_buffer_frame_dim(enum mvx_format format,
         return ret;
 
     for (i = 0; i < *nplanes; i++) {
-        const unsigned int stride_align = 1;
+        const unsigned int stride_align = 16;
         unsigned int tmp = DIV_ROUND_UP(width * s[i][0],
                         SUBSAMPLE_PIXELS);
         /* Use optimal stride if no special stride was requested. */
@@ -521,7 +521,7 @@ int mvx_buffer_frame_dim(enum mvx_format format,
             }
         } else {
             /* Else make sure to round up to minimum stride. */
-            stride[i] = max(stride[i], tmp);
+            stride[i] = max(stride[i], round_up(tmp, stride_align));
         }
         size[i] = DIV_ROUND_UP(height * s[i][1],
                        SUBSAMPLE_PIXELS ) * stride[i];
