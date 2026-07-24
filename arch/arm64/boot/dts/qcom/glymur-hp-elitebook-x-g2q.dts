@@ -643,15 +643,15 @@
 };
 
 &remoteproc_adsp {
-	firmware-name = "qcom/glymur/hp/elitebook-x-g2q/adsp.mbn",
-			"qcom/glymur/hp/elitebook-x-g2q/adsp_dtb.mbn";
+	firmware-name = "qcom/glymur/hp/elitebook-x-g2q/qcadsp8480.mbn",
+			"qcom/glymur/hp/elitebook-x-g2q/adsp_dtbs.elf";
 
 	status = "okay";
 };
 
 &remoteproc_cdsp {
-	firmware-name = "qcom/glymur/hp/elitebook-x-g2q/cdsp.mbn",
-			"qcom/glymur/hp/elitebook-x-g2q/cdsp_dtb.mbn";
+	firmware-name = "qcom/glymur/hp/elitebook-x-g2q/qccdsp8480.mbn",
+			"qcom/glymur/hp/elitebook-x-g2q/cdsp_dtbs.elf";
 
 	status = "okay";
 };
